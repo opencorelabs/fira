@@ -1,13 +1,25 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "protos/fira/v1/api.proto",
-    "version": "version not set"
+    "title": "Fira API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Open Core Labs",
+      "url": "https://github.com/opencorelabs/fira",
+      "email": "sam@opencorelabs.org"
+    },
+    "license": {
+      "name": "GNU Affero General Public License v3.0",
+      "url": "https://github.com/opencorelabs/fira/blob/main/LICENSE"
+    }
   },
   "tags": [
     {
       "name": "FiraService"
     }
+  ],
+  "schemes": [
+    "https"
   ],
   "consumes": [
     "application/json"
@@ -92,6 +104,13 @@
           "$ref": "#/definitions/GetApiInfoResponseVersion"
         }
       }
+    }
+  },
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "name": "X-API-Key",
+      "in": "header"
     }
   }
 }
