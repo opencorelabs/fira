@@ -51,7 +51,7 @@ message GetApiInfoResponse {
 service FiraService {
     rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoResponse) {
         option (google.api.http) = { 
-            get: "/info"
+            get: "/api/v1/info"
         };
     }
 }
