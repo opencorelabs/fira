@@ -28,7 +28,7 @@
     "application/json"
   ],
   "paths": {
-    "/info": {
+    "/api/v1/info": {
       "get": {
         "operationId": "FiraService_GetApiInfo",
         "responses": {
