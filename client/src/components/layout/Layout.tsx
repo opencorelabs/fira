@@ -17,6 +17,8 @@ import {
 import React from 'react';
 import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
 
+import { Sidebar } from './Sidebar';
+
 type LayoutProps = {
   children: React.ReactNode;
 };
@@ -37,8 +39,9 @@ export function Layout({ children }: LayoutProps) {
         borderRightColor={useColorModeValue('gray.200', 'gray.600')}
         py={6}
         display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
+        px={2}
       >
-        {/* Sidebar */}
+        <Sidebar />
       </Box>
       <Box flex={1} overflow="auto">
         <Flex
@@ -71,8 +74,12 @@ export function Layout({ children }: LayoutProps) {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Menu</DrawerHeader>
-          <DrawerBody>{/* Sidebar Content */}</DrawerBody>
+          <DrawerHeader>Fira</DrawerHeader>
+          <DrawerBody>
+            <Box px={2}>
+              <Sidebar />
+            </Box>
+          </DrawerBody>
         </DrawerContent>
       </Drawer>
     </Flex>
