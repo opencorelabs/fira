@@ -1,3 +1,5 @@
+import { ChakraProvider, theme } from '@chakra-ui/react';
+
 export function AppProviders({ children }) {
-  return <>{children}</>;
+  return <ChakraProvider theme={theme}>{children}</ChakraProvider>;
 }
