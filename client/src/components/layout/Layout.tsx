@@ -17,6 +17,7 @@ import {
 import React from 'react';
 import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
 
+import { WordMark } from '../WordMark';
 import { Sidebar } from './Sidebar';
 
 type LayoutProps = {
@@ -42,6 +43,9 @@ export function Layout({ children }: LayoutProps) {
         display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
         px={2}
       >
+        <Box px={4}>
+          <WordMark />
+        </Box>
         <Sidebar />
       </Box>
       <Box flex={1} overflow="auto">
@@ -75,7 +79,9 @@ export function Layout({ children }: LayoutProps) {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader bg={bg}>Fira</DrawerHeader>
+          <DrawerHeader bg={bg}>
+            <WordMark />
+          </DrawerHeader>
           <DrawerBody bg={bg}>
             <Sidebar />
           </DrawerBody>
