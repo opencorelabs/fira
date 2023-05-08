@@ -10,41 +10,43 @@ import {
   Icon,
   IconButton,
   useBreakpointValue,
+  useColorMode,
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
 import React from 'react';
-import { FiMenu } from 'react-icons/fi';
+import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 export function Layout({ children }: LayoutProps) {
+  const sidebarWidth = useBreakpointValue({ base: '100%', md: '260px' });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const sidebar = useBreakpointValue({ base: '100%', md: '260px' });
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Flex height="100vh">
       <Box
         as="nav"
-        width={sidebar}
-        maxWidth={sidebar}
+        width={sidebarWidth}
+        maxWidth={sidebarWidth}
         bg={useColorModeValue('white', 'gray.800')}
         borderRightWidth="1px"
         borderRightColor={useColorModeValue('gray.200', 'gray.600')}
-        py="6"
+        py={6}
         display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
       >
         {/* Sidebar */}
       </Box>
-      <Box flex="1" overflow="auto">
+      <Box flex={1} overflow="auto">
         <Flex
           as="header"
           align="center"
-          justify="space-between"
-          py="4"
-          px="6"
+          justify={{ base: 'space-between', md: 'flex-end' }}
+          py={4}
+          px={6}
           bg={useColorModeValue('white', 'gray.800')}
           borderBottomWidth="1px"
           borderBottomColor={useColorModeValue('gray.200', 'gray.600')}
@@ -55,6 +57,12 @@ export function Layout({ children }: LayoutProps) {
             variant="ghost"
             icon={<Icon as={FiMenu} />}
             aria-label="Menu"
+          />
+          <IconButton
+            onClick={toggleColorMode}
+            variant="ghost"
+            icon={<Icon as={colorMode === 'dark' ? FiSun : FiMoon} />}
+            aria-label="Toggle Theme"
           />
         </Flex>
         <Box p={6}>{children}</Box>
