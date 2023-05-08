@@ -1,9 +1,12 @@
 import { AppProviders } from 'src/AppProviders';
+import { Layout } from 'src/components/layout/Layout';
 
 export function App({ Component, pageProps }) {
   return (
     <AppProviders>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </AppProviders>
   );
 }
