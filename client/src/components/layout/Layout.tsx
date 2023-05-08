@@ -27,6 +27,7 @@ export function Layout({ children }: LayoutProps) {
   const sidebarWidth = useBreakpointValue({ base: '100%', md: '260px' });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+  const bg = useColorModeValue('white', 'gray.800');
 
   return (
     <Flex height="100vh">
@@ -34,7 +35,7 @@ export function Layout({ children }: LayoutProps) {
         as="nav"
         width={sidebarWidth}
         maxWidth={sidebarWidth}
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={bg}
         borderRightWidth="1px"
         borderRightColor={useColorModeValue('gray.200', 'gray.600')}
         py={6}
@@ -50,7 +51,7 @@ export function Layout({ children }: LayoutProps) {
           justify={{ base: 'space-between', md: 'flex-end' }}
           py={4}
           px={6}
-          bg={useColorModeValue('white', 'gray.800')}
+          bg={bg}
           borderBottomWidth="1px"
           borderBottomColor={useColorModeValue('gray.200', 'gray.600')}
         >
@@ -74,11 +75,9 @@ export function Layout({ children }: LayoutProps) {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Fira</DrawerHeader>
-          <DrawerBody>
-            <Box px={2}>
-              <Sidebar />
-            </Box>
+          <DrawerHeader bg={bg}>Fira</DrawerHeader>
+          <DrawerBody bg={bg}>
+            <Sidebar />
           </DrawerBody>
         </DrawerContent>
       </Drawer>
