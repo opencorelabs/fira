@@ -69,9 +69,9 @@ func main() {
 
 	mux.Handle("/swagger-ui/", http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./dist/swagger-ui"))))
 
-	log.Infof("HTTP server ready on %s...", app.Config().BindHTTP)
+	log.Infof("HTTP server ready on %s...", app.Config().BindHttp)
 
-	err = http.ListenAndServe(app.Config().BindHTTP, mux)
+	err = http.ListenAndServe(app.Config().BindHttp, mux)
 	if err != nil {
 		log.Fatal(err)
 	}

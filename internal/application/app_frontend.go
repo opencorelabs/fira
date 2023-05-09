@@ -49,9 +49,9 @@ func (a *App) StopFrontend() error {
 }
 
 func (a *App) ServeFrontend() error {
-	feUrl, feUrlErr := url.Parse(a.cfg.FrontendURL)
+	feUrl, feUrlErr := url.Parse(a.cfg.FrontendUrl)
 	if feUrlErr != nil {
-		return fmt.Errorf("unable to parse frontend url '%s': %w", a.cfg.FrontendURL, feUrlErr)
+		return fmt.Errorf("unable to parse frontend url '%s': %w", a.cfg.FrontendUrl, feUrlErr)
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(feUrl)

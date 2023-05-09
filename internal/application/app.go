@@ -31,6 +31,8 @@ func NewApp() (*App, error) {
 		return nil, fmt.Errorf("unable to init logger: %w", loggerErr)
 	}
 
+	logger.Sugar().Named("startup").Infow("config initialized", "debug", cfg.Debug)
+
 	return &App{
 		cfg:    cfg,
 		logger: logger,

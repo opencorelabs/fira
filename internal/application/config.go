@@ -7,9 +7,9 @@ import (
 
 type Config struct {
 	Debug       bool   `default:"true"`
-	BindHTTP    string `default:"localhost:8080"`
-	ClientDir   string `default:"./client"`
-	FrontendURL string `default:"http://localhost:3000"`
+	BindHttp    string `default:"localhost:8080" split_words:"true"`
+	ClientDir   string `default:"./client" split_words:"true"`
+	FrontendUrl string `default:"http://localhost:3000" split_words:"true"`
 }
 
 func InitConfig() (*Config, error) {
