@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"os/exec"
+	"sync"
 )
 
 type App struct {
@@ -12,6 +13,7 @@ type App struct {
 	logger      *zap.Logger
 	frontendCmd *exec.Cmd
 	mux         *http.ServeMux
+	wg          *sync.WaitGroup
 }
 
 func NewApp() (*App, error) {
@@ -37,6 +39,7 @@ func NewApp() (*App, error) {
 		cfg:    cfg,
 		logger: logger,
 		mux:    http.NewServeMux(),
+		wg:     &sync.WaitGroup{},
 	}, nil
 }
 
