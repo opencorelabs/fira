@@ -13,4 +13,4 @@ primary_region = "sea"
   auto_start_machines = true
 
 [env]
-  BIND = "0.0.0.0:8080"
+  FIRA_BIND_HTTP = "0.0.0.0:8080"
