@@ -30,6 +30,7 @@ func (a *App) StartGRPC(ctx context.Context) error {
 			listener, listenErr := net.Listen("tcp", a.cfg.GrpcUrl)
 			if listenErr != nil {
 				errChan <- fmt.Errorf("failed to listen: %w", listenErr)
+				return
 			}
 
 			log.Infow("gRPC server ready", "addr", a.cfg.GrpcUrl)
