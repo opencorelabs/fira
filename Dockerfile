@@ -46,5 +46,7 @@ COPY --from=client /code/.next ./client/.next
 COPY --from=client /code/node_modules ./client/node_modules
 
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV FIRA_DEBUG=false
+ENV FIRA_CLIENT_DIR=/root/client
 
 CMD ["./server"]
