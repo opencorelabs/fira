@@ -6,7 +6,7 @@
     "contact": {
       "name": "Open Core Labs",
       "url": "https://github.com/opencorelabs/fira",
-      "email": "sam@opencorelabs.org"
+      "email": "pnwx@opencorelabs.org"
     },
     "license": {
       "name": "GNU Affero General Public License v3.0",
@@ -45,6 +45,70 @@
             }
           }
         },
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/link": {
+      "post": {
+        "summary": "Create a new link session. This will return a URL to redirect the user to where they will be able to select a\nfinancial institution to connect to and log in.",
+        "operationId": "FiraService_CreateLinkSession",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1LinkSession"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateLinkSessionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/link/{linkId}": {
+      "get": {
+        "summary": "Retrieve the status of a link session.",
+        "operationId": "FiraService_GetLinkSession",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1LinkSession"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "linkId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "tags": [
           "FiraService"
         ]
@@ -97,6 +161,30 @@
         }
       }
     },
+    "v1Connection": {
+      "type": "object"
+    },
+    "v1CreateLinkSessionRequest": {
+      "type": "object",
+      "properties": {
+        "redirectUri": {
+          "type": "string",
+          "title": "This is the URL that will be redirected to once the user session is comp"
+        },
+        "connectionId": {
+          "type": "string",
+          "description": "Use connection_id when reconnecting a lapsed connection."
+        }
+      }
+    },
+    "v1CreateLinkSessionResponse": {
+      "type": "object",
+      "properties": {
+        "linkSession": {
+          "$ref": "#/definitions/v1LinkSession"
+        }
+      }
+    },
     "v1GetApiInfoResponse": {
       "type": "object",
       "properties": {
@@ -104,6 +192,58 @@
           "$ref": "#/definitions/GetApiInfoResponseVersion"
         }
       }
+    },
+    "v1GetLinkSessionResponse": {
+      "type": "object",
+      "properties": {
+        "linkSession": {
+          "$ref": "#/definitions/v1LinkSession"
+        }
+      }
+    },
+    "v1LinkError": {
+      "type": "object"
+    },
+    "v1LinkSession": {
+      "type": "object",
+      "properties": {
+        "linkId": {
+          "type": "string",
+          "description": "The link ID. Use in URL to fetch status."
+        },
+        "redirectUri": {
+          "type": "string",
+          "title": "The configured redirect URI"
+        },
+        "connectionId": {
+          "type": "string",
+          "description": "The configured connection to reconnect."
+        },
+        "status": {
+          "$ref": "#/definitions/v1LinkSessionStatus",
+          "description": "Status of the current link. A timed out link will show up as failed."
+        },
+        "error": {
+          "$ref": "#/definitions/v1LinkError",
+          "title": "If the link failed, this will be the LinkError object"
+        },
+        "connection": {
+          "$ref": "#/definitions/v1Connection",
+          "description": "If the link was successful, this will be the resulting Connection object."
+        }
+      },
+      "description": "A link session represents an attempt by a user to connect to their financial institution, select accounts,\nand provide consent to data sharing."
+    },
+    "v1LinkSessionStatus": {
+      "type": "string",
+      "enum": [
+        "LINK_SESSION_STATUS_UNSPECIFIED",
+        "LINK_SESSION_STATUS_CREATED",
+        "LINK_SESSION_STATUS_IN_PROGRESS",
+        "LINK_SESSION_STATUS_COMPLETE",
+        "LINK_SESSION_STATUS_FAILED"
+      ],
+      "default": "LINK_SESSION_STATUS_UNSPECIFIED"
     }
   },
   "securityDefinitions": {
