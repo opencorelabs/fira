@@ -1,24 +1,30 @@
 import {
+  Avatar,
   Box,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerHeader,
   DrawerOverlay,
   Flex,
+  Grid,
   Icon,
   IconButton,
+  Link,
+  Stack,
+  Text,
   useBreakpointValue,
   useColorMode,
   useColorModeValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import React from 'react';
-import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
+import { RiMenuFill, RiMoonLine, RiSunLine } from 'react-icons/ri';
+import { RiBankLine, RiPieChart2Line } from 'react-icons/ri';
 
 import { WordMark } from '../WordMark';
-import { Sidebar } from './Sidebar';
+import { SidebarItem } from './SidebarItem';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -29,6 +35,7 @@ export function Layout({ children }: LayoutProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const bg = useColorModeValue('white', 'gray.800');
+  const menubg = useColorModeValue('gray.100', 'gray.700');
 
   return (
     <Flex height="100vh">
@@ -42,15 +49,40 @@ export function Layout({ children }: LayoutProps) {
         display={{ base: 'none', md: 'block' }}
         px={2}
       >
-        <Flex
-          alignItems="center"
-          px={4}
-          h="75px"
-          justifyContent={{ base: 'center', lg: 'flex-start' }}
-        >
-          <WordMark size={{ base: 'md', lg: 'xl' }} />
+        <Flex direction="column" justify="space-between" h="100%" pb={2}>
+          <Box>
+            <Flex
+              alignItems="center"
+              px={4}
+              h="75px"
+              justifyContent={{ base: 'center', lg: 'flex-start' }}
+            >
+              <WordMark size={{ base: 'md', lg: 'xl' }} />
+            </Flex>
+            <Stack spacing={1}>
+              <SidebarItem label="Net Worth" icon={RiPieChart2Line} href="/" />
+              <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
+            </Stack>
+          </Box>
+          <Link as={NextLink} href="" w="100%" _hover={{ bg: menubg }} borderRadius="md">
+            <Grid
+              alignItems="center"
+              py={4}
+              px={{ base: 0, md: 4 }}
+              justifyContent={{ base: 'center', lg: 'flex-start' }}
+              gridTemplateColumns="15% 85%"
+            >
+              <Avatar boxSize={5} src="" />
+              <Text
+                fontWeight="bold"
+                ml={2}
+                display={{ base: 'block', md: 'none', lg: 'block' }}
+              >
+                Harry Hexhash
+              </Text>
+            </Grid>
+          </Link>
         </Flex>
-        <Sidebar />
       </Box>
       <Box flex={1} overflow="auto">
         <Flex
@@ -67,14 +99,14 @@ export function Layout({ children }: LayoutProps) {
             display={{ base: 'inline-flex', md: 'none' }}
             onClick={onOpen}
             variant="ghost"
-            icon={<Icon as={FiMenu} />}
+            icon={<Icon as={RiMenuFill} />}
             aria-label="Menu"
           />
           <IconButton
             display="inline-flex"
             onClick={toggleColorMode}
             variant="ghost"
-            icon={<Icon as={colorMode === 'dark' ? FiSun : FiMoon} />}
+            icon={<Icon as={colorMode === 'dark' ? RiSunLine : RiMoonLine} />}
             aria-label="Toggle Theme"
           />
         </Flex>
@@ -84,11 +116,47 @@ export function Layout({ children }: LayoutProps) {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader bg={bg}>
-            <WordMark />
-          </DrawerHeader>
           <DrawerBody bg={bg}>
-            <Sidebar />
+            <Flex direction="column" justify="space-between" h="100%" pb={2}>
+              <Box>
+                <Flex
+                  alignItems="center"
+                  px={4}
+                  h="75px"
+                  justifyContent={{ base: 'center', lg: 'flex-start' }}
+                >
+                  <WordMark size={{ base: 'md', lg: 'xl' }} />
+                </Flex>
+                <Stack spacing={1}>
+                  <SidebarItem label="Net Worth" icon={RiPieChart2Line} href="/" />
+                  <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
+                </Stack>
+              </Box>
+              <Link
+                as={NextLink}
+                href=""
+                w="100%"
+                _hover={{ bg: menubg }}
+                borderRadius="md"
+              >
+                <Grid
+                  alignItems="center"
+                  py={4}
+                  px={{ base: 0, md: 4 }}
+                  justifyContent={{ base: 'center', lg: 'flex-start' }}
+                  gridTemplateColumns="15% 85%"
+                >
+                  <Avatar boxSize={5} src="" />
+                  <Text
+                    fontWeight="bold"
+                    ml={2}
+                    display={{ base: 'block', md: 'none', lg: 'block' }}
+                  >
+                    Harry Hexhash
+                  </Text>
+                </Grid>
+              </Link>
+            </Flex>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
