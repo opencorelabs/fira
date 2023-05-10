@@ -20,4 +20,4 @@ const config: ThemeConfig = {
   useSystemColorMode: true,
 };
 
-export const theme = extendTheme({ config, colors });
+export const theme = extendTheme({ colors, config });

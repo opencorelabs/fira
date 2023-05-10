@@ -1,5 +1,9 @@
-import { Heading } from '@chakra-ui/react';
+import { Heading, HeadingProps } from '@chakra-ui/react';
 
-export function WordMark() {
-  return <Heading fontFamily="rasa">fira</Heading>;
+export function WordMark(props: HeadingProps) {
+  return (
+    <Heading fontFamily="rasa" {...props}>
+      fira
+    </Heading>
+  );
 }

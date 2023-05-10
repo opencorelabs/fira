@@ -25,7 +25,7 @@ type LayoutProps = {
 };
 
 export function Layout({ children }: LayoutProps) {
-  const sidebarWidth = useBreakpointValue({ base: '100%', md: '260px' });
+  const sidebarWidth = useBreakpointValue({ base: '100%', md: '75px', lg: '240px' });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
   const bg = useColorModeValue('white', 'gray.800');
@@ -39,13 +39,17 @@ export function Layout({ children }: LayoutProps) {
         bg={bg}
         borderRightWidth="1px"
         borderRightColor={useColorModeValue('gray.200', 'gray.600')}
-        py={6}
-        display={{ base: isOpen ? 'block' : 'none', md: 'block' }}
+        display={{ base: 'none', md: 'block' }}
         px={2}
       >
-        <Box px={4}>
-          <WordMark />
-        </Box>
+        <Flex
+          alignItems="center"
+          px={4}
+          h="75px"
+          justifyContent={{ base: 'center', lg: 'flex-start' }}
+        >
+          <WordMark size={{ base: 'md', lg: 'xl' }} />
+        </Flex>
         <Sidebar />
       </Box>
       <Box flex={1} overflow="auto">
@@ -67,6 +71,7 @@ export function Layout({ children }: LayoutProps) {
             aria-label="Menu"
           />
           <IconButton
+            display="inline-flex"
             onClick={toggleColorMode}
             variant="ghost"
             icon={<Icon as={colorMode === 'dark' ? FiSun : FiMoon} />}
