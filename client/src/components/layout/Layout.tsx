@@ -7,7 +7,6 @@ import {
   DrawerContent,
   DrawerOverlay,
   Flex,
-  Grid,
   Icon,
   IconButton,
   Link,
@@ -65,22 +64,21 @@ export function Layout({ children }: LayoutProps) {
             </Stack>
           </Box>
           <Link as={NextLink} href="" w="100%" _hover={{ bg: menubg }} borderRadius="md">
-            <Grid
+            <Flex
               alignItems="center"
               py={4}
               px={{ base: 0, md: 4 }}
               justifyContent={{ base: 'center', lg: 'flex-start' }}
-              gridTemplateColumns="15% 85%"
             >
               <Avatar boxSize={5} src="" />
               <Text
                 fontWeight="bold"
-                ml={2}
+                ml={4}
                 display={{ base: 'block', md: 'none', lg: 'block' }}
               >
                 Harry Hexhash
               </Text>
-            </Grid>
+            </Flex>
           </Link>
         </Flex>
       </Box>
@@ -139,22 +137,21 @@ export function Layout({ children }: LayoutProps) {
                 _hover={{ bg: menubg }}
                 borderRadius="md"
               >
-                <Grid
+                <Flex
                   alignItems="center"
                   py={4}
                   px={{ base: 0, md: 4 }}
                   justifyContent={{ base: 'center', lg: 'flex-start' }}
-                  gridTemplateColumns="15% 85%"
                 >
                   <Avatar boxSize={5} src="" />
                   <Text
                     fontWeight="bold"
-                    ml={2}
+                    ml={4}
                     display={{ base: 'block', md: 'none', lg: 'block' }}
                   >
                     Harry Hexhash
                   </Text>
-                </Grid>
+                </Flex>
               </Link>
             </Flex>
           </DrawerBody>
