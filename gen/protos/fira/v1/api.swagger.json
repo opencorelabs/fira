@@ -28,6 +28,194 @@
     "application/json"
   ],
   "paths": {
+    "/api/v1/accounts/complete_password_reset": {
+      "post": {
+        "summary": "Complete the password reset process. Provide the token from the password reset email and a new password.",
+        "operationId": "FiraService_CompletePasswordReset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CompletePasswordResetResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CompletePasswordResetRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/accounts/login": {
+      "post": {
+        "summary": "Exchange email/password credentials for a session JWT",
+        "operationId": "FiraService_LoginAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoginAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/accounts/me": {
+      "get": {
+        "summary": "Retrieve the account information for the currently logged in account holder.",
+        "operationId": "FiraService_GetAccount",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/v1Account"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/accounts/register": {
+      "post": {
+        "summary": "Register a new account with the server. This will trigger an out-of-band verification for the user. As of now,\nthis will take the form of email verification.",
+        "operationId": "FiraService_CreateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/accounts/request_password_reset": {
+      "post": {
+        "summary": "Start the password reset process. If the email is found, a password reset email will be sent to the account holder.",
+        "operationId": "FiraService_BeginPasswordReset",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BeginPasswordResetResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1BeginPasswordResetRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/accounts/verify": {
+      "post": {
+        "summary": "Verify an unverified account using a token exchanged out-of-band with the account owner.",
+        "operationId": "FiraService_VerifyAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1VerifyAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1VerifyAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
     "/api/v1/info": {
       "get": {
         "operationId": "FiraService_GetApiInfo",
@@ -161,8 +349,157 @@
         }
       }
     },
+    "v1Account": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/v1AccountNamespace"
+        },
+        "status": {
+          "$ref": "#/definitions/v1AccountRegistrationStatus"
+        },
+        "credentialType": {
+          "$ref": "#/definitions/v1AccountCredentialType"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "The account holder's name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The account holder's email."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "The account holder's avatar URL."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The account creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The account last updated timestamp."
+        }
+      }
+    },
+    "v1AccountCredentialType": {
+      "type": "string",
+      "enum": [
+        "ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED",
+        "ACCOUNT_CREDENTIAL_TYPE_EMAIL",
+        "ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB"
+      ],
+      "default": "ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED"
+    },
+    "v1AccountNamespace": {
+      "type": "string",
+      "enum": [
+        "ACCOUNT_NAMESPACE_UNSPECIFIED",
+        "ACCOUNT_NAMESPACE_DEVELOPER",
+        "ACCOUNT_NAMESPACE_CONSUMER"
+      ],
+      "default": "ACCOUNT_NAMESPACE_UNSPECIFIED",
+      "description": "Accounts can be created within one of these namespaces."
+    },
+    "v1AccountRegistrationStatus": {
+      "type": "string",
+      "enum": [
+        "ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED",
+        "ACCOUNT_REGISTRATION_STATUS_VERIFY_EMAIL",
+        "ACCOUNT_REGISTRATION_STATUS_OK",
+        "ACCOUNT_REGISTRATION_STATUS_ERROR"
+      ],
+      "default": "ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED"
+    },
+    "v1BeginPasswordResetRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/v1AccountNamespace",
+          "description": "Namespace to log the user into - must match the original namespace used to create the account."
+        },
+        "resetBaseUrl": {
+          "type": "string",
+          "title": "This will be used for building the URL in the password reset email.\nFor example, with a base URL of \"https://myapp.net\" will the link in the reset email will a \"reset_token\"\nURL argument appended to it: \"http://myapp.net?reset_token=zxb38rjs9nh\""
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the account to reset."
+        }
+      }
+    },
+    "v1BeginPasswordResetResponse": {
+      "type": "object",
+      "description": "Placeholder - there is no information to return right now. If the email exists, a reset email will be sent."
+    },
+    "v1CompletePasswordResetRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "The reset_token provided in the URL."
+        },
+        "password": {
+          "type": "string",
+          "description": "New password for the account."
+        }
+      }
+    },
+    "v1CompletePasswordResetResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1AccountRegistrationStatus",
+          "description": "Status of the password reset."
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "If status is ACCOUNT_REGISTRATION_STATUS_ERROR this will be a human-readable message."
+        },
+        "jwt": {
+          "type": "string",
+          "description": "If the status is ACCOUNT_REGISTRATION_STATUS_OK, this will be a new login JWT."
+        }
+      }
+    },
     "v1Connection": {
       "type": "object"
+    },
+    "v1CreateAccountRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/v1AccountNamespace",
+          "title": "Which namespace to create the account in"
+        },
+        "credential": {
+          "$ref": "#/definitions/v1LoginCredential",
+          "title": "Login credentials for the new account"
+        }
+      }
+    },
+    "v1CreateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1AccountRegistrationStatus",
+          "description": "Status of the account registration. Most accounts will immediately go into the\nACCOUNT_REGISTRATION_STATUS_VERIFY_EMAIL status."
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "If the status was ACCOUNT_REGISTRATION_STATUS_ERROR, this will be the human-readable error message."
+        },
+        "jwt": {
+          "type": "string",
+          "description": "If the status is ACCOUNT_REGISTRATION_STATUS_OK, this will be the login JWT."
+        }
+      }
     },
     "v1CreateLinkSessionRequest": {
       "type": "object",
@@ -182,6 +519,56 @@
       "properties": {
         "linkSession": {
           "$ref": "#/definitions/v1LinkSession"
+        }
+      }
+    },
+    "v1CredentialTypeEmail": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "The email address to use for the account."
+        },
+        "password": {
+          "type": "string",
+          "description": "The password to use for the account."
+        },
+        "verificationBaseUrl": {
+          "type": "string",
+          "title": "This will be used for building the URL in the verification email.\nFor example, with a base URL of \"https://myapp.net\" will the link in the verification email will a \"verification_token\"\nURL argument appended to it: \"http://myapp.net?verification_token=zxb38rjs9nh\"\nUse only for registration or re-verification"
+        },
+        "name": {
+          "type": "string",
+          "description": "Common name for the new account i.e. \"Jane Smith\" - provide if the credential type is email.\nUse only for registration."
+        },
+        "verify": {
+          "type": "boolean",
+          "description": "If true, re-send the email verification."
+        }
+      }
+    },
+    "v1CredentialTypeGithub": {
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "type": "string",
+          "description": "Public client ID for the GitHub OAuth app - must match the client secret stored on the server."
+        },
+        "redirectUri": {
+          "type": "string",
+          "description": "The redirect URI configured for the GitHub OAuth app."
+        },
+        "code": {
+          "type": "string",
+          "description": "The OAuth code returned by GitHub after the user has authorized the app."
+        }
+      }
+    },
+    "v1GetAccountResponse": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/v1Account"
         }
       }
     },
@@ -244,6 +631,80 @@
         "LINK_SESSION_STATUS_FAILED"
       ],
       "default": "LINK_SESSION_STATUS_UNSPECIFIED"
+    },
+    "v1LoginAccountRequest": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "$ref": "#/definitions/v1AccountNamespace",
+          "description": "Namespace to log the user into - must match the original namespace used to create the account."
+        },
+        "credential": {
+          "$ref": "#/definitions/v1LoginCredential",
+          "title": "Login credentials for the account"
+        }
+      }
+    },
+    "v1LoginAccountResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1AccountRegistrationStatus",
+          "title": "Status of the account"
+        },
+        "accountErrorMessage": {
+          "type": "string",
+          "description": "If status is ACCOUNT_REGISTRATION_STATUS_ERROR this will be a human-readable message."
+        },
+        "credentialsValid": {
+          "type": "boolean",
+          "description": "Whether the provided credentials were valid. If not, the JWT will not be provided."
+        },
+        "jwt": {
+          "type": "string",
+          "description": "If the credentials were valid, this will be a new login JWT."
+        }
+      }
+    },
+    "v1LoginCredential": {
+      "type": "object",
+      "properties": {
+        "credentialType": {
+          "$ref": "#/definitions/v1AccountCredentialType"
+        },
+        "emailCredential": {
+          "$ref": "#/definitions/v1CredentialTypeEmail"
+        },
+        "githubCredential": {
+          "$ref": "#/definitions/v1CredentialTypeGithub"
+        }
+      }
+    },
+    "v1VerifyAccountRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "description": "The verification_token provided in the URL."
+        }
+      }
+    },
+    "v1VerifyAccountResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1AccountRegistrationStatus",
+          "description": "Status of the account registration. If the token was valid and not expired, this should be\nACCOUNT_REGISTRATION_STATUS_OK. Otherwise, the user may have to re-verify. To re-verify, use the log in endpoint\nwith email and password, setting the verify flag to true."
+        },
+        "errorMessage": {
+          "type": "string",
+          "description": "If the status is ACCOUNT_REGISTRATION_STATUS_ERROR this will be a human-readable message."
+        },
+        "jwt": {
+          "type": "string",
+          "description": "If the token was valid, this will be a new login JWT."
+        }
+      }
     }
   },
   "securityDefinitions": {

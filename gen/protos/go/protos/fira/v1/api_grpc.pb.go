@@ -19,9 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	FiraService_GetApiInfo_FullMethodName        = "/protos.fira.v1.FiraService/GetApiInfo"
-	FiraService_CreateLinkSession_FullMethodName = "/protos.fira.v1.FiraService/CreateLinkSession"
-	FiraService_GetLinkSession_FullMethodName    = "/protos.fira.v1.FiraService/GetLinkSession"
+	FiraService_GetApiInfo_FullMethodName            = "/protos.fira.v1.FiraService/GetApiInfo"
+	FiraService_CreateAccount_FullMethodName         = "/protos.fira.v1.FiraService/CreateAccount"
+	FiraService_VerifyAccount_FullMethodName         = "/protos.fira.v1.FiraService/VerifyAccount"
+	FiraService_LoginAccount_FullMethodName          = "/protos.fira.v1.FiraService/LoginAccount"
+	FiraService_BeginPasswordReset_FullMethodName    = "/protos.fira.v1.FiraService/BeginPasswordReset"
+	FiraService_CompletePasswordReset_FullMethodName = "/protos.fira.v1.FiraService/CompletePasswordReset"
+	FiraService_GetAccount_FullMethodName            = "/protos.fira.v1.FiraService/GetAccount"
+	FiraService_CreateLinkSession_FullMethodName     = "/protos.fira.v1.FiraService/CreateLinkSession"
+	FiraService_GetLinkSession_FullMethodName        = "/protos.fira.v1.FiraService/GetLinkSession"
 )
 
 // FiraServiceClient is the client API for FiraService service.
@@ -29,6 +35,19 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FiraServiceClient interface {
 	GetApiInfo(ctx context.Context, in *GetApiInfoRequest, opts ...grpc.CallOption) (*GetApiInfoResponse, error)
+	// Register a new account with the server. This will trigger an out-of-band verification for the user. As of now,
+	// this will take the form of email verification.
+	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*CreateAccountResponse, error)
+	// Verify an unverified account using a token exchanged out-of-band with the account owner.
+	VerifyAccount(ctx context.Context, in *VerifyAccountRequest, opts ...grpc.CallOption) (*VerifyAccountResponse, error)
+	// Exchange email/password credentials for a session JWT
+	LoginAccount(ctx context.Context, in *LoginAccountRequest, opts ...grpc.CallOption) (*LoginAccountResponse, error)
+	// Start the password reset process. If the email is found, a password reset email will be sent to the account holder.
+	BeginPasswordReset(ctx context.Context, in *BeginPasswordResetRequest, opts ...grpc.CallOption) (*BeginPasswordResetResponse, error)
+	// Complete the password reset process. Provide the token from the password reset email and a new password.
+	CompletePasswordReset(ctx context.Context, in *CompletePasswordResetRequest, opts ...grpc.CallOption) (*CompletePasswordResetResponse, error)
+	// Retrieve the account information for the currently logged in account holder.
+	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
 	// Create a new link session. This will return a URL to redirect the user to where they will be able to select a
 	// financial institution to connect to and log in.
 	CreateLinkSession(ctx context.Context, in *CreateLinkSessionRequest, opts ...grpc.CallOption) (*CreateLinkSessionResponse, error)
@@ -47,6 +66,60 @@ func NewFiraServiceClient(cc grpc.ClientConnInterface) FiraServiceClient {
 func (c *firaServiceClient) GetApiInfo(ctx context.Context, in *GetApiInfoRequest, opts ...grpc.CallOption) (*GetApiInfoResponse, error) {
 	out := new(GetApiInfoResponse)
 	err := c.cc.Invoke(ctx, FiraService_GetApiInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*CreateAccountResponse, error) {
+	out := new(CreateAccountResponse)
+	err := c.cc.Invoke(ctx, FiraService_CreateAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) VerifyAccount(ctx context.Context, in *VerifyAccountRequest, opts ...grpc.CallOption) (*VerifyAccountResponse, error) {
+	out := new(VerifyAccountResponse)
+	err := c.cc.Invoke(ctx, FiraService_VerifyAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) LoginAccount(ctx context.Context, in *LoginAccountRequest, opts ...grpc.CallOption) (*LoginAccountResponse, error) {
+	out := new(LoginAccountResponse)
+	err := c.cc.Invoke(ctx, FiraService_LoginAccount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) BeginPasswordReset(ctx context.Context, in *BeginPasswordResetRequest, opts ...grpc.CallOption) (*BeginPasswordResetResponse, error) {
+	out := new(BeginPasswordResetResponse)
+	err := c.cc.Invoke(ctx, FiraService_BeginPasswordReset_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) CompletePasswordReset(ctx context.Context, in *CompletePasswordResetRequest, opts ...grpc.CallOption) (*CompletePasswordResetResponse, error) {
+	out := new(CompletePasswordResetResponse)
+	err := c.cc.Invoke(ctx, FiraService_CompletePasswordReset_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error) {
+	out := new(GetAccountResponse)
+	err := c.cc.Invoke(ctx, FiraService_GetAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +149,19 @@ func (c *firaServiceClient) GetLinkSession(ctx context.Context, in *GetLinkSessi
 // for forward compatibility
 type FiraServiceServer interface {
 	GetApiInfo(context.Context, *GetApiInfoRequest) (*GetApiInfoResponse, error)
+	// Register a new account with the server. This will trigger an out-of-band verification for the user. As of now,
+	// this will take the form of email verification.
+	CreateAccount(context.Context, *CreateAccountRequest) (*CreateAccountResponse, error)
+	// Verify an unverified account using a token exchanged out-of-band with the account owner.
+	VerifyAccount(context.Context, *VerifyAccountRequest) (*VerifyAccountResponse, error)
+	// Exchange email/password credentials for a session JWT
+	LoginAccount(context.Context, *LoginAccountRequest) (*LoginAccountResponse, error)
+	// Start the password reset process. If the email is found, a password reset email will be sent to the account holder.
+	BeginPasswordReset(context.Context, *BeginPasswordResetRequest) (*BeginPasswordResetResponse, error)
+	// Complete the password reset process. Provide the token from the password reset email and a new password.
+	CompletePasswordReset(context.Context, *CompletePasswordResetRequest) (*CompletePasswordResetResponse, error)
+	// Retrieve the account information for the currently logged in account holder.
+	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
 	// Create a new link session. This will return a URL to redirect the user to where they will be able to select a
 	// financial institution to connect to and log in.
 	CreateLinkSession(context.Context, *CreateLinkSessionRequest) (*CreateLinkSessionResponse, error)
@@ -90,6 +176,24 @@ type UnimplementedFiraServiceServer struct {
 
 func (UnimplementedFiraServiceServer) GetApiInfo(context.Context, *GetApiInfoRequest) (*GetApiInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetApiInfo not implemented")
+}
+func (UnimplementedFiraServiceServer) CreateAccount(context.Context, *CreateAccountRequest) (*CreateAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
+}
+func (UnimplementedFiraServiceServer) VerifyAccount(context.Context, *VerifyAccountRequest) (*VerifyAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyAccount not implemented")
+}
+func (UnimplementedFiraServiceServer) LoginAccount(context.Context, *LoginAccountRequest) (*LoginAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginAccount not implemented")
+}
+func (UnimplementedFiraServiceServer) BeginPasswordReset(context.Context, *BeginPasswordResetRequest) (*BeginPasswordResetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BeginPasswordReset not implemented")
+}
+func (UnimplementedFiraServiceServer) CompletePasswordReset(context.Context, *CompletePasswordResetRequest) (*CompletePasswordResetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompletePasswordReset not implemented")
+}
+func (UnimplementedFiraServiceServer) GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
 }
 func (UnimplementedFiraServiceServer) CreateLinkSession(context.Context, *CreateLinkSessionRequest) (*CreateLinkSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLinkSession not implemented")
@@ -124,6 +228,114 @@ func _FiraService_GetApiInfo_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FiraServiceServer).GetApiInfo(ctx, req.(*GetApiInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).CreateAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_CreateAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).CreateAccount(ctx, req.(*CreateAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_VerifyAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).VerifyAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_VerifyAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).VerifyAccount(ctx, req.(*VerifyAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_LoginAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).LoginAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_LoginAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).LoginAccount(ctx, req.(*LoginAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_BeginPasswordReset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BeginPasswordResetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).BeginPasswordReset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_BeginPasswordReset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).BeginPasswordReset(ctx, req.(*BeginPasswordResetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_CompletePasswordReset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompletePasswordResetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).CompletePasswordReset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_CompletePasswordReset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).CompletePasswordReset(ctx, req.(*CompletePasswordResetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_GetAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).GetAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_GetAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).GetAccount(ctx, req.(*GetAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -174,6 +386,30 @@ var FiraService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetApiInfo",
 			Handler:    _FiraService_GetApiInfo_Handler,
+		},
+		{
+			MethodName: "CreateAccount",
+			Handler:    _FiraService_CreateAccount_Handler,
+		},
+		{
+			MethodName: "VerifyAccount",
+			Handler:    _FiraService_VerifyAccount_Handler,
+		},
+		{
+			MethodName: "LoginAccount",
+			Handler:    _FiraService_LoginAccount_Handler,
+		},
+		{
+			MethodName: "BeginPasswordReset",
+			Handler:    _FiraService_BeginPasswordReset_Handler,
+		},
+		{
+			MethodName: "CompletePasswordReset",
+			Handler:    _FiraService_CompletePasswordReset_Handler,
+		},
+		{
+			MethodName: "GetAccount",
+			Handler:    _FiraService_GetAccount_Handler,
 		},
 		{
 			MethodName: "CreateLinkSession",
