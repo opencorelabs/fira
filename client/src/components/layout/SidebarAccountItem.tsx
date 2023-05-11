@@ -1,14 +1,13 @@
-import { Flex, Icon, Link, Text, useColorModeValue } from '@chakra-ui/react';
+import { Avatar, Flex, Link, Text, useColorModeValue } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { IconType } from 'react-icons';
 
-type SidebarItemProps = {
+type SidebarAccountItemProps = {
   label: string;
-  icon: IconType;
+  avatar: string;
   href: string;
 };
 
-export function SidebarItem({ label, icon, href }: SidebarItemProps) {
+export function SidebarAccountItem({ label, avatar, href }: SidebarAccountItemProps) {
   const bg = useColorModeValue('gray.100', 'gray.700');
   return (
     <Link as={NextLink} href={href} w="100%" _hover={{ bg }} borderRadius="md">
@@ -18,7 +17,7 @@ export function SidebarItem({ label, icon, href }: SidebarItemProps) {
         px={{ base: 0, md: 4 }}
         justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
       >
-        <Icon boxSize={5} as={icon} />
+        <Avatar size="xs" src={avatar} name={label} />
         <Text
           fontWeight="bold"
           ml={4}
