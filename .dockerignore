@@ -24,3 +24,4 @@ fly.toml
 .idea
 **/node_modules
 **/.next
+/bin
