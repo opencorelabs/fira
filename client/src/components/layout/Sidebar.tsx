@@ -23,7 +23,7 @@ export function Sidebar() {
           <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
         </Stack>
       </Box>
-      <SidebarAccountItem avatar="" label="Harry Hexhash" href="" />
+      <SidebarAccountItem avatar="" label="Harry Hexhash" href="/settings/account" />
     </Flex>
   );
 }
