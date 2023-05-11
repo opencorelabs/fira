@@ -21,11 +21,7 @@ func (a *App) StartGRPC(ctx context.Context) error {
 	// start the GRPC service
 	a.StartService(ctx, "grpc-server", func(ctx context.Context, errChan chan error) Finalizer {
 		go func() {
-			defer func() {
-				if p := recover(); p != nil {
-					errChan <- fmt.Errorf("recovered from panic: %#v", p)
-				}
-			}()
+			defer a.PanicRecovery(errChan)
 
 			listener, listenErr := net.Listen("tcp", a.cfg.GrpcUrl)
 			if listenErr != nil {
@@ -44,17 +40,20 @@ func (a *App) StartGRPC(ctx context.Context) error {
 		}
 	})
 
-	// dial the gRPC server above to make a client connection
-	conn, connErr := grpc.Dial(a.cfg.GrpcUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, connErr := grpc.Dial(a.cfg.GrpcUrl,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
+
 	if connErr != nil {
-		return fmt.Errorf("fail to dial grpc server: %v", connErr)
+		return fmt.Errorf("failed to dial: %w", connErr)
 	}
 
-	defer func() {
-		if err := conn.Close(); err != nil {
-			log.Warnw("failed to close grpc connection", "error", err)
+	a.StartService(ctx, "grpc-gateway", func(ctx context.Context, errChan chan error) Finalizer {
+		return func(ctx context.Context) error {
+			return conn.Close()
 		}
-	}()
+	})
 
 	// create an HTTP router using the client connection above
 	// and register it with the service client
