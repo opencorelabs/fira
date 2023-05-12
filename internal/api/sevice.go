@@ -36,22 +36,22 @@ func (*FiraApiService) GetApiInfo(context.Context, *v1.GetApiInfoRequest) (*v1.G
 	}, nil
 }
 
-func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
+func (s *FiraApiService) decodeLoginCredential(c *v1.LoginCredential) (map[string]string, auth.Backend, error) {
 	var credType auth.CredentialsType
 	credential := make(map[string]string)
-	switch request.Credential.CredentialType {
+	switch c.CredentialType {
 	case v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_EMAIL:
 		credType = auth.CredentialsTypeEmailPassword
-		credential["email"] = request.Credential.EmailCredential.Email
-		credential["password"] = request.Credential.EmailCredential.Password
+		credential["email"] = c.EmailCredential.Email
+		credential["password"] = c.EmailCredential.Password
 	case v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB:
 		credType = auth.CredentialsTypeOAuth
 		credential["provider"] = "github"
-		credential["token"] = request.Credential.GithubCredential.ClientId
-		credential["code"] = request.Credential.GithubCredential.Code
-		credential["redirect_uri"] = request.Credential.GithubCredential.RedirectUri
+		credential["token"] = c.GithubCredential.ClientId
+		credential["code"] = c.GithubCredential.Code
+		credential["redirect_uri"] = c.GithubCredential.RedirectUri
 	default:
-		return nil, status.Errorf(codes.InvalidArgument, "invalid credential type")
+		return nil, nil, status.Errorf(codes.InvalidArgument, "invalid credential type")
 	}
 
 	backend, getErr := s.authRegistry.GetBackend(credType)
@@ -60,7 +60,16 @@ func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAc
 			"error", getErr,
 			"credential_type", credType,
 		)
-		return nil, status.Errorf(codes.Internal, "internal error")
+		return nil, nil, status.Errorf(codes.Internal, "internal error")
+	}
+
+	return credential, backend, nil
+}
+
+func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
+	credential, backend, decodeErr := s.decodeLoginCredential(request.Credential)
+	if decodeErr != nil {
+		return nil, decodeErr
 	}
 
 	account, regErr := backend.Register(ctx, credential)
@@ -68,17 +77,14 @@ func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAc
 	if regErr != nil {
 		s.logger.Errorw("failed to register account",
 			"error", regErr,
-			"credential_type", credType,
+			"credential_type", request.Credential.CredentialType,
 		)
 		return nil, status.Errorf(codes.Unauthenticated, "registration error")
 	}
 
 	jwt, jwtErr := s.jwtManager.Generate(account.ID)
 	if jwtErr != nil {
-		s.logger.Errorw("failed to generate jwt",
-			"error", jwtErr,
-			"credential_type", credType,
-		)
+		s.logger.Errorw("failed to generate jwt", "error", jwtErr)
 		return nil, status.Errorf(codes.Internal, "internal error")
 	}
 
