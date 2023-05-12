@@ -15,7 +15,7 @@ ENV FIRA_BIND_HTTP=0.0.0.0:8080
 
 COPY go.mod go.sum Makefile ./
 RUN mkdir client
-COPY client/package.json client/yarn.lock ./client/
+COPY workspace/apps/fira-app/package.json workspace/apps/fira-app/yarn.lock ./workspace/apps/fira-app/
 RUN make reqs
 
 COPY . .
