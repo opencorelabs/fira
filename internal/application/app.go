@@ -3,6 +3,8 @@ package application
 import (
 	"context"
 	"fmt"
+	"github.com/opencorelabs/fira/internal/config"
+	"github.com/opencorelabs/fira/internal/logging"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -18,25 +20,19 @@ type Finalizer func(ctx context.Context) error
 // App is a service container and supervision tree for Fira. StartService() can be used to fork a new
 // "process" (blocking function) which will be supervised and restarted if it fails.
 type App struct {
-	cfg    *Config
+	cfg    *config.Config
 	logger *zap.Logger
 	mux    *http.ServeMux
 	wg     *sync.WaitGroup
 }
 
 func NewApp() (*App, error) {
-	cfg, cfgErr := InitConfig()
+	cfg, cfgErr := config.Init()
 	if cfgErr != nil {
 		return nil, fmt.Errorf("unable to init config: %w", cfgErr)
 	}
 
-	var logger *zap.Logger
-	var loggerErr error
-	if cfg.Debug {
-		logger, loggerErr = zap.NewDevelopment()
-	} else {
-		logger, loggerErr = zap.NewProduction()
-	}
+	logger, loggerErr := logging.Init(cfg)
 	if loggerErr != nil {
 		return nil, fmt.Errorf("unable to init logger: %w", loggerErr)
 	}
@@ -51,7 +47,7 @@ func NewApp() (*App, error) {
 	}, nil
 }
 
-func (a *App) Config() *Config {
+func (a *App) Config() *config.Config {
 	return a.cfg
 }
 

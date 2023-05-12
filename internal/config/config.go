@@ -1,9 +1,13 @@
-package application
+package config
 
 import (
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
 )
+
+type Provider interface {
+	Config() *Config
+}
 
 type Config struct {
 	Debug       bool   `default:"true"`
@@ -13,11 +17,15 @@ type Config struct {
 	GrpcUrl     string `default:"localhost:5567"`
 }
 
-func InitConfig() (*Config, error) {
+func Init() (*Config, error) {
 	var cfg Config
 	err := envconfig.Process("fira", &cfg)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read environment: %w", err)
 	}
 	return &cfg, nil
+}
+
+func (c *Config) Config() *Config {
+	return c
 }

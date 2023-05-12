@@ -3,6 +3,8 @@ module github.com/opencorelabs/fira
 go 1.20
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.5
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/kelseyhightower/envconfig v1.4.0
 	go.uber.org/zap v1.24.0

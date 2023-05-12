@@ -6,6 +6,8 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/api"
+	"github.com/opencorelabs/fira/internal/application/interceptors"
+	"github.com/opencorelabs/fira/internal/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
@@ -15,7 +17,15 @@ import (
 func (a *App) StartGRPC(ctx context.Context) error {
 	log := a.Logger().Sugar().Named("startup")
 	svc := &api.FiraApiService{}
-	grpcServer := grpc.NewServer()
+
+	grpcServer := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			interceptors.UnaryLoggingInterceptor(a.Logger()),
+			auth.JWTInterceptor(a, nil, auth.TodoJWTManager),
+			interceptors.UnaryRecoveryInterceptor(a.Logger()),
+		),
+	)
+
 	v1.RegisterFiraServiceServer(grpcServer, svc)
 
 	// start the GRPC service
