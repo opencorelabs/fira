@@ -31,4 +31,6 @@ RUN make reqs
 
 COPY . .
 
+WORKDIR /app/
+
 CMD ["air"]

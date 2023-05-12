@@ -31,7 +31,8 @@ protoreqs:
 .PHONY: clientreqs
 clientreqs:
 	@which yarn >/dev/null 2>&1 || npm install -g yarn
-	@cd ./workspace && yarn install --pure-lockfile --non-interactive --production --cache-folder ./ycache; rm -rf ./ycache
+	@cd ./workspace && yarn install --pure-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
+	@cd ./workspace && yarn workspace @fira/api-sdk build
 
 .PHONY: dev
 dev:
