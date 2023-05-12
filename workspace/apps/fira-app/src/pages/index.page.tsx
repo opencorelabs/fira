@@ -1,4 +1,4 @@
-import { Api } from '@fira/api';
+import { Api } from '@fira/api-sdk';
 import { useEffect } from 'react';
 
 export default function Index() {
