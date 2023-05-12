@@ -20,17 +20,17 @@ func InterceptorLogger(l *zap.Logger) logging.Logger {
 				f = append(f, zap.Any(k, v))
 			}
 		}
-		l = l.WithOptions(zap.AddCallerSkip(1)).With(f...)
+		logger := l.WithOptions(zap.AddCallerSkip(1)).With(f...)
 
 		switch lvl {
 		case logging.LevelDebug:
-			l.Debug(msg)
+			logger.Debug(msg)
 		case logging.LevelInfo:
-			l.Info(msg)
+			logger.Info(msg)
 		case logging.LevelWarn:
-			l.Warn(msg)
+			logger.Warn(msg)
 		case logging.LevelError:
-			l.Error(msg)
+			logger.Error(msg)
 		default:
 			panic(fmt.Sprintf("unknown level %v", lvl))
 		}

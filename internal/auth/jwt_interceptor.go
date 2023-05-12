@@ -3,12 +3,14 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/opencorelabs/fira/internal/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"strings"
 	"time"
 )
 
@@ -90,6 +92,12 @@ func JWTInterceptor(log logging.Provider, accounts AccountStoreProvider, manager
 		}
 
 		token := values[0]
+		if strings.HasPrefix(token, "Bearer ") {
+			token = strings.TrimPrefix(token, "Bearer ")
+		}
+
+		fmt.Println("token", token)
+
 		claims, verifyErr := manager.Verify(token)
 		if verifyErr != nil {
 			logger.Debugw("token verification failed", "error", verifyErr)

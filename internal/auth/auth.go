@@ -29,7 +29,8 @@ type Account struct {
 
 type AccountStore interface {
 	FindAccountByID(ctx context.Context, id string) (*Account, error)
-	Create(ctx context.Context, account *Account) error
+	FindByCredentials(ctx context.Context, creds map[string]string) (*Account, error)
+	Create(ctx context.Context, account *Account, creds map[string]string) error
 	Update(ctx context.Context, account *Account) error
 }
 

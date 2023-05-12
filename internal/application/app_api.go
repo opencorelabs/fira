@@ -8,6 +8,7 @@ import (
 	"github.com/opencorelabs/fira/internal/api"
 	"github.com/opencorelabs/fira/internal/application/interceptors"
 	"github.com/opencorelabs/fira/internal/auth"
+	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
@@ -16,12 +17,16 @@ import (
 
 func (a *App) StartGRPC(ctx context.Context) error {
 	log := a.Logger().Sugar().Named("startup")
-	svc := &api.FiraApiService{}
+
+	authReg := auth.NewDefaultRegistry()
+	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(a))
+
+	svc := api.New(a, authReg, auth.TodoJWTManager)
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			interceptors.UnaryLoggingInterceptor(a.Logger()),
-			auth.JWTInterceptor(a, nil, auth.TodoJWTManager),
+			auth.JWTInterceptor(a, a, auth.TodoJWTManager),
 			interceptors.UnaryRecoveryInterceptor(a.Logger()),
 		),
 	)

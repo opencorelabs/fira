@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"fmt"
+	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/config"
 	"github.com/opencorelabs/fira/internal/logging"
 	"go.uber.org/zap"
@@ -24,6 +25,9 @@ type App struct {
 	logger *zap.Logger
 	mux    *http.ServeMux
 	wg     *sync.WaitGroup
+
+	initMtx      *sync.Mutex
+	accountStore auth.AccountStore
 }
 
 func NewApp() (*App, error) {
@@ -40,10 +44,11 @@ func NewApp() (*App, error) {
 	logger.Sugar().Named("startup").Infow("config initialized", "debug", cfg.Debug)
 
 	return &App{
-		cfg:    cfg,
-		logger: logger,
-		mux:    http.NewServeMux(),
-		wg:     &sync.WaitGroup{},
+		cfg:     cfg,
+		logger:  logger,
+		mux:     http.NewServeMux(),
+		wg:      &sync.WaitGroup{},
+		initMtx: &sync.Mutex{},
 	}, nil
 }
 
