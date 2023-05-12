@@ -10,9 +10,13 @@ services:
     volumes:
       - .:/app
       - node_modules:/workspace/node_modules
-      - next:/app/client/.next
+      - app_modules:/workspace/apps/fira-app/node_modules
+      - sdk_modules:/workspace/libs/fira-api-sdk/node_modules
+      - next:/workspace/apps/fira-app/.next
       - bin:/app/bin
 volumes:
   node_modules:
+  app_modules:
+  sdk_modules:
   bin:
   next:
