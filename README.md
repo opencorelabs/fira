@@ -7,23 +7,21 @@ Tech Stack:
 * Backend: Go 1.20 / GRPC 
 * Frontend: NodeJS 16 / Yarn / Next.js
 
-### Runing locally
+### Running locally
 
 **Via Docker**
 
-Using docker is an easy way to get started very quickly. All you need is Docker running on your machine, and docker-compose installed. Start Fira by running docker-compose from the root of the repository:
+Using docker is an easy way to get started very quickly. All you need is Docker running on your machine, with make and docker-compose installed. Dependencies are automatically managed, and the environment is optimized for interactive development with auto reloading by default. Start Fira by making the dev target from the root of the repository:
 
 ```shell
-docker-compose up fira
+make dev
 ```
 
 Then open up `http://localhost:8080` in your browser.
 
-Any time you make changes, you can simply close the server, and re-run with `docker-compose up --build fira` to get a fresh build.
+Any time you make changes, to either the server or the client, the changes will be automatically reloaded. The client will hot-reload if possible, the server will re-generate code and re-build.
 
 **Via Shell**
-
-While using Docker works great for testing, or for small, infrequent changes, it's cumbersome to have to restart and rebuild to see every change.
 
 To run the project and its dependencies natively, you'll need the following tools and configuration:
 
