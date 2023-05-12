@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
-      - node_modules:/app/client/node_modules
+      - node_modules:/workspace/node_modules
       - next:/app/client/.next
       - bin:/app/bin
 volumes:

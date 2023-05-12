@@ -22,11 +22,11 @@ func (a *App) StartFrontend(ctx context.Context) error {
 		return fmt.Errorf("unable to resolve client dir: %w", cliDirErr)
 	}
 
-	yarnArgs := []string{"run"}
+	var yarnArgs []string
 	if a.cfg.Debug {
-		yarnArgs = append(yarnArgs, "dev")
+		yarnArgs = append(yarnArgs, "workspace", "@fira/app", "dev")
 	} else {
-		yarnArgs = append(yarnArgs, "start")
+		yarnArgs = append(yarnArgs, "run", "start")
 	}
 
 	feUrl, feUrlErr := url.Parse(a.cfg.FrontendUrl)
