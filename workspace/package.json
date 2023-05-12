@@ -5,8 +5,8 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "libs/*"
+    "libs/*",
+    "apps/*"
   ],
   "devDependencies": {
     "@types/jest": "^29.5.1",

@@ -12,11 +12,12 @@ COPY . /code
 RUN mkdir bin
 RUN go build -o ./bin/server ./cmd/server 
 
-# build the client deps
+# build the fira-app deps
 FROM node:16-alpine as clientdeps
 RUN apk add --no-cache libc6-compat nasm autoconf automake bash libltdl libtool gcc make g++ zlib-dev
 WORKDIR /code
-COPY client/package.json client/yarn.lock ./
+COPY workspace/package.json workspace/yarn.lock ./
+COPY workspace/apps/fira-app/package.json workspace/apps/fira-app/yarn.lock ./apps/fira-app/
 RUN yarn install
 
 FROM node:16-alpine as client

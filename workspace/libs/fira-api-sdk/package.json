@@ -1,5 +1,5 @@
 {
-  "name": "@fira/api",
+  "name": "@fira/api-sdk",
   "version": "1.0.0",
   "description": "Typescript interface for the Fira API",
   "main": "dist/index.js",
