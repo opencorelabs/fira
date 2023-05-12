@@ -18,14 +18,13 @@ COPY go.mod go.sum Makefile ./
 # Setup workspace
 RUN mkdir workspace
 
-
-# Copy root workspace
+# root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
 
-# Copy libs first
+# libs
 COPY workspace/libs/fira-api-sdk ./workspace/libs/fira-api-sdk/
 
-# Copy apps
+# apps
 COPY workspace/apps/fira-app ./workspace/apps/fira-app/
 
 RUN make reqs

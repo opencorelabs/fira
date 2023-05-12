@@ -14,7 +14,7 @@ gen: protoreqs
 	@go mod tidy
 
 .PHONY: reqs
-reqs: protoreqs appreqs
+reqs: protoreqs clientreqs
 	@echo "Installing dependencies..."
 	@go mod download
 
@@ -28,11 +28,10 @@ protoreqs:
 	@which protoc-gen-buf-breaking >/dev/null 2>&1 || go install github.com/bufbuild/buf/cmd/protoc-gen-buf-breaking@latest
 	@which protoc-gen-buf-lint >/dev/null 2>&1 || go install github.com/bufbuild/buf/cmd/protoc-gen-buf-lint@latest
 
-.PHONY: appreqs
-appreqs:
+.PHONY: clientreqs
+clientreqs:
 	@which yarn >/dev/null 2>&1 || npm install -g yarn
 	@cd ./workspace && yarn install --pure-lockfile --non-interactive --production --cache-folder ./ycache; rm -rf ./ycache
-	# @cd workspace && yarn workspace @fira/api-sdk build
 
 .PHONY: dev
 dev:
