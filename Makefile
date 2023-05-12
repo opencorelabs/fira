@@ -14,7 +14,7 @@ gen: protoreqs
 	@go mod tidy
 
 .PHONY: reqs
-reqs: protoreqs clientreqs
+reqs: protoreqs appreqs
 	@echo "Installing dependencies..."
 	@go mod download
 
@@ -28,10 +28,10 @@ protoreqs:
 	@which protoc-gen-buf-breaking >/dev/null 2>&1 || go install github.com/bufbuild/buf/cmd/protoc-gen-buf-breaking@latest
 	@which protoc-gen-buf-lint >/dev/null 2>&1 || go install github.com/bufbuild/buf/cmd/protoc-gen-buf-lint@latest
 
-.PHONY: clientreqs
-clientreqs:
+.PHONY: appreqs
+appreqs:
 	@which yarn >/dev/null 2>&1 || npm install -g yarn
-	@cd client && yarn install
+	@cd workspace/apps/app && yarn install
 
 .PHONY: dev
 dev:

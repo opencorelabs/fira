@@ -10,4 +10,3 @@ describe('The API', () => {
     expect(res.data.version?.major).toBe(1);
   });
 });
-
