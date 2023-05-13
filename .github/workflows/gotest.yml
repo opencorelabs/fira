@@ -1,4 +1,4 @@
-name: Go package
+name: Go tests
 
 on: [ push ]
 
@@ -16,7 +16,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          go get .
+          go mod download all
           go install gotest.tools/gotestsum@latest
 
       - name: Build
