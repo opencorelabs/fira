@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/opencorelabs/fira/internal/logging"
 	"google.golang.org/grpc"
@@ -73,10 +72,8 @@ func JWTInterceptor(log logging.Provider, accounts AccountStoreProvider, manager
 	logger := log.Logger().Named("jwt-interceptor").Sugar()
 
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-		logger.Debug("checking authorization for method", info.FullMethod)
 		_, ok := PublicRoutes[info.FullMethod]
 		if ok {
-			logger.Debugf("public route %s allowed", info.FullMethod)
 			return handler(ctx, req)
 		}
 
@@ -95,8 +92,6 @@ func JWTInterceptor(log logging.Provider, accounts AccountStoreProvider, manager
 		if strings.HasPrefix(token, "Bearer ") {
 			token = strings.TrimPrefix(token, "Bearer ")
 		}
-
-		fmt.Println("token", token)
 
 		claims, verifyErr := manager.Verify(token)
 		if verifyErr != nil {

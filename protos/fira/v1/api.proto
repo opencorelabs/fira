@@ -206,9 +206,17 @@ message CreateAccountResponse {
   string jwt = 3;
 }
 
+enum VerificationType {
+  VERIFICATION_TYPE_UNSPECIFIED = 0;
+  VERIFICATION_TYPE_EMAIL = 1;
+}
+
 message VerifyAccountRequest {
   // The verification_token provided in the URL.
   string token = 1;
+
+  // The verification type, will also be provided in the URL.
+  VerificationType type = 2;
 }
 
 message VerifyAccountResponse {
