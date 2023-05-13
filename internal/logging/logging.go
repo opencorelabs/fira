@@ -21,5 +21,6 @@ func Init(cfg config.Provider) (*zap.Logger, error) {
 	if loggerErr != nil {
 		return nil, fmt.Errorf("unable to init logger: %w", loggerErr)
 	}
+	logger = logger.WithOptions(zap.AddStacktrace(zap.FatalLevel))
 	return logger, nil
 }

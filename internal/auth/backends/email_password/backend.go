@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/opencorelabs/fira/internal/auth"
+	"github.com/opencorelabs/fira/internal/auth/verification"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,12 +15,14 @@ type Data struct {
 }
 
 type EmailPasswordBackend struct {
-	storeProvider auth.AccountStoreProvider
+	storeProvider        auth.AccountStoreProvider
+	verificationProvider verification.Provider
 }
 
-func New(storeProvider auth.AccountStoreProvider) auth.Backend {
+func New(storeProvider auth.AccountStoreProvider, verifProvider verification.Provider) auth.Backend {
 	return &EmailPasswordBackend{
-		storeProvider: storeProvider,
+		storeProvider:        storeProvider,
+		verificationProvider: verifProvider,
 	}
 }
 
@@ -36,8 +39,7 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, credentials map[str
 
 	uniqueCredentials := map[string]string{"email": d.Email}
 	acct := &auth.Account{
-		// TODO: account should initially be invalid
-		Valid:           true, // account is initially invalid, email must be verified
+		Valid:           false, // account is initially invalid, email must be verified
 		CredentialsType: auth.CredentialsTypeEmailPassword,
 		Credentials: map[string]string{
 			"email":    d.Email,
@@ -47,6 +49,18 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, credentials map[str
 
 	if saveErr := e.storeProvider.AccountStore().Create(ctx, acct, uniqueCredentials); saveErr != nil {
 		return nil, fmt.Errorf("failed to save account: %w", saveErr)
+	}
+
+	// send verification token via email
+	additionalCredentials, sendErr := e.verificationProvider.Email().SendVerificationToken(ctx, acct)
+	if sendErr != nil {
+		return nil, fmt.Errorf("failed to send verification token: %w", sendErr)
+	}
+
+	// save verification token to account
+	updatedAcct := acct.MergeCredentials(additionalCredentials)
+	if saveErr := e.storeProvider.AccountStore().Update(ctx, updatedAcct); saveErr != nil {
+		return nil, fmt.Errorf("failed to save verification token: %w", saveErr)
 	}
 
 	return acct, nil

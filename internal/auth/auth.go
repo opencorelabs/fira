@@ -20,13 +20,6 @@ var (
 	ErrUnknownAuthorizer  = errors.New("unknown authorizer")
 )
 
-type Account struct {
-	ID              string
-	Valid           bool
-	CredentialsType CredentialsType
-	Credentials     map[string]string
-}
-
 type AccountStore interface {
 	FindAccountByID(ctx context.Context, id string) (*Account, error)
 	FindByCredentials(ctx context.Context, creds map[string]string) (*Account, error)

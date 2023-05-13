@@ -680,12 +680,24 @@
         }
       }
     },
+    "v1VerificationType": {
+      "type": "string",
+      "enum": [
+        "VERIFICATION_TYPE_UNSPECIFIED",
+        "VERIFICATION_TYPE_EMAIL"
+      ],
+      "default": "VERIFICATION_TYPE_UNSPECIFIED"
+    },
     "v1VerifyAccountRequest": {
       "type": "object",
       "properties": {
         "token": {
           "type": "string",
           "description": "The verification_token provided in the URL."
+        },
+        "type": {
+          "$ref": "#/definitions/v1VerificationType",
+          "description": "The verification type, will also be provided in the URL."
         }
       }
     },
