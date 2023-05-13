@@ -39,3 +39,16 @@ dev:
 	@echo "Starting dev server in docker..."
 	@docker-compose up -d --build --remove-orphans dev
 	@docker-compose logs -f dev
+
+.PHONY: ci-test
+ci-test: testreqs
+	@echo "Running tests..."
+	@gotestsum --junitfile junit-out.xml --format testname -- -coverprofile coverage.out -v ./...
+
+.PHONY: testreqs
+testreqs:
+	@which gotestsum >/dev/null 2>&1 || go install gotest.tools/gotestsum@latest
+
+.PHONY: lintreqs
+lintreqs:
+	@which golangci-lint >/dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
