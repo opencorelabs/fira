@@ -7,6 +7,7 @@ import { api } from 'src/lib/fira-api';
 export const options: NextAuthOptions = {
   pages: {
     signIn: '/auth/login',
+    newUser: '/auth/register',
   },
   session: {
     strategy: 'jwt',
@@ -16,6 +17,16 @@ export const options: NextAuthOptions = {
     async signIn(message) {
       console.info('message', message);
     },
+  },
+  callbacks: {
+    session: async ({ session, user, token }) => {
+      console.info('session, user, token', session, user, token);
+      // session.accessToken = user.token;
+      return session;
+    },
+    // async jwt({ token, user, account, profile, isNewUser }) {
+    //   return token;
+    // },
   },
   providers: [
     CredentialsProvider({
@@ -28,34 +39,29 @@ export const options: NextAuthOptions = {
       async authorize(credentials) {
         try {
           const response = await api.firaServiceLoginAccount({
-            namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_UNSPECIFIED,
+            namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
             credential: {
-              credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED,
+              credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
               emailCredential: {
                 email: credentials.email,
                 password: credentials.password,
               },
             },
           });
-          // const res = await fetch('/api/v1/accounts/login', {
-          //   method: 'POST',
-          //   body: JSON.stringify(credentials),
-          //   headers: { 'Content-Type': 'application/json' },
+          if (!response.ok) return null;
+          // Not implemented yet
+          // Needed for user id
+          // const me = await api.firaServiceGetAccount({
+          //   headers: {
+          //     authorization: `Bearer ${response.data.jwt}`,
+          //   },
           // });
-          // const user = await res.json();
-          console.info('response', response);
+          // console.log('me', me);
+          return { id: '1', email: credentials.email, token: response.data.jwt };
         } catch (error) {
           console.info('error', error);
         }
 
-        // const user = users[credentials.email];
-        // if (user && user.password === credentials.password) {
-        //   // estlint disable for `password`
-        //   // eslint-disable-next-line unused-imports/no-unused-vars
-        //   const { password, ...rest } = user;
-        //   return rest;
-        // }
-        // user not found
         return null;
       },
     }),
