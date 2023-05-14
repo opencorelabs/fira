@@ -2,6 +2,7 @@ package email_password
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/opencorelabs/fira/internal/auth"
@@ -84,7 +85,12 @@ func (e *EmailPasswordBackend) Authenticate(ctx context.Context, credentials map
 		return nil, auth.ErrInvalidCredentials
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(acct.Credentials["password"]), []byte(d.Password)); err != nil {
+	decodedPw, decodeErr := hex.DecodeString(acct.Credentials["password"])
+	if decodeErr != nil {
+		return nil, fmt.Errorf("failed to decode password: %w", decodeErr)
+	}
+
+	if err := bcrypt.CompareHashAndPassword(decodedPw, []byte(d.Password)); err != nil {
 		return nil, auth.ErrInvalidCredentials
 	}
 

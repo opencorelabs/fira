@@ -107,7 +107,27 @@ func (s *FiraApiService) VerifyAccount(ctx context.Context, request *v1.VerifyAc
 }
 
 func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAccountRequest) (*v1.LoginAccountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+	credential, backend, decodeErr := s.decodeLoginCredential(request.Credential)
+	if decodeErr != nil {
+		return nil, decodeErr
+	}
+
+	account, loginErr := backend.Authenticate(ctx, credential)
+	if loginErr != nil {
+		s.logger.Debugw("failed to authenticate account", "error", loginErr)
+		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
+	}
+
+	jwt, jwtErr := s.jwtManager.Generate(account.ID)
+	if jwtErr != nil {
+		s.logger.Errorw("failed to generate jwt", "error", jwtErr)
+		return nil, status.Errorf(codes.Internal, "internal error")
+	}
+
+	return &v1.LoginAccountResponse{
+		Status: s.getAccountStatus(account),
+		Jwt:    jwt,
+	}, nil
 }
 
 func (s *FiraApiService) BeginPasswordReset(ctx context.Context, request *v1.BeginPasswordResetRequest) (*v1.BeginPasswordResetResponse, error) {
