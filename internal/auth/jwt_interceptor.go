@@ -47,7 +47,7 @@ func (m *JWTManager) Generate(accountID string) (string, error) {
 		AccountID: accountID,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	return token.SignedString(m.secret)
 }
 
