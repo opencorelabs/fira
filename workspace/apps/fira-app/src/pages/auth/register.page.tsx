@@ -19,6 +19,7 @@ import { getCsrfToken } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { AuthLayout } from 'src/components/auth/Layout';
 import { api } from 'src/lib/fira-api';
 
 type FormValues = {
@@ -29,7 +30,7 @@ type FormValues = {
 export default function Register({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [response, setResponse] = useState<V1CreateAccountResponse>(null);
+  const [response, setResponse] = useState<V1CreateAccountResponse | null>(null);
   const router = useRouter();
   const {
     handleSubmit,
@@ -103,6 +104,10 @@ export default function Register({
     </VStack>
   );
 }
+
+Register.getLayout = function getLayout(page: React.ReactNode) {
+  return <AuthLayout>{page}</AuthLayout>;
+};
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const csrfToken = await getCsrfToken(context);

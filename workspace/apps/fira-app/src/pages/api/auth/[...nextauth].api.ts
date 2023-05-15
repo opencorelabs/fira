@@ -4,14 +4,14 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { api } from 'src/lib/fira-api';
 
-export const options: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/auth/login',
     newUser: '/auth/register',
   },
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 1 days
+    maxAge: 24 * 60 * 60, // 24 hours (same as server-side)
   },
   events: {
     async signIn(message) {
@@ -19,14 +19,15 @@ export const options: NextAuthOptions = {
     },
   },
   callbacks: {
-    session: async ({ session, user, token }) => {
-      console.info('session, user, token', session, user, token);
-      // session.accessToken = user.token;
+    session: async ({ session }) => {
       return session;
     },
-    // async jwt({ token, user, account, profile, isNewUser }) {
-    //   return token;
-    // },
+    async jwt({ token, user }) {
+      if (user) {
+        token.token = { ...token, ...user };
+      }
+      return token;
+    },
   },
   providers: [
     CredentialsProvider({
@@ -68,4 +69,4 @@ export const options: NextAuthOptions = {
   ],
 };
 
-export default NextAuth(options);
+export default NextAuth(authOptions);
