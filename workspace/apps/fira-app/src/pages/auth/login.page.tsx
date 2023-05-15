@@ -15,7 +15,8 @@ import { getCsrfToken, signIn } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { options } from 'src/pages/api/auth/[...nextauth].api';
+import { AuthLayout } from 'src/components/auth/Layout';
+import { authOptions } from 'src/pages/api/auth/[...nextauth].api';
 
 type FormValues = {
   email: string;
@@ -23,7 +24,7 @@ type FormValues = {
 };
 
 type SignInResponse = {
-  error: string | null;
+  error?: string;
   ok: boolean;
   status: number;
   url: null | string;
@@ -32,7 +33,7 @@ type SignInResponse = {
 export default function Login({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [response, setResponse] = useState<SignInResponse>(null);
+  const [response, setResponse] = useState<SignInResponse | null>(null);
   const router = useRouter();
   const {
     handleSubmit,
@@ -48,10 +49,11 @@ export default function Login({
           ...values,
           redirect: false,
         });
-        if (response.ok && !response.error) {
-          router.push('/');
+        if (response?.ok && !response?.error) {
+          router.push((router.query?.callbackUrl as string) ?? '/');
         }
-        setResponse(response);
+
+        response && setResponse(response);
       } catch (error) {
         console.error(error);
       }
@@ -97,8 +99,12 @@ export default function Login({
   );
 }
 
+Login.getLayout = function getLayout(page: React.ReactNode) {
+  return <AuthLayout>{page}</AuthLayout>;
+};
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, options);
+  const session = await getServerSession(context.req, context.res, authOptions);
   if (session) {
     return {
       redirect: {

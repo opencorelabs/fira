@@ -1,3 +1,5 @@
+import { Layout } from 'src/components/layout/Layout';
+
 export default function SettingsAccount() {
   return (
     <div>
@@ -5,3 +7,7 @@ export default function SettingsAccount() {
     </div>
   );
 }
+
+SettingsAccount.getLayout = function getLayout(page: React.ReactNode) {
+  return <Layout>{page}</Layout>;
+};

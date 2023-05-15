@@ -1,7 +1,9 @@
 import { Box, Button, Container, Input, Text } from '@chakra-ui/react';
+import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { AuthLayout } from 'src/components/auth/Layout';
 import { api } from 'src/lib/fira-api';
 
 type FormValues = {
@@ -9,16 +11,21 @@ type FormValues = {
 };
 
 export default function VerifyEmail() {
+  const router = useRouter();
   const { register, handleSubmit } = useForm<FormValues>();
 
-  const handleVerify = useCallback(async (data: FormValues) => {
-    // 204df76d-4acc-4ac3-8fcb-ace8428b29fc
-    await api.firaServiceVerifyAccount({
-      // @ts-expect-error type is required
-      type: 1,
-      token: data.token,
-    });
-  }, []);
+  const handleVerify = useCallback(
+    async (data: FormValues) => {
+      const response = await api.firaServiceVerifyAccount({
+        // @ts-expect-error type is required
+        type: 1,
+        token: data.token,
+      });
+      console.info('response', response);
+      router.push('/');
+    },
+    [router]
+  );
 
   return (
     <Container maxW="container.xl">
@@ -40,3 +47,7 @@ export default function VerifyEmail() {
     </Container>
   );
 }
+
+VerifyEmail.getLayout = function getLayout(page: React.ReactNode) {
+  return <AuthLayout>{page}</AuthLayout>;
+};

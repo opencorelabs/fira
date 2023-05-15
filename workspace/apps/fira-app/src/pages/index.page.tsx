@@ -1,24 +1,13 @@
-import { useEffect, useState } from 'react';
-
-import { api } from 'src/lib/fira-api';
+import { Layout } from 'src/components/layout/Layout';
 
 export default function Index() {
-  const [info, setInfo] = useState(null);
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await api.firaServiceGetApiInfo();
-        setInfo(response);
-      } catch (error) {
-        console.error('error', error);
-      }
-    })();
-  }, []);
-
   return (
     <div>
-      <h1>Dashboard</h1>
-      <pre>{JSON.stringify(info, null, 2)}</pre>
+      <h1>Home</h1>
     </div>
   );
 }
+
+Index.getLayout = function getLayout(page: React.ReactNode) {
+  return <Layout>{page}</Layout>;
+};

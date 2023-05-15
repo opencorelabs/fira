@@ -3,14 +3,15 @@ package auth
 import (
 	"context"
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/opencorelabs/fira/internal/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"strings"
-	"time"
 )
 
 var (
