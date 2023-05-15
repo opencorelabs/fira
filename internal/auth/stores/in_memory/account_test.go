@@ -24,6 +24,7 @@ func (s *InMemorySuite) BeforeTest(_, _ string) {
 
 func (s *InMemorySuite) TestAccountStore_Create_SetsID() {
 	acct := &auth.Account{
+		Namespace:       auth.AccountNamespaceConsumer,
 		CredentialsType: auth.CredentialsTypeEmailPassword,
 	}
 	cerr := s.store.Create(context.Background(), acct, map[string]string{"email": "test@test.net"})
@@ -47,7 +48,7 @@ func (s *InMemorySuite) TestAccountStore_FindAccountByID() {
 	cerr := s.store.Create(context.Background(), acct, map[string]string{})
 	s.Require().NoError(cerr)
 
-	acct2, err := s.store.FindAccountByID(context.Background(), acct.ID)
+	acct2, err := s.store.FindAccountByID(context.Background(), auth.AccountNamespaceConsumer, acct.ID)
 	s.Require().NoError(err)
 	s.Equal(acct, acct2)
 }
@@ -62,7 +63,7 @@ func (s *InMemorySuite) Test_AccountStore_Update() {
 	err := s.store.Update(context.Background(), acct)
 	s.Require().NoError(err)
 
-	acct2, err := s.store.FindAccountByID(context.Background(), acct.ID)
+	acct2, err := s.store.FindAccountByID(context.Background(), auth.AccountNamespaceConsumer, acct.ID)
 	s.Require().NoError(err)
 	s.Equal(acct, acct2)
 }
@@ -73,7 +74,7 @@ func (s *InMemorySuite) TestAccountStore_FindByCredentials() {
 	cerr := s.store.Create(context.Background(), acct, distinctCreds)
 	s.Require().NoError(cerr)
 
-	acct2, err := s.store.FindByCredentials(context.Background(), distinctCreds)
+	acct2, err := s.store.FindByCredentials(context.Background(), auth.AccountNamespaceConsumer, distinctCreds)
 	s.Require().NoError(err)
 	s.Equal(acct, acct2)
 }
@@ -85,7 +86,7 @@ func (s *InMemorySuite) TestAccountStore_FindByCredentials_Missing() {
 	s.Require().NoError(cerr)
 
 	missingCreds := map[string]string{"email": "uhh@test.net"}
-	acct2, err := s.store.FindByCredentials(context.Background(), missingCreds)
+	acct2, err := s.store.FindByCredentials(context.Background(), auth.AccountNamespaceConsumer, missingCreds)
 	s.Require().ErrorIs(err, auth.ErrNoAccount)
 	s.Nil(acct2)
 }
@@ -96,13 +97,14 @@ func (s *InMemorySuite) TestAccountStore_FindByID_Missing() {
 	cerr := s.store.Create(context.Background(), acct, distinctCreds)
 	s.Require().NoError(cerr)
 
-	acct2, err := s.store.FindAccountByID(context.Background(), uuid.NewString())
+	acct2, err := s.store.FindAccountByID(context.Background(), auth.AccountNamespaceConsumer, uuid.NewString())
 	s.Require().ErrorIs(err, auth.ErrNoAccount)
 	s.Nil(acct2)
 }
 
 func testAcct() *auth.Account {
 	return &auth.Account{
+		Namespace:       auth.AccountNamespaceConsumer,
 		CredentialsType: auth.CredentialsTypeEmailPassword,
 		Credentials: map[string]string{
 			"email":    "test@test.net",

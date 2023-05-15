@@ -6,11 +6,18 @@ import (
 )
 
 type CredentialsType int
+type AccountNamespace string
 
 const (
 	CredentialsTypeNone CredentialsType = iota
 	CredentialsTypeEmailPassword
 	CredentialsTypeOAuth
+)
+
+const (
+	AccountNamespaceNone      AccountNamespace = ""
+	AccountNamespaceConsumer  AccountNamespace = "consumer"
+	AccountNamespaceDeveloper AccountNamespace = "developer"
 )
 
 var (
@@ -21,8 +28,8 @@ var (
 )
 
 type AccountStore interface {
-	FindAccountByID(ctx context.Context, id string) (*Account, error)
-	FindByCredentials(ctx context.Context, creds map[string]string) (*Account, error)
+	FindAccountByID(ctx context.Context, namespace AccountNamespace, id string) (*Account, error)
+	FindByCredentials(ctx context.Context, namespace AccountNamespace, creds map[string]string) (*Account, error)
 	Create(ctx context.Context, account *Account, creds map[string]string) error
 	Update(ctx context.Context, account *Account) error
 }
@@ -34,12 +41,12 @@ type AccountStoreProvider interface {
 type Backend interface {
 	// Register creates a new account from the provided credentials. If an account
 	// already exists, returns ErrAccountExists.
-	Register(ctx context.Context, credentials map[string]string) (*Account, error)
+	Register(ctx context.Context, namespace AccountNamespace, credentials map[string]string) (*Account, error)
 
 	// Authenticate attempts to authenticate an account using the provided credentials.
 	// The credentials are expected to be in the format of the CredentialsType associated
 	// with the Backend.
-	Authenticate(ctx context.Context, credentials map[string]string) (*Account, error)
+	Authenticate(ctx context.Context, namespace AccountNamespace, credentials map[string]string) (*Account, error)
 }
 
 type Registry interface {

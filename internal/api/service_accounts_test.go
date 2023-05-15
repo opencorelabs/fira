@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
+	"github.com/opencorelabs/fira/internal/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -71,7 +72,7 @@ func (s *FiraApiSuite) Test_LoginAccount_NoAccountExists() {
 
 func (s *FiraApiSuite) Test_LoginAccount_WrongPassword() {
 	s.verifiedAccount()
-	
+
 	req := &v1.LoginAccountRequest{
 		Credential: &v1.LoginCredential{
 			CredentialType: v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_EMAIL,
@@ -89,7 +90,7 @@ func (s *FiraApiSuite) Test_LoginAccount_WrongPassword() {
 
 func (s *FiraApiSuite) createAccount() (*v1.CreateAccountResponse, error) {
 	req := &v1.CreateAccountRequest{
-		Namespace: v1.AccountNamespace_ACCOUNT_NAMESPACE_DEVELOPER,
+		Namespace: v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER,
 		Credential: &v1.LoginCredential{
 			CredentialType: v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_EMAIL,
 			EmailCredential: &v1.CredentialTypeEmail{
@@ -104,7 +105,7 @@ func (s *FiraApiSuite) createAccount() (*v1.CreateAccountResponse, error) {
 
 func (s *FiraApiSuite) verifyAccount(email string) (*v1.VerifyAccountResponse, error) {
 	// read out the verification token
-	usr, findErr := s.acctStore.FindByCredentials(context.TODO(), map[string]string{
+	usr, findErr := s.acctStore.FindByCredentials(context.TODO(), auth.AccountNamespaceConsumer, map[string]string{
 		"email": email,
 	})
 	s.Require().NoErrorf(findErr, "failed to find account")
@@ -113,8 +114,9 @@ func (s *FiraApiSuite) verifyAccount(email string) (*v1.VerifyAccountResponse, e
 
 	// verify the account
 	req := &v1.VerifyAccountRequest{
-		Token: tok,
-		Type:  v1.VerificationType_VERIFICATION_TYPE_EMAIL,
+		Token:     tok,
+		Namespace: v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER,
+		Type:      v1.VerificationType_VERIFICATION_TYPE_EMAIL,
 	}
 
 	return s.api.VerifyAccount(context.Background(), req)
@@ -122,6 +124,7 @@ func (s *FiraApiSuite) verifyAccount(email string) (*v1.VerifyAccountResponse, e
 
 func (s *FiraApiSuite) loginAccount() (*v1.LoginAccountResponse, error) {
 	loginReq := &v1.LoginAccountRequest{
+		Namespace: v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER,
 		Credential: &v1.LoginCredential{
 			CredentialType: v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_EMAIL,
 			EmailCredential: &v1.CredentialTypeEmail{

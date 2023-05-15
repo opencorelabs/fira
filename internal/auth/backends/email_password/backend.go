@@ -27,7 +27,7 @@ func New(storeProvider auth.AccountStoreProvider, verifProvider verification.Pro
 	}
 }
 
-func (e *EmailPasswordBackend) Register(ctx context.Context, credentials map[string]string) (*auth.Account, error) {
+func (e *EmailPasswordBackend) Register(ctx context.Context, namespace auth.AccountNamespace, credentials map[string]string) (*auth.Account, error) {
 	d, dErr := decode(credentials)
 	if dErr != nil {
 		return nil, dErr
@@ -41,6 +41,7 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, credentials map[str
 	uniqueCredentials := map[string]string{"email": d.Email}
 	acct := &auth.Account{
 		Valid:           false, // account is initially invalid, email must be verified
+		Namespace:       namespace,
 		CredentialsType: auth.CredentialsTypeEmailPassword,
 		Credentials: map[string]string{
 			"email":    d.Email,
@@ -67,13 +68,13 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, credentials map[str
 	return acct, nil
 }
 
-func (e *EmailPasswordBackend) Authenticate(ctx context.Context, credentials map[string]string) (*auth.Account, error) {
+func (e *EmailPasswordBackend) Authenticate(ctx context.Context, namespace auth.AccountNamespace, credentials map[string]string) (*auth.Account, error) {
 	d, dErr := decode(credentials)
 	if dErr != nil {
 		return nil, dErr
 	}
 
-	acct, acctErr := e.storeProvider.AccountStore().FindByCredentials(ctx, map[string]string{
+	acct, acctErr := e.storeProvider.AccountStore().FindByCredentials(ctx, namespace, map[string]string{
 		"email": d.Email,
 	})
 

@@ -2,6 +2,7 @@ package auth
 
 type Account struct {
 	ID              string
+	Namespace       AccountNamespace
 	Valid           bool
 	CredentialsType CredentialsType
 	Credentials     map[string]string

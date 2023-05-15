@@ -695,6 +695,10 @@
           "type": "string",
           "description": "The verification_token provided in the URL."
         },
+        "namespace": {
+          "$ref": "#/definitions/v1AccountNamespace",
+          "description": "The namespace to verify the account in."
+        },
         "type": {
           "$ref": "#/definitions/v1VerificationType",
           "description": "The verification type, will also be provided in the URL."

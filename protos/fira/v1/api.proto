@@ -215,8 +215,11 @@ message VerifyAccountRequest {
   // The verification_token provided in the URL.
   string token = 1;
 
+  // The namespace to verify the account in.
+  AccountNamespace namespace = 2;
+
   // The verification type, will also be provided in the URL.
-  VerificationType type = 2;
+  VerificationType type = 3;
 }
 
 message VerifyAccountResponse {
