@@ -35,11 +35,11 @@ func (l *LoggingVerifier) SendVerificationToken(ctx context.Context, account *au
 	}, nil
 }
 
-func (l *LoggingVerifier) VerifyWithToken(ctx context.Context, token string) (*auth.Account, error) {
+func (l *LoggingVerifier) VerifyWithToken(ctx context.Context, namespace auth.AccountNamespace, token string) (*auth.Account, error) {
 	cred := map[string]string{
 		"logging_verification_token": token,
 	}
-	user, userErr := l.accounts.AccountStore().FindByCredentials(ctx, cred)
+	user, userErr := l.accounts.AccountStore().FindByCredentials(ctx, namespace, cred)
 	if userErr != nil {
 		return nil, auth.ErrNoAccount
 	}

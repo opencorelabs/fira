@@ -39,7 +39,7 @@ func (s *FiraApiService) decodeLoginCredential(c *v1.LoginCredential) (map[strin
 	return credential, backend, nil
 }
 
-func (s *FiraApiService) getAccountStatus(acct *auth.Account) v1.AccountRegistrationStatus {
+func getAccountStatus(acct *auth.Account) v1.AccountRegistrationStatus {
 	if acct.Valid {
 		return v1.AccountRegistrationStatus_ACCOUNT_REGISTRATION_STATUS_OK
 	}
@@ -50,13 +50,24 @@ func (s *FiraApiService) getAccountStatus(acct *auth.Account) v1.AccountRegistra
 	return v1.AccountRegistrationStatus_ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED
 }
 
+func getAccountNamespace(ns v1.AccountNamespace) auth.AccountNamespace {
+	switch ns {
+	case v1.AccountNamespace_ACCOUNT_NAMESPACE_DEVELOPER:
+		return auth.AccountNamespaceDeveloper
+	case v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER:
+		return auth.AccountNamespaceConsumer
+	default:
+		return auth.AccountNamespaceNone
+	}
+}
+
 func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
 	credential, backend, decodeErr := s.decodeLoginCredential(request.Credential)
 	if decodeErr != nil {
 		return nil, decodeErr
 	}
 
-	account, regErr := backend.Register(ctx, credential)
+	account, regErr := backend.Register(ctx, getAccountNamespace(request.Namespace), credential)
 
 	if regErr != nil {
 		s.logger.Errorw("failed to register account",
@@ -73,7 +84,7 @@ func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAc
 	}
 
 	return &v1.CreateAccountResponse{
-		Status: s.getAccountStatus(account),
+		Status: getAccountStatus(account),
 		Jwt:    jwt,
 	}, nil
 }
@@ -87,12 +98,12 @@ func (s *FiraApiService) VerifyAccount(ctx context.Context, request *v1.VerifyAc
 		return nil, status.Errorf(codes.InvalidArgument, "invalid verification type")
 	}
 
-	acct, verifErr := verifier.VerifyWithToken(ctx, request.Token)
+	acct, verifErr := verifier.VerifyWithToken(ctx, getAccountNamespace(request.Namespace), request.Token)
 	if verifErr != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid verification token")
 	}
 	resp := &v1.VerifyAccountResponse{
-		Status: s.getAccountStatus(acct),
+		Status: getAccountStatus(acct),
 	}
 	if acct.Valid {
 		jwt, jwtErr := s.jwtManager.Generate(acct.ID)
@@ -112,7 +123,7 @@ func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAcco
 		return nil, decodeErr
 	}
 
-	account, loginErr := backend.Authenticate(ctx, credential)
+	account, loginErr := backend.Authenticate(ctx, getAccountNamespace(request.Namespace), credential)
 	if loginErr != nil {
 		s.logger.Debugw("failed to authenticate account", "error", loginErr)
 		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
@@ -125,7 +136,7 @@ func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAcco
 	}
 
 	return &v1.LoginAccountResponse{
-		Status: s.getAccountStatus(account),
+		Status: getAccountStatus(account),
 		Jwt:    jwt,
 	}, nil
 }

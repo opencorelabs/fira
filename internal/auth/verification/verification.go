@@ -8,7 +8,7 @@ import (
 
 type Verifier interface {
 	SendVerificationToken(ctx context.Context, account *auth.Account) (map[string]string, error)
-	VerifyWithToken(ctx context.Context, token string) (*auth.Account, error)
+	VerifyWithToken(ctx context.Context, namespace auth.AccountNamespace, token string) (*auth.Account, error)
 }
 
 type Provider interface {

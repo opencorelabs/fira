@@ -29,7 +29,12 @@ var (
 
 type AccountClaims struct {
 	jwt.RegisteredClaims
-	AccountID string `json:"account_id"`
+	// for account tokens
+	AccountID        string `json:"actid"`
+	AccountNamespace string `json:"actns"`
+	// for app tokens
+	AppID          string `json:"appid"`
+	AppEnvironment string `json:"appenv"`
 }
 
 type JWTManager struct {
@@ -47,7 +52,7 @@ func (m *JWTManager) Generate(accountID string) (string, error) {
 		AccountID: accountID,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	return token.SignedString(m.secret)
 }
 
@@ -99,7 +104,17 @@ func JWTInterceptor(log logging.Provider, accounts AccountStoreProvider, manager
 			return nil, StandardRejectionCode
 		}
 
-		account, accountErr := accounts.AccountStore().FindAccountByID(ctx, claims.AccountID)
+		var namespace AccountNamespace
+		if claims.AccountNamespace == string(AccountNamespaceConsumer) {
+			namespace = AccountNamespaceConsumer
+		} else if claims.AccountNamespace == string(AccountNamespaceDeveloper) {
+			namespace = AccountNamespaceDeveloper
+		} else {
+			logger.Debugw("invalid namespace", "namespace", claims.AccountNamespace)
+			return nil, StandardRejectionCode
+		}
+
+		account, accountErr := accounts.AccountStore().FindAccountByID(ctx, namespace, claims.AccountID)
 		if accountErr != nil {
 			logger.Debugw("account not found", "account_id", claims.AccountID)
 			return nil, StandardRejectionCode
