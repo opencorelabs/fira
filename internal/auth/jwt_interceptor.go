@@ -30,11 +30,11 @@ var (
 type AccountClaims struct {
 	jwt.RegisteredClaims
 	// for account tokens
-	AccountID        string `json:"actid"`
-	AccountNamespace string `json:"actns"`
+	AccountID        string `json:"actid,omitempty"`
+	AccountNamespace string `json:"actns,omitempty"`
 	// for app tokens
-	AppID          string `json:"appid"`
-	AppEnvironment string `json:"appenv"`
+	AppID          string `json:"appid,omitempty"`
+	AppEnvironment string `json:"appenv,omitempty"`
 }
 
 type JWTManager struct {
@@ -42,14 +42,15 @@ type JWTManager struct {
 	duration time.Duration
 }
 
-func (m *JWTManager) Generate(accountID string) (string, error) {
+func (m *JWTManager) Generate(accountID string, namespace AccountNamespace) (string, error) {
 	claims := AccountClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "fira",
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.duration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
-		AccountID: accountID,
+		AccountID:        accountID,
+		AccountNamespace: string(namespace),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)

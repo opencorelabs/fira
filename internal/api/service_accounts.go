@@ -77,7 +77,7 @@ func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAc
 		return nil, status.Errorf(codes.Unauthenticated, "registration error")
 	}
 
-	jwt, jwtErr := s.jwtManager.Generate(account.ID)
+	jwt, jwtErr := s.jwtManager.Generate(account.ID, getAccountNamespace(request.Namespace))
 	if jwtErr != nil {
 		s.logger.Errorw("failed to generate jwt", "error", jwtErr)
 		return nil, status.Errorf(codes.Internal, "internal error")
@@ -106,7 +106,7 @@ func (s *FiraApiService) VerifyAccount(ctx context.Context, request *v1.VerifyAc
 		Status: getAccountStatus(acct),
 	}
 	if acct.Valid {
-		jwt, jwtErr := s.jwtManager.Generate(acct.ID)
+		jwt, jwtErr := s.jwtManager.Generate(acct.ID, getAccountNamespace(request.Namespace))
 		if jwtErr != nil {
 			s.logger.Errorw("failed to generate jwt", "error", jwtErr)
 			return nil, status.Errorf(codes.Internal, "internal error")
@@ -129,7 +129,7 @@ func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAcco
 		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
 	}
 
-	jwt, jwtErr := s.jwtManager.Generate(account.ID)
+	jwt, jwtErr := s.jwtManager.Generate(account.ID, getAccountNamespace(request.Namespace))
 	if jwtErr != nil {
 		s.logger.Errorw("failed to generate jwt", "error", jwtErr)
 		return nil, status.Errorf(codes.Internal, "internal error")
