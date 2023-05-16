@@ -1,4 +1,3 @@
-'use client';
 import {
   Box,
   Button,
@@ -15,7 +14,7 @@ import {
   V1CreateAccountResponse,
 } from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { getCsrfToken } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,7 +26,7 @@ type FormValues = {
   password: string;
 };
 
-export function Register({
+export default function Register({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [response, setResponse] = useState<V1CreateAccountResponse | null>(null);
@@ -55,8 +54,10 @@ export function Register({
         if (!response.ok && response.error) {
           throw response.error;
         }
+
         setResponse(response.data);
         console.info('response', response);
+
         router.push('/auth/verify-email');
       } catch (error) {
         console.error(error);

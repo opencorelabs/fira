@@ -8,29 +8,31 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import {
-  V1AccountCredentialType,
-  V1AccountNamespace,
-  V1CreateAccountResponse,
-} from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
-import { getCsrfToken } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
+import { getCsrfToken, signIn } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { AuthLayout } from 'src/components/auth/Layout';
-import { api } from 'src/lib/fira-api';
+import { authOptions } from 'src/pages/api/auth/[...nextauth].api';
 
 type FormValues = {
   email: string;
   password: string;
 };
 
-export default function Register({
+type SignInResponse = {
+  error?: string;
+  ok: boolean;
+  status: number;
+  url: null | string;
+};
+
+export default function Login({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [response, setResponse] = useState<V1CreateAccountResponse | null>(null);
+  const [response, setResponse] = useState<SignInResponse | null>(null);
   const router = useRouter();
   const {
     handleSubmit,
@@ -42,24 +44,15 @@ export default function Register({
     async (values: FormValues) => {
       try {
         setResponse(null);
-        const response = await api.firaServiceCreateAccount({
-          namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-          credential: {
-            credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
-            emailCredential: {
-              email: values.email,
-              password: values.password,
-            },
-          },
+        const response = await signIn('credentials', {
+          ...values,
+          redirect: false,
         });
-        if (!response.ok && response.error) {
-          throw response.error;
+        if (response?.ok && !response?.error) {
+          router.push((router.query?.callbackUrl as string) ?? '/');
         }
 
-        setResponse(response.data);
-        console.info('response', response);
-
-        router.push('/auth/verify-email');
+        response && setResponse(response);
       } catch (error) {
         console.error(error);
       }
@@ -71,7 +64,7 @@ export default function Register({
 
   return (
     <VStack h="full" align="center" justify="center">
-      <Heading>Register</Heading>
+      <Heading>Login</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
           <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
@@ -94,9 +87,9 @@ export default function Register({
           <Button size="sm" w="full" type="submit" colorScheme="blue">
             Login
           </Button>
-          {!!response?.errorMessage && (
+          {!!response?.error && (
             <Text color="red">
-              {response.errorMessage} - Status {response.status}
+              {response.error} - Status {response.status}
             </Text>
           )}
         </VStack>
@@ -105,11 +98,16 @@ export default function Register({
   );
 }
 
-Register.getLayout = function getLayout(page: React.ReactNode) {
-  return <AuthLayout>{page}</AuthLayout>;
-};
-
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  if (session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
   const csrfToken = await getCsrfToken(context);
   return {
     props: { csrfToken },

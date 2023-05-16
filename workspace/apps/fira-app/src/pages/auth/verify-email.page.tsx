@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { AuthLayout } from 'src/components/auth/Layout';
 import { api } from 'src/lib/fira-api';
 
 type FormValues = {
@@ -47,7 +46,3 @@ export default function VerifyEmail() {
     </Container>
   );
 }
-
-VerifyEmail.getLayout = function getLayout(page: React.ReactNode) {
-  return <AuthLayout>{page}</AuthLayout>;
-};

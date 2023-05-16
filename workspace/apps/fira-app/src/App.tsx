@@ -1,18 +1,21 @@
-import { NextPage } from 'next';
+import { ChakraProvider } from '@chakra-ui/react';
 import { SessionProvider } from 'next-auth/react';
 
-import { AppProviders } from 'src/AppProviders';
-
+import { AuthLayout } from './components/auth/Layout';
+import { Layout as DashboardLayout } from './components/layout/Layout';
+import { theme } from './theme';
 import { GlobalStyle } from './theme/GlobalStyle';
 
-export function App({ Component, pageProps, session }) {
-  const getLayout = Component.getLayout || ((page: NextPage) => page);
+export function App({ Component, pageProps }) {
+  const Layout = Component.auth ? DashboardLayout : AuthLayout;
   return (
-    <AppProviders>
-      <SessionProvider session={session}>
+    <ChakraProvider theme={theme}>
+      <SessionProvider session={pageProps.session}>
         <GlobalStyle />
-        {getLayout(<Component {...pageProps} />)}
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </SessionProvider>
-    </AppProviders>
+    </ChakraProvider>
   );
 }
