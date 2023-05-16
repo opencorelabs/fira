@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
@@ -33,7 +34,9 @@ func (s *FiraApiSuite) BeforeTest(_, _ string) {
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(s, s))
 
-	authJwtMgr := auth.NewAccountJWTManager([][]byte{[]byte("secret")}, time.Minute, s, s)
+	authJwtMgr := auth.NewAccountJWTManager(func(ctx context.Context) [][]byte {
+		return [][]byte{[]byte("secret")}
+	}, time.Minute, s, s)
 
 	s.api = New(s, authReg, authJwtMgr, s)
 }

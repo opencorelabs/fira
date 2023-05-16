@@ -25,7 +25,9 @@ func (a *App) StartGRPC(ctx context.Context) error {
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(a, verificationProvider))
 
-	accountJwtManager := auth.NewAccountJWTManager([][]byte{[]byte("dev-secret")}, 15*time.Minute, a, a)
+	accountJwtManager := auth.NewAccountJWTManager(func(ctx context.Context) [][]byte {
+		return [][]byte{[]byte("dev-secret")}
+	}, 15*time.Minute, a, a)
 
 	svc := api.New(a, authReg, accountJwtManager, verificationProvider)
 

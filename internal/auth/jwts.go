@@ -24,3 +24,9 @@ type JWTManager interface {
 	// Verify returns a context with the principal set
 	Verify(ctx context.Context, tokenStr string) (context.Context, error)
 }
+
+func AccountFromContext(ctx context.Context) (*Account, bool) {
+	acctVal := ctx.Value(firaAccountKey)
+	acct, hasAcct := acctVal.(*Account)
+	return acct, hasAcct
+}
