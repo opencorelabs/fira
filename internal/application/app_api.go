@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
+	"time"
 )
 
 func (a *App) StartGRPC(ctx context.Context) error {
@@ -24,13 +25,15 @@ func (a *App) StartGRPC(ctx context.Context) error {
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(a, verificationProvider))
 
-	svc := api.New(a, authReg, auth.TodoJWTManager, verificationProvider)
+	accountJwtManager := auth.NewAccountJWTManager([][]byte{[]byte("dev-secret")}, 15*time.Minute, a, a)
+
+	svc := api.New(a, authReg, accountJwtManager, verificationProvider)
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			interceptors.UnaryLoggingInterceptor(a.Logger()),
-			auth.JWTInterceptor(a, a, auth.TodoJWTManager),
 			interceptors.UnaryRecoveryInterceptor(a.Logger()),
+			interceptors.UnaryLoggingInterceptor(a.Logger()),
+			auth.JWTInterceptor(a, accountJwtManager, nil),
 		),
 	)
 

@@ -16,14 +16,14 @@ type FiraApiService struct {
 	v1.UnimplementedFiraServiceServer
 	authRegistry         auth.Registry
 	logger               *zap.SugaredLogger
-	jwtManager           *auth.JWTManager
+	jwtManager           auth.JWTManager
 	verificationProvider verification.Provider
 }
 
 func New(
 	log logging.Provider,
 	authReg auth.Registry,
-	manager *auth.JWTManager,
+	manager auth.JWTManager,
 	verificationProvider verification.Provider,
 ) v1.FiraServiceServer {
 	return &FiraApiService{

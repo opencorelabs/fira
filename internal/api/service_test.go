@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"testing"
+	"time"
 )
 
 type FiraApiSuite struct {
@@ -32,7 +33,9 @@ func (s *FiraApiSuite) BeforeTest(_, _ string) {
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(s, s))
 
-	s.api = New(s, authReg, auth.TodoJWTManager, s)
+	authJwtMgr := auth.NewAccountJWTManager([][]byte{[]byte("secret")}, time.Minute, s, s)
+
+	s.api = New(s, authReg, authJwtMgr, s)
 }
 
 func (s *FiraApiSuite) Logger() *zap.Logger {
