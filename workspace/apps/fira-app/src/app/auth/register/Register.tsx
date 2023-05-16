@@ -1,3 +1,4 @@
+'use client';
 import {
   Box,
   Button,
@@ -8,32 +9,28 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import {
+  V1AccountCredentialType,
+  V1AccountNamespace,
+  V1CreateAccountResponse,
+} from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import { useRouter } from 'next/router';
-import { getServerSession } from 'next-auth';
-import { getCsrfToken, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { getCsrfToken } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { AuthLayout } from 'src/components/auth/Layout';
-import { authOptions } from 'src/pages/api/auth/[...nextauth].api';
+import { api } from 'src/lib/fira-api';
 
 type FormValues = {
   email: string;
   password: string;
 };
 
-type SignInResponse = {
-  error?: string;
-  ok: boolean;
-  status: number;
-  url: null | string;
-};
-
-export default function Login({
+export function Register({
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [response, setResponse] = useState<SignInResponse | null>(null);
+  const [response, setResponse] = useState<V1CreateAccountResponse | null>(null);
   const router = useRouter();
   const {
     handleSubmit,
@@ -45,15 +42,22 @@ export default function Login({
     async (values: FormValues) => {
       try {
         setResponse(null);
-        const response = await signIn('credentials', {
-          ...values,
-          redirect: false,
+        const response = await api.firaServiceCreateAccount({
+          namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
+          credential: {
+            credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
+            emailCredential: {
+              email: values.email,
+              password: values.password,
+            },
+          },
         });
-        if (response?.ok && !response?.error) {
-          router.push((router.query?.callbackUrl as string) ?? '/');
+        if (!response.ok && response.error) {
+          throw response.error;
         }
-
-        response && setResponse(response);
+        setResponse(response.data);
+        console.info('response', response);
+        router.push('/auth/verify-email');
       } catch (error) {
         console.error(error);
       }
@@ -65,7 +69,7 @@ export default function Login({
 
   return (
     <VStack h="full" align="center" justify="center">
-      <Heading>Login</Heading>
+      <Heading>Register</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
           <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
@@ -88,9 +92,9 @@ export default function Login({
           <Button size="sm" w="full" type="submit" colorScheme="blue">
             Login
           </Button>
-          {!!response?.error && (
+          {!!response?.errorMessage && (
             <Text color="red">
-              {response.error} - Status {response.status}
+              {response.errorMessage} - Status {response.status}
             </Text>
           )}
         </VStack>
@@ -99,20 +103,7 @@ export default function Login({
   );
 }
 
-Login.getLayout = function getLayout(page: React.ReactNode) {
-  return <AuthLayout>{page}</AuthLayout>;
-};
-
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-  if (session) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
   const csrfToken = await getCsrfToken(context);
   return {
     props: { csrfToken },
