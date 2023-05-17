@@ -5,3 +5,5 @@ export default function SettingsAccount() {
     </div>
   );
 }
+
+SettingsAccount.auth = true;
