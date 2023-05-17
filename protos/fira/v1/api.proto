@@ -289,13 +289,76 @@ message CompletePasswordResetResponse {
   string jwt = 3;
 }
 
-// Placeholder - there is no information to return right now. If the email exists, a reset email will be sent.
+// Placeholder - there is no information to return right now
+// If the email exists, a reset email will be sent.
 message BeginPasswordResetResponse {}
 
 message GetAccountRequest {}
 message GetAccountResponse {
   Account account = 1;
 }
+
+enum Environment {
+  ENVIRONMENT_UNSPECIFIED = 0;
+  ENVIRONMENT_SANDBOX = 1;
+  ENVIRONMENT_DEVELOPER = 2;
+  ENVIRONMENT_PRODUCTION = 3;
+}
+
+message AppToken {
+  Environment environment = 1;
+  string jwt = 2;
+  google.protobuf.Timestamp valid_util = 3;
+}
+
+message App {
+  string app_id = 1;
+  string name = 2;
+  Account owner = 4;
+
+  google.protobuf.Timestamp created_at = 15;
+  google.protobuf.Timestamp updated_at = 16;
+
+  repeated AppToken tokens = 20;
+}
+
+message CreateAppRequest {
+  string name = 1;
+}
+
+message CreateAppResponse {
+  App app = 1;
+}
+
+message GetAppRequest {
+  string app_id = 1;
+}
+
+message GetAppResponse {
+  App app = 1;
+}
+
+message ListAppsRequest {}
+
+message ListAppsResponse {
+  repeated App apps = 1;
+}
+
+message RotateAppTokenRequest {
+  string app_id = 1;
+  Environment environment = 2;
+}
+
+message RotateAppTokenResponse {
+  App app = 1;
+}
+
+message InvalidateAppTokenRequest {
+  string app_id = 1;
+  string jwt = 2;
+}
+
+message InvalidateAppTokenResponse {}
 
 service FiraService {
   rpc GetApiInfo(GetApiInfoRequest) returns (GetApiInfoResponse) {
@@ -331,6 +394,44 @@ service FiraService {
   rpc BeginPasswordReset(BeginPasswordResetRequest) returns (BeginPasswordResetResponse) {
     option (google.api.http) = {
       post: "/api/v1/accounts/request_password_reset"
+      body: "*"
+    };
+  }
+
+  // Create an "App" - app are used to access the Fira data API.
+  rpc CreateApp(CreateAppRequest) returns (CreateAppResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/apps"
+      body: "*"
+    };
+  }
+
+  // Returns a list of all apps for the logged in user.
+  rpc ListApps(ListAppsRequest) returns (ListAppsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/apps"
+    };
+  }
+
+  // Returns a single app for the logged in user.
+  rpc GetApp(GetAppRequest) returns (GetAppResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/apps/{app_id}"
+    };
+  }
+
+  // Rotate the JWT for an app. The old token will still be valid until the expiration time.
+  rpc RotateAppToken(RotateAppTokenRequest) returns (RotateAppTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/apps/{app_id}/rotate_token"
+      body: "*"
+    };
+  }
+
+  // Invalidate an app token. This will immediately invalidate the token.
+  rpc InvalidateAppToken(InvalidateAppTokenRequest) returns (InvalidateAppTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/apps/{app_id}/invalidate_token"
       body: "*"
     };
   }

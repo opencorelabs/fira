@@ -10,6 +10,7 @@ import (
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
 	"github.com/opencorelabs/fira/internal/auth/verification"
+	"github.com/opencorelabs/fira/internal/developer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
@@ -29,13 +30,17 @@ func (a *App) StartGRPC(ctx context.Context) error {
 		return [][]byte{[]byte("dev-secret")}
 	}, 15*time.Minute, a, a)
 
-	svc := api.New(a, authReg, accountJwtManager, verificationProvider)
+	appJwtManager := developer.NewAppJWTManager(a, a)
+
+	accountSvc := api.NewAccountService(a, authReg, accountJwtManager, verificationProvider)
+
+	svc := api.New(accountSvc)
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			interceptors.UnaryRecoveryInterceptor(a.Logger()),
 			interceptors.UnaryLoggingInterceptor(a.Logger()),
-			auth.JWTInterceptor(a, accountJwtManager, nil),
+			auth.JWTInterceptor(a, accountJwtManager, appJwtManager),
 		),
 	)
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/config"
+	"github.com/opencorelabs/fira/internal/developer"
 	"github.com/opencorelabs/fira/internal/logging"
 	"go.uber.org/zap"
 	"net/http"
@@ -28,6 +29,7 @@ type App struct {
 
 	initMtx      *sync.Mutex
 	accountStore auth.AccountStore
+	appStore     developer.AppStore
 }
 
 func NewApp() (*App, error) {

@@ -216,6 +216,179 @@
         ]
       }
     },
+    "/api/v1/apps": {
+      "get": {
+        "summary": "Returns a list of all apps for the logged in user.",
+        "operationId": "FiraService_ListApps",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListAppsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "FiraService"
+        ]
+      },
+      "post": {
+        "summary": "Create an \"App\" - app are used to access the Fira data API.",
+        "operationId": "FiraService_CreateApp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateAppResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAppRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/apps/{appId}": {
+      "get": {
+        "summary": "Returns a single app for the logged in user.",
+        "operationId": "FiraService_GetApp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAppResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/apps/{appId}/invalidate_token": {
+      "post": {
+        "summary": "Invalidate an app token. This will immediately invalidate the token.",
+        "operationId": "FiraService_InvalidateAppToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1InvalidateAppTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jwt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
+    "/api/v1/apps/{appId}/rotate_token": {
+      "post": {
+        "summary": "Rotate the JWT for an app. The old token will still be valid until the expiration time.",
+        "operationId": "FiraService_RotateAppToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RotateAppTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "appId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "environment": {
+                  "$ref": "#/definitions/v1Environment"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
     "/api/v1/info": {
       "get": {
         "operationId": "FiraService_GetApiInfo",
@@ -417,6 +590,50 @@
       ],
       "default": "ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED"
     },
+    "v1App": {
+      "type": "object",
+      "properties": {
+        "appId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner": {
+          "$ref": "#/definitions/v1Account"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AppToken"
+          }
+        }
+      }
+    },
+    "v1AppToken": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "$ref": "#/definitions/v1Environment"
+        },
+        "jwt": {
+          "type": "string"
+        },
+        "validUtil": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1BeginPasswordResetRequest": {
       "type": "object",
       "properties": {
@@ -436,7 +653,7 @@
     },
     "v1BeginPasswordResetResponse": {
       "type": "object",
-      "description": "Placeholder - there is no information to return right now. If the email exists, a reset email will be sent."
+      "description": "Placeholder - there is no information to return right now\nIf the email exists, a reset email will be sent."
     },
     "v1CompletePasswordResetRequest": {
       "type": "object",
@@ -498,6 +715,22 @@
         "jwt": {
           "type": "string",
           "description": "If the status is ACCOUNT_REGISTRATION_STATUS_OK, this will be the login JWT."
+        }
+      }
+    },
+    "v1CreateAppRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateAppResponse": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "$ref": "#/definitions/v1App"
         }
       }
     },
@@ -564,6 +797,16 @@
         }
       }
     },
+    "v1Environment": {
+      "type": "string",
+      "enum": [
+        "ENVIRONMENT_UNSPECIFIED",
+        "ENVIRONMENT_SANDBOX",
+        "ENVIRONMENT_DEVELOPER",
+        "ENVIRONMENT_PRODUCTION"
+      ],
+      "default": "ENVIRONMENT_UNSPECIFIED"
+    },
     "v1GetAccountResponse": {
       "type": "object",
       "properties": {
@@ -580,6 +823,14 @@
         }
       }
     },
+    "v1GetAppResponse": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "$ref": "#/definitions/v1App"
+        }
+      }
+    },
     "v1GetLinkSessionResponse": {
       "type": "object",
       "properties": {
@@ -587,6 +838,9 @@
           "$ref": "#/definitions/v1LinkSession"
         }
       }
+    },
+    "v1InvalidateAppTokenResponse": {
+      "type": "object"
     },
     "v1LinkError": {
       "type": "object"
@@ -631,6 +885,18 @@
         "LINK_SESSION_STATUS_FAILED"
       ],
       "default": "LINK_SESSION_STATUS_UNSPECIFIED"
+    },
+    "v1ListAppsResponse": {
+      "type": "object",
+      "properties": {
+        "apps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1App"
+          }
+        }
+      }
     },
     "v1LoginAccountRequest": {
       "type": "object",
@@ -677,6 +943,14 @@
         },
         "githubCredential": {
           "$ref": "#/definitions/v1CredentialTypeGithub"
+        }
+      }
+    },
+    "v1RotateAppTokenResponse": {
+      "type": "object",
+      "properties": {
+        "app": {
+          "$ref": "#/definitions/v1App"
         }
       }
     },

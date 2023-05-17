@@ -5,11 +5,34 @@ import (
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/verification"
+	"github.com/opencorelabs/fira/internal/logging"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *FiraApiService) decodeLoginCredential(c *v1.LoginCredential) (map[string]string, auth.Backend, error) {
+type AccountService struct {
+	authRegistry         auth.Registry
+	logger               *zap.SugaredLogger
+	jwtManager           auth.JWTManager
+	verificationProvider verification.Provider
+}
+
+func NewAccountService(
+	log logging.Provider,
+	authReg auth.Registry,
+	manager auth.JWTManager,
+	verificationProvider verification.Provider,
+) *AccountService {
+	return &AccountService{
+		authRegistry:         authReg,
+		jwtManager:           manager,
+		verificationProvider: verificationProvider,
+		logger:               log.Logger().Named("api-service").Sugar(),
+	}
+}
+
+func (s *AccountService) decodeLoginCredential(c *v1.LoginCredential) (map[string]string, auth.Backend, error) {
 	var credType auth.CredentialsType
 	credential := make(map[string]string)
 	switch c.CredentialType {
@@ -61,7 +84,7 @@ func getAccountNamespace(ns v1.AccountNamespace) auth.AccountNamespace {
 	}
 }
 
-func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
+func (s *AccountService) CreateAccount(ctx context.Context, request *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
 	credential, backend, decodeErr := s.decodeLoginCredential(request.Credential)
 	if decodeErr != nil {
 		return nil, decodeErr
@@ -89,7 +112,7 @@ func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAc
 	}, nil
 }
 
-func (s *FiraApiService) VerifyAccount(ctx context.Context, request *v1.VerifyAccountRequest) (*v1.VerifyAccountResponse, error) {
+func (s *AccountService) VerifyAccount(ctx context.Context, request *v1.VerifyAccountRequest) (*v1.VerifyAccountResponse, error) {
 	var verifier verification.Verifier
 	switch request.Type {
 	case v1.VerificationType_VERIFICATION_TYPE_EMAIL:
@@ -117,7 +140,7 @@ func (s *FiraApiService) VerifyAccount(ctx context.Context, request *v1.VerifyAc
 	return resp, nil
 }
 
-func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAccountRequest) (*v1.LoginAccountResponse, error) {
+func (s *AccountService) LoginAccount(ctx context.Context, request *v1.LoginAccountRequest) (*v1.LoginAccountResponse, error) {
 	credential, backend, decodeErr := s.decodeLoginCredential(request.Credential)
 	if decodeErr != nil {
 		return nil, decodeErr
@@ -141,14 +164,14 @@ func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAcco
 	}, nil
 }
 
-func (s *FiraApiService) BeginPasswordReset(ctx context.Context, request *v1.BeginPasswordResetRequest) (*v1.BeginPasswordResetResponse, error) {
+func (s *AccountService) BeginPasswordReset(ctx context.Context, request *v1.BeginPasswordResetRequest) (*v1.BeginPasswordResetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
 
-func (s *FiraApiService) CompletePasswordReset(ctx context.Context, request *v1.CompletePasswordResetRequest) (*v1.CompletePasswordResetResponse, error) {
+func (s *AccountService) CompletePasswordReset(ctx context.Context, request *v1.CompletePasswordResetRequest) (*v1.CompletePasswordResetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
 
-func (s *FiraApiService) GetAccount(ctx context.Context, request *v1.GetAccountRequest) (*v1.GetAccountResponse, error) {
+func (s *AccountService) GetAccount(ctx context.Context, request *v1.GetAccountRequest) (*v1.GetAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }

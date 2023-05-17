@@ -7,21 +7,15 @@ import (
 	"time"
 )
 
-type Environment string
+type AppStore interface {
+	CreateApp(app *App) error
+	GetAppsByAccountID(accountID string) ([]*App, error)
+	GetAppByID(appID string) (*App, error)
+}
 
-const (
-	EnvironmentDevelopment Environment = "development"
-	EnvironmentStaging     Environment = "staging"
-	EnvironmentProduction  Environment = "production"
-)
-
-var (
-	TokenExpiryMap = map[Environment]time.Duration{
-		EnvironmentDevelopment: time.Hour * 24 * 30,
-		EnvironmentStaging:     time.Hour * 24 * 90,
-		EnvironmentProduction:  time.Hour * 24 * 365,
-	}
-)
+type AppStoreProvider interface {
+	AppStore() AppStore
+}
 
 type AppClaims struct {
 	jwt.RegisteredClaims
@@ -39,6 +33,8 @@ type App struct {
 	Name      string
 	AccountID string
 	Tokens    map[Environment][]Token
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (a *App) JWT(env Environment) (string, error) {
@@ -74,12 +70,6 @@ func (a *App) Rotate(env Environment) error {
 	}
 	a.Tokens[env] = append(a.Tokens[env], tok)
 	return nil
-}
-
-type AppStore interface {
-	CreateApp(app *App) error
-	GetAppsByAccountID(accountID string) ([]*App, error)
-	GetAppByJWT(token string) (*App, error)
 }
 
 func generateToken(env Environment) (tok Token, err error) {

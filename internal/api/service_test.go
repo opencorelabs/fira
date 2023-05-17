@@ -38,7 +38,9 @@ func (s *FiraApiSuite) BeforeTest(_, _ string) {
 		return [][]byte{[]byte("secret")}
 	}, time.Minute, s, s)
 
-	s.api = New(s, authReg, authJwtMgr, s)
+	acctSvc := NewAccountService(s, authReg, authJwtMgr, s)
+
+	s.api = New(acctSvc)
 }
 
 func (s *FiraApiSuite) Logger() *zap.Logger {

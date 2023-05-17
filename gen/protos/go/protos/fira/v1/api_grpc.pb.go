@@ -24,6 +24,11 @@ const (
 	FiraService_VerifyAccount_FullMethodName         = "/protos.fira.v1.FiraService/VerifyAccount"
 	FiraService_LoginAccount_FullMethodName          = "/protos.fira.v1.FiraService/LoginAccount"
 	FiraService_BeginPasswordReset_FullMethodName    = "/protos.fira.v1.FiraService/BeginPasswordReset"
+	FiraService_CreateApp_FullMethodName             = "/protos.fira.v1.FiraService/CreateApp"
+	FiraService_ListApps_FullMethodName              = "/protos.fira.v1.FiraService/ListApps"
+	FiraService_GetApp_FullMethodName                = "/protos.fira.v1.FiraService/GetApp"
+	FiraService_RotateAppToken_FullMethodName        = "/protos.fira.v1.FiraService/RotateAppToken"
+	FiraService_InvalidateAppToken_FullMethodName    = "/protos.fira.v1.FiraService/InvalidateAppToken"
 	FiraService_CompletePasswordReset_FullMethodName = "/protos.fira.v1.FiraService/CompletePasswordReset"
 	FiraService_GetAccount_FullMethodName            = "/protos.fira.v1.FiraService/GetAccount"
 	FiraService_CreateLinkSession_FullMethodName     = "/protos.fira.v1.FiraService/CreateLinkSession"
@@ -44,6 +49,16 @@ type FiraServiceClient interface {
 	LoginAccount(ctx context.Context, in *LoginAccountRequest, opts ...grpc.CallOption) (*LoginAccountResponse, error)
 	// Start the password reset process. If the email is found, a password reset email will be sent to the account holder.
 	BeginPasswordReset(ctx context.Context, in *BeginPasswordResetRequest, opts ...grpc.CallOption) (*BeginPasswordResetResponse, error)
+	// Create an "App" - app are used to access the Fira data API.
+	CreateApp(ctx context.Context, in *CreateAppRequest, opts ...grpc.CallOption) (*CreateAppResponse, error)
+	// Returns a list of all apps for the logged in user.
+	ListApps(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*ListAppsResponse, error)
+	// Returns a single app for the logged in user.
+	GetApp(ctx context.Context, in *GetAppRequest, opts ...grpc.CallOption) (*GetAppResponse, error)
+	// Rotate the JWT for an app. The old token will still be valid until the expiration time.
+	RotateAppToken(ctx context.Context, in *RotateAppTokenRequest, opts ...grpc.CallOption) (*RotateAppTokenResponse, error)
+	// Invalidate an app token. This will immediately invalidate the token.
+	InvalidateAppToken(ctx context.Context, in *InvalidateAppTokenRequest, opts ...grpc.CallOption) (*InvalidateAppTokenResponse, error)
 	// Complete the password reset process. Provide the token from the password reset email and a new password.
 	CompletePasswordReset(ctx context.Context, in *CompletePasswordResetRequest, opts ...grpc.CallOption) (*CompletePasswordResetResponse, error)
 	// Retrieve the account information for the currently logged in account holder.
@@ -108,6 +123,51 @@ func (c *firaServiceClient) BeginPasswordReset(ctx context.Context, in *BeginPas
 	return out, nil
 }
 
+func (c *firaServiceClient) CreateApp(ctx context.Context, in *CreateAppRequest, opts ...grpc.CallOption) (*CreateAppResponse, error) {
+	out := new(CreateAppResponse)
+	err := c.cc.Invoke(ctx, FiraService_CreateApp_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) ListApps(ctx context.Context, in *ListAppsRequest, opts ...grpc.CallOption) (*ListAppsResponse, error) {
+	out := new(ListAppsResponse)
+	err := c.cc.Invoke(ctx, FiraService_ListApps_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) GetApp(ctx context.Context, in *GetAppRequest, opts ...grpc.CallOption) (*GetAppResponse, error) {
+	out := new(GetAppResponse)
+	err := c.cc.Invoke(ctx, FiraService_GetApp_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) RotateAppToken(ctx context.Context, in *RotateAppTokenRequest, opts ...grpc.CallOption) (*RotateAppTokenResponse, error) {
+	out := new(RotateAppTokenResponse)
+	err := c.cc.Invoke(ctx, FiraService_RotateAppToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *firaServiceClient) InvalidateAppToken(ctx context.Context, in *InvalidateAppTokenRequest, opts ...grpc.CallOption) (*InvalidateAppTokenResponse, error) {
+	out := new(InvalidateAppTokenResponse)
+	err := c.cc.Invoke(ctx, FiraService_InvalidateAppToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *firaServiceClient) CompletePasswordReset(ctx context.Context, in *CompletePasswordResetRequest, opts ...grpc.CallOption) (*CompletePasswordResetResponse, error) {
 	out := new(CompletePasswordResetResponse)
 	err := c.cc.Invoke(ctx, FiraService_CompletePasswordReset_FullMethodName, in, out, opts...)
@@ -158,6 +218,16 @@ type FiraServiceServer interface {
 	LoginAccount(context.Context, *LoginAccountRequest) (*LoginAccountResponse, error)
 	// Start the password reset process. If the email is found, a password reset email will be sent to the account holder.
 	BeginPasswordReset(context.Context, *BeginPasswordResetRequest) (*BeginPasswordResetResponse, error)
+	// Create an "App" - app are used to access the Fira data API.
+	CreateApp(context.Context, *CreateAppRequest) (*CreateAppResponse, error)
+	// Returns a list of all apps for the logged in user.
+	ListApps(context.Context, *ListAppsRequest) (*ListAppsResponse, error)
+	// Returns a single app for the logged in user.
+	GetApp(context.Context, *GetAppRequest) (*GetAppResponse, error)
+	// Rotate the JWT for an app. The old token will still be valid until the expiration time.
+	RotateAppToken(context.Context, *RotateAppTokenRequest) (*RotateAppTokenResponse, error)
+	// Invalidate an app token. This will immediately invalidate the token.
+	InvalidateAppToken(context.Context, *InvalidateAppTokenRequest) (*InvalidateAppTokenResponse, error)
 	// Complete the password reset process. Provide the token from the password reset email and a new password.
 	CompletePasswordReset(context.Context, *CompletePasswordResetRequest) (*CompletePasswordResetResponse, error)
 	// Retrieve the account information for the currently logged in account holder.
@@ -188,6 +258,21 @@ func (UnimplementedFiraServiceServer) LoginAccount(context.Context, *LoginAccoun
 }
 func (UnimplementedFiraServiceServer) BeginPasswordReset(context.Context, *BeginPasswordResetRequest) (*BeginPasswordResetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BeginPasswordReset not implemented")
+}
+func (UnimplementedFiraServiceServer) CreateApp(context.Context, *CreateAppRequest) (*CreateAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateApp not implemented")
+}
+func (UnimplementedFiraServiceServer) ListApps(context.Context, *ListAppsRequest) (*ListAppsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListApps not implemented")
+}
+func (UnimplementedFiraServiceServer) GetApp(context.Context, *GetAppRequest) (*GetAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetApp not implemented")
+}
+func (UnimplementedFiraServiceServer) RotateAppToken(context.Context, *RotateAppTokenRequest) (*RotateAppTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RotateAppToken not implemented")
+}
+func (UnimplementedFiraServiceServer) InvalidateAppToken(context.Context, *InvalidateAppTokenRequest) (*InvalidateAppTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InvalidateAppToken not implemented")
 }
 func (UnimplementedFiraServiceServer) CompletePasswordReset(context.Context, *CompletePasswordResetRequest) (*CompletePasswordResetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CompletePasswordReset not implemented")
@@ -304,6 +389,96 @@ func _FiraService_BeginPasswordReset_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FiraService_CreateApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAppRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).CreateApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_CreateApp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).CreateApp(ctx, req.(*CreateAppRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_ListApps_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAppsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).ListApps(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_ListApps_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).ListApps(ctx, req.(*ListAppsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_GetApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAppRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).GetApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_GetApp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).GetApp(ctx, req.(*GetAppRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_RotateAppToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RotateAppTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).RotateAppToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_RotateAppToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).RotateAppToken(ctx, req.(*RotateAppTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FiraService_InvalidateAppToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InvalidateAppTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).InvalidateAppToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_InvalidateAppToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).InvalidateAppToken(ctx, req.(*InvalidateAppTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FiraService_CompletePasswordReset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CompletePasswordResetRequest)
 	if err := dec(in); err != nil {
@@ -402,6 +577,26 @@ var FiraService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BeginPasswordReset",
 			Handler:    _FiraService_BeginPasswordReset_Handler,
+		},
+		{
+			MethodName: "CreateApp",
+			Handler:    _FiraService_CreateApp_Handler,
+		},
+		{
+			MethodName: "ListApps",
+			Handler:    _FiraService_ListApps_Handler,
+		},
+		{
+			MethodName: "GetApp",
+			Handler:    _FiraService_GetApp_Handler,
+		},
+		{
+			MethodName: "RotateAppToken",
+			Handler:    _FiraService_RotateAppToken_Handler,
+		},
+		{
+			MethodName: "InvalidateAppToken",
+			Handler:    _FiraService_InvalidateAppToken_Handler,
 		},
 		{
 			MethodName: "CompletePasswordReset",
