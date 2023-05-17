@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { getCsrfToken } from 'next-auth/react';
 
@@ -8,8 +9,7 @@ import { Register } from './Register';
 export default async function RegisterPage() {
   const session = await getServerSession(authOptions);
   if (session) {
-    // how to redirect to home page?
-    return null;
+    redirect('/networth');
   }
   const csrfToken = await getCsrfToken();
   return <Register csrfToken={csrfToken} />;

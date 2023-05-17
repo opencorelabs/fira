@@ -19,12 +19,16 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    session: async ({ session }) => {
+    session: async ({ session, token }) => {
+      console.info('\nSESSION CALLBACK --- { session, token }', { session, token });
+      // @ts-expect-error accessToken is not in the type definition
+      session.accessToken = token?.accessToken;
       return session;
     },
     async jwt({ token, user }) {
+      console.info('\nJWT CALLBACK --- { token, user }', { token, user });
       if (user) {
-        token.token = { ...token, ...user };
+        token.accessToken = token.token;
       }
       return token;
     },

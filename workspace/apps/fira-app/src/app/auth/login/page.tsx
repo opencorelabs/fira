@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth/next';
 import { getCsrfToken } from 'next-auth/react';
 
@@ -8,8 +9,7 @@ import { Login } from './Login';
 export default async function LoginPage() {
   const session = await getServerSession(authOptions);
   if (session) {
-    // how to redirect to home page?
-    return null;
+    redirect('/networth');
   }
   const csrfToken = await getCsrfToken();
   return <Login csrfToken={csrfToken} />;

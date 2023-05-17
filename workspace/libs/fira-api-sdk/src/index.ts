@@ -19,7 +19,7 @@ export interface GetApiInfoResponseVersion {
 }
 
 export interface ProtobufAny {
-  '@type'?: string;
+  "@type"?: string;
   [key: string]: any;
 }
 
@@ -56,9 +56,9 @@ export interface V1Account {
 
 /** @default "ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED" */
 export enum V1AccountCredentialType {
-  ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED = 'ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED',
-  ACCOUNT_CREDENTIAL_TYPE_EMAIL = 'ACCOUNT_CREDENTIAL_TYPE_EMAIL',
-  ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB = 'ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB',
+  ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED = "ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED",
+  ACCOUNT_CREDENTIAL_TYPE_EMAIL = "ACCOUNT_CREDENTIAL_TYPE_EMAIL",
+  ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB = "ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB",
 }
 
 /**
@@ -66,17 +66,17 @@ export enum V1AccountCredentialType {
  * @default "ACCOUNT_NAMESPACE_UNSPECIFIED"
  */
 export enum V1AccountNamespace {
-  ACCOUNT_NAMESPACE_UNSPECIFIED = 'ACCOUNT_NAMESPACE_UNSPECIFIED',
-  ACCOUNT_NAMESPACE_DEVELOPER = 'ACCOUNT_NAMESPACE_DEVELOPER',
-  ACCOUNT_NAMESPACE_CONSUMER = 'ACCOUNT_NAMESPACE_CONSUMER',
+  ACCOUNT_NAMESPACE_UNSPECIFIED = "ACCOUNT_NAMESPACE_UNSPECIFIED",
+  ACCOUNT_NAMESPACE_DEVELOPER = "ACCOUNT_NAMESPACE_DEVELOPER",
+  ACCOUNT_NAMESPACE_CONSUMER = "ACCOUNT_NAMESPACE_CONSUMER",
 }
 
 /** @default "ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED" */
 export enum V1AccountRegistrationStatus {
-  ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED = 'ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED',
-  ACCOUNT_REGISTRATION_STATUS_VERIFY_EMAIL = 'ACCOUNT_REGISTRATION_STATUS_VERIFY_EMAIL',
-  ACCOUNT_REGISTRATION_STATUS_OK = 'ACCOUNT_REGISTRATION_STATUS_OK',
-  ACCOUNT_REGISTRATION_STATUS_ERROR = 'ACCOUNT_REGISTRATION_STATUS_ERROR',
+  ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED = "ACCOUNT_REGISTRATION_STATUS_UNSPECIFIED",
+  ACCOUNT_REGISTRATION_STATUS_VERIFY_EMAIL = "ACCOUNT_REGISTRATION_STATUS_VERIFY_EMAIL",
+  ACCOUNT_REGISTRATION_STATUS_OK = "ACCOUNT_REGISTRATION_STATUS_OK",
+  ACCOUNT_REGISTRATION_STATUS_ERROR = "ACCOUNT_REGISTRATION_STATUS_ERROR",
 }
 
 export interface V1BeginPasswordResetRequest {
@@ -219,11 +219,11 @@ export interface V1LinkSession {
 
 /** @default "LINK_SESSION_STATUS_UNSPECIFIED" */
 export enum V1LinkSessionStatus {
-  LINK_SESSION_STATUS_UNSPECIFIED = 'LINK_SESSION_STATUS_UNSPECIFIED',
-  LINK_SESSION_STATUS_CREATED = 'LINK_SESSION_STATUS_CREATED',
-  LINK_SESSION_STATUS_IN_PROGRESS = 'LINK_SESSION_STATUS_IN_PROGRESS',
-  LINK_SESSION_STATUS_COMPLETE = 'LINK_SESSION_STATUS_COMPLETE',
-  LINK_SESSION_STATUS_FAILED = 'LINK_SESSION_STATUS_FAILED',
+  LINK_SESSION_STATUS_UNSPECIFIED = "LINK_SESSION_STATUS_UNSPECIFIED",
+  LINK_SESSION_STATUS_CREATED = "LINK_SESSION_STATUS_CREATED",
+  LINK_SESSION_STATUS_IN_PROGRESS = "LINK_SESSION_STATUS_IN_PROGRESS",
+  LINK_SESSION_STATUS_COMPLETE = "LINK_SESSION_STATUS_COMPLETE",
+  LINK_SESSION_STATUS_FAILED = "LINK_SESSION_STATUS_FAILED",
 }
 
 export interface V1LoginAccountRequest {
@@ -250,9 +250,19 @@ export interface V1LoginCredential {
   githubCredential?: V1CredentialTypeGithub;
 }
 
+/** @default "VERIFICATION_TYPE_UNSPECIFIED" */
+export enum V1VerificationType {
+  VERIFICATION_TYPE_UNSPECIFIED = "VERIFICATION_TYPE_UNSPECIFIED",
+  VERIFICATION_TYPE_EMAIL = "VERIFICATION_TYPE_EMAIL",
+}
+
 export interface V1VerifyAccountRequest {
   /** The verification_token provided in the URL. */
   token?: string;
+  /** The namespace to verify the account in. */
+  namespace?: V1AccountNamespace;
+  /** The verification type, will also be provided in the URL. */
+  type?: V1VerificationType;
 }
 
 export interface V1VerifyAccountResponse {
@@ -269,9 +279,9 @@ export interface V1VerifyAccountResponse {
 }
 
 export type QueryParamsType = Record<string | number, any>;
-export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
+export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
-export interface FullRequestParams extends Omit<RequestInit, 'body'> {
+export interface FullRequestParams extends Omit<RequestInit, "body"> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -290,11 +300,11 @@ export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   cancelToken?: CancelToken;
 }
 
-export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>;
+export type RequestParams = Omit<FullRequestParams, "body" | "method" | "query" | "path">;
 
 export interface ApiConfig<SecurityDataType = unknown> {
   baseUrl?: string;
-  baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>;
+  baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
   securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void;
   customFetch?: typeof fetch;
 }
@@ -307,24 +317,24 @@ export interface HttpResponse<D extends unknown, E extends unknown = unknown> ex
 type CancelToken = Symbol | string | number;
 
 export enum ContentType {
-  Json = 'application/json',
-  FormData = 'multipart/form-data',
-  UrlEncoded = 'application/x-www-form-urlencoded',
-  Text = 'text/plain',
+  Json = "application/json",
+  FormData = "multipart/form-data",
+  UrlEncoded = "application/x-www-form-urlencoded",
+  Text = "text/plain",
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = '';
+  public baseUrl: string = "";
   private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker'];
+  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
   private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams);
 
   private baseApiParams: RequestParams = {
-    credentials: 'same-origin',
+    credentials: "same-origin",
     headers: {},
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer',
+    redirect: "follow",
+    referrerPolicy: "no-referrer",
   };
 
   constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
@@ -337,7 +347,7 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected encodeQueryParam(key: string, value: any) {
     const encodedKey = encodeURIComponent(key);
-    return `${encodedKey}=${encodeURIComponent(typeof value === 'number' ? value : `${value}`)}`;
+    return `${encodedKey}=${encodeURIComponent(typeof value === "number" ? value : `${value}`)}`;
   }
 
   protected addQueryParam(query: QueryParamsType, key: string) {
@@ -346,26 +356,26 @@ export class HttpClient<SecurityDataType = unknown> {
 
   protected addArrayQueryParam(query: QueryParamsType, key: string) {
     const value = query[key];
-    return value.map((v: any) => this.encodeQueryParam(key, v)).join('&');
+    return value.map((v: any) => this.encodeQueryParam(key, v)).join("&");
   }
 
   protected toQueryString(rawQuery?: QueryParamsType): string {
     const query = rawQuery || {};
-    const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key]);
+    const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
     return keys
       .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
-      .join('&');
+      .join("&");
   }
 
   protected addQueryParams(rawQuery?: QueryParamsType): string {
     const queryString = this.toQueryString(rawQuery);
-    return queryString ? `?${queryString}` : '';
+    return queryString ? `?${queryString}` : "";
   }
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
     [ContentType.Json]: (input: any) =>
-      input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
-    [ContentType.Text]: (input: any) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
+      input !== null && (typeof input === "object" || typeof input === "string") ? JSON.stringify(input) : input,
+    [ContentType.Text]: (input: any) => (input !== null && typeof input !== "string" ? JSON.stringify(input) : input),
     [ContentType.FormData]: (input: any) =>
       Object.keys(input || {}).reduce((formData, key) => {
         const property = input[key];
@@ -373,7 +383,7 @@ export class HttpClient<SecurityDataType = unknown> {
           key,
           property instanceof Blob
             ? property
-            : typeof property === 'object' && property !== null
+            : typeof property === "object" && property !== null
             ? JSON.stringify(property)
             : `${property}`,
         );
@@ -430,7 +440,7 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<HttpResponse<T, E>> => {
     const secureParams =
-      ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) &&
+      ((typeof secure === "boolean" ? secure : this.baseApiParams.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
       {};
@@ -439,14 +449,14 @@ export class HttpClient<SecurityDataType = unknown> {
     const payloadFormatter = this.contentFormatters[type || ContentType.Json];
     const responseFormat = format || requestParams.format;
 
-    return this.customFetch(`${baseUrl || this.baseUrl || ''}${path}${queryString ? `?${queryString}` : ''}`, {
+    return this.customFetch(`${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`, {
       ...requestParams,
       headers: {
         ...(requestParams.headers || {}),
-        ...(type && type !== ContentType.FormData ? { 'Content-Type': type } : {}),
+        ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
       },
       signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
-      body: typeof body === 'undefined' || body === null ? null : payloadFormatter(body),
+      body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
     }).then(async (response) => {
       const r = response as HttpResponse<T, E>;
       r.data = null as unknown as T;
@@ -499,10 +509,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     firaServiceCompletePasswordReset: (body: V1CompletePasswordResetRequest, params: RequestParams = {}) =>
       this.request<V1CompletePasswordResetResponse, RpcStatus>({
         path: `/api/v1/accounts/complete_password_reset`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -519,10 +529,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     firaServiceLoginAccount: (body: V1LoginAccountRequest, params: RequestParams = {}) =>
       this.request<V1LoginAccountResponse, RpcStatus>({
         path: `/api/v1/accounts/login`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -539,8 +549,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     firaServiceGetAccount: (params: RequestParams = {}) =>
       this.request<V1Account, RpcStatus>({
         path: `/api/v1/accounts/me`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -558,10 +568,10 @@ this will take the form of email verification.
     firaServiceCreateAccount: (body: V1CreateAccountRequest, params: RequestParams = {}) =>
       this.request<V1CreateAccountResponse, RpcStatus>({
         path: `/api/v1/accounts/register`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -578,10 +588,10 @@ this will take the form of email verification.
     firaServiceBeginPasswordReset: (body: V1BeginPasswordResetRequest, params: RequestParams = {}) =>
       this.request<V1BeginPasswordResetResponse, RpcStatus>({
         path: `/api/v1/accounts/request_password_reset`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -598,10 +608,10 @@ this will take the form of email verification.
     firaServiceVerifyAccount: (body: V1VerifyAccountRequest, params: RequestParams = {}) =>
       this.request<V1VerifyAccountResponse, RpcStatus>({
         path: `/api/v1/accounts/verify`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -617,8 +627,8 @@ this will take the form of email verification.
     firaServiceGetApiInfo: (params: RequestParams = {}) =>
       this.request<V1GetApiInfoResponse, RpcStatus>({
         path: `/api/v1/info`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -636,10 +646,10 @@ financial institution to connect to and log in.
     firaServiceCreateLinkSession: (body: V1CreateLinkSessionRequest, params: RequestParams = {}) =>
       this.request<V1LinkSession, RpcStatus>({
         path: `/api/v1/link`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -656,8 +666,8 @@ financial institution to connect to and log in.
     firaServiceGetLinkSession: (linkId: string, params: RequestParams = {}) =>
       this.request<V1LinkSession, RpcStatus>({
         path: `/api/v1/link/${linkId}`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
   };

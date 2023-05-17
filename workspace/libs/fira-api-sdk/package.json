@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
-    "generate": "swagger-typescript-api -r -p ../../gen/protos/fira/v1/api.swagger.json -o src -n index.ts",
+    "generate": "swagger-typescript-api -r -p ../../../gen/protos/fira/v1/api.swagger.json -o src -n index.ts",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "npm run build",
