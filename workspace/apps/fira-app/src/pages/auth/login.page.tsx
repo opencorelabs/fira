@@ -9,6 +9,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { getServerSession } from 'next-auth';
 import { getCsrfToken, signIn } from 'next-auth/react';
@@ -49,7 +50,8 @@ export default function Login({
           redirect: false,
         });
         if (response?.ok && !response?.error) {
-          router.push((router.query?.callbackUrl as string) ?? '/');
+          // TODO: validate callback url is on the same domain
+          router.push((router.query?.callbackUrl as string) ?? '/networth');
         }
 
         response && setResponse(response);
@@ -87,6 +89,17 @@ export default function Login({
           <Button size="sm" w="full" type="submit" colorScheme="blue">
             Login
           </Button>
+          <Button
+            as={Link}
+            variant="ghost"
+            size="sm"
+            w="full"
+            type="submit"
+            colorScheme="blue"
+            href="/auth/register"
+          >
+            Don't have an account? Sign up
+          </Button>
           {!!response?.error && (
             <Text color="red">
               {response.error} - Status {response.status}
@@ -103,7 +116,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (session) {
     return {
       redirect: {
-        destination: '/',
+        destination: '/networth',
         permanent: false,
       },
     };

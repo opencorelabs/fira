@@ -15,11 +15,14 @@ import {
 } from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
+import { getServerSession } from 'next-auth/next';
 import { getCsrfToken } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { api } from 'src/lib/fira-api';
+
+import { authOptions } from '../api/auth/[...nextauth].api';
 
 type FormValues = {
   email: string;
@@ -91,7 +94,7 @@ export default function Register({
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
           <Button size="sm" w="full" type="submit" colorScheme="blue">
-            Login
+            Sign up
           </Button>
           {!!response?.errorMessage && (
             <Text color="red">
@@ -105,6 +108,15 @@ export default function Register({
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  if (session) {
+    return {
+      redirect: {
+        destination: '/networth',
+        permanent: false,
+      },
+    };
+  }
   const csrfToken = await getCsrfToken(context);
   return {
     props: { csrfToken },

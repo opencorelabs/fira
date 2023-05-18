@@ -1,7 +1,12 @@
 export default function Index() {
-  return (
-    <div>
-      <h1>Home</h1>
-    </div>
-  );
+  return null;
+}
+
+export function getServerSideProps() {
+  return {
+    redirect: {
+      destination: '/networth',
+      permanent: false,
+    },
+  };
 }

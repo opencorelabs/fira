@@ -9,13 +9,13 @@ import { GlobalStyle } from './theme/GlobalStyle';
 export function App({ Component, pageProps }) {
   const Layout = Component.auth ? DashboardLayout : AuthLayout;
   return (
-    <ChakraProvider theme={theme}>
-      <SessionProvider session={pageProps.session}>
+    <SessionProvider session={pageProps.session}>
+      <ChakraProvider theme={theme}>
         <GlobalStyle />
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </SessionProvider>
-    </ChakraProvider>
+      </ChakraProvider>
+    </SessionProvider>
   );
 }

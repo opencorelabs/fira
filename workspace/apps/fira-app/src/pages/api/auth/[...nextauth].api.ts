@@ -19,12 +19,17 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    session: async ({ session }) => {
+    session: async ({ session, token }) => {
+      if (token.accessToken) {
+        // @ts-expect-error accessToken not defined on session
+        session.accessToken = token.accessToken;
+      }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
-        token.token = { ...token, ...user };
+        // @ts-expect-error token not defined on user
+        token.accessToken = user.token;
       }
       return token;
     },
