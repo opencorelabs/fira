@@ -20,7 +20,7 @@ import { getCsrfToken } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { api } from 'src/lib/fira-api';
+import { getApi } from 'src/lib/fira-api';
 
 import { authOptions } from '../api/auth/[...nextauth].api';
 
@@ -44,7 +44,7 @@ export default function Register({
     async (values: FormValues) => {
       try {
         setResponse(null);
-        const response = await api.firaServiceCreateAccount({
+        const response = await getApi().firaServiceCreateAccount({
           namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
           credential: {
             credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,

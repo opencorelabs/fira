@@ -12,5 +12,10 @@ primary_region = "sea"
   auto_stop_machines = true
   auto_start_machines = true
 
+[build.args]
+  NEXTAUTH_URL = "https://fira.opencorelabs.org"
+
 [env]
   FIRA_BIND_HTTP = "0.0.0.0:8080"
+  NODE_ENV = "production"
+  NEXTAUTH_URL = "https://fira.opencorelabs.org"

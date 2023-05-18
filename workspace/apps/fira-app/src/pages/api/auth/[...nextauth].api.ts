@@ -2,7 +2,7 @@ import { V1AccountCredentialType, V1AccountNamespace } from '@fira/api-sdk';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-import { api } from 'src/lib/fira-api';
+import { getApi } from 'src/lib/fira-api';
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -44,7 +44,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          const response = await api.firaServiceLoginAccount({
+          const response = await getApi().firaServiceLoginAccount({
             namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
             credential: {
               credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
