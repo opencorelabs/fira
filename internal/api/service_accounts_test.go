@@ -143,3 +143,13 @@ func (s *FiraApiSuite) verifiedAccount() {
 	_, verifErr := s.verifyAccount("pnwx@opencorelabs.org")
 	s.Require().NoErrorf(verifErr, "failed to verify account")
 }
+
+func (s *FiraApiSuite) acctCtx() (*auth.Account, context.Context) {
+	s.verifiedAccount()
+	acct, acctErr := s.acctStore.FindByCredentials(context.TODO(), auth.AccountNamespaceConsumer, map[string]string{
+		"email": "pnwx@opencorelabs.org",
+	})
+	s.Require().NoErrorf(acctErr, "failed to find account")
+	s.Require().NotNil(acct, "account is nil")
+	return acct, auth.WithAccount(context.Background(), acct)
+}

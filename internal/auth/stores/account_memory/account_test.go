@@ -1,10 +1,10 @@
-package in_memory_test
+package account_memory_test
 
 import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/opencorelabs/fira/internal/auth"
-	"github.com/opencorelabs/fira/internal/auth/stores/in_memory"
+	"github.com/opencorelabs/fira/internal/auth/stores/account_memory"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -19,7 +19,7 @@ func TestInMemorySuite(t *testing.T) {
 }
 
 func (s *InMemorySuite) BeforeTest(_, _ string) {
-	s.store = in_memory.New()
+	s.store = account_memory.New()
 }
 
 func (s *InMemorySuite) TestAccountStore_Create_SetsID() {

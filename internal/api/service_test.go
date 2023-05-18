@@ -5,8 +5,10 @@ import (
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
-	"github.com/opencorelabs/fira/internal/auth/stores/in_memory"
+	"github.com/opencorelabs/fira/internal/auth/stores/account_memory"
 	"github.com/opencorelabs/fira/internal/auth/verification"
+	"github.com/opencorelabs/fira/internal/developer"
+	"github.com/opencorelabs/fira/internal/developer/stores/app_memory"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"testing"
@@ -18,6 +20,7 @@ type FiraApiSuite struct {
 	logger    *zap.Logger
 	api       v1.FiraServiceServer
 	acctStore auth.AccountStore
+	appStore  developer.AppStore
 }
 
 func TestFiraApiSuite(t *testing.T) {
@@ -29,7 +32,8 @@ func (s *FiraApiSuite) SetupSuite() {
 }
 
 func (s *FiraApiSuite) BeforeTest(_, _ string) {
-	s.acctStore = in_memory.New()
+	s.acctStore = account_memory.New()
+	s.appStore = app_memory.New()
 
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(s, s))
@@ -38,9 +42,12 @@ func (s *FiraApiSuite) BeforeTest(_, _ string) {
 		return [][]byte{[]byte("secret")}
 	}, time.Minute, s, s)
 
-	acctSvc := NewAccountService(s, authReg, authJwtMgr, s)
+	appJwtMgr := developer.NewAppJWTManager(s, s)
 
-	s.api = New(acctSvc)
+	acctSvc := NewAccountService(s, authReg, authJwtMgr, s)
+	appSvc := NewAppService(s, appJwtMgr, s)
+
+	s.api = New(acctSvc, appSvc)
 }
 
 func (s *FiraApiSuite) Logger() *zap.Logger {
@@ -49,6 +56,10 @@ func (s *FiraApiSuite) Logger() *zap.Logger {
 
 func (s *FiraApiSuite) AccountStore() auth.AccountStore {
 	return s.acctStore
+}
+
+func (s *FiraApiSuite) AppStore() developer.AppStore {
+	return s.appStore
 }
 
 func (s *FiraApiSuite) Email() verification.Verifier {

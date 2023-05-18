@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/opencorelabs/fira/internal/auth"
-	"github.com/opencorelabs/fira/internal/auth/stores/in_memory"
+	"github.com/opencorelabs/fira/internal/auth/stores/account_memory"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"testing"
@@ -24,7 +24,7 @@ func TestAccountJWTManagerSuite(t *testing.T) {
 }
 
 func (s *AccountJWTManagerSuite) BeforeTest(suiteName, testName string) {
-	s.acctStore = in_memory.New()
+	s.acctStore = account_memory.New()
 	s.secrets = [][]byte{[]byte("secret1")}
 	s.secretsFn = func(context.Context) [][]byte {
 		return s.secrets

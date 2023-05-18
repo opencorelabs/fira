@@ -104,5 +104,9 @@ func (a *AccountJWTManager) Verify(ctx context.Context, tokenStr string) (contex
 		return nil, ErrInvalidToken
 	}
 
-	return context.WithValue(ctx, firaAccountKey, account), nil
+	return WithAccount(ctx, account), nil
+}
+
+func WithAccount(ctx context.Context, account *Account) context.Context {
+	return context.WithValue(ctx, firaAccountKey, account)
 }
