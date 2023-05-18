@@ -1,31 +1,53 @@
-import { Avatar, Flex, Link, Text, useColorModeValue } from '@chakra-ui/react';
-import NextLink from 'next/link';
+import {
+  Avatar,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  Text,
+} from '@chakra-ui/react';
+import Link from 'next/link';
+import { signOut } from 'next-auth/react';
+import { useCallback } from 'react';
 
 type SidebarAccountItemProps = {
   label: string;
   avatar: string;
-  href: string;
 };
 
-export function SidebarAccountItem({ label, avatar, href }: SidebarAccountItemProps) {
-  const bg = useColorModeValue('gray.100', 'gray.700');
+export function SidebarAccountItem({ label, avatar }: SidebarAccountItemProps) {
+  const handleSignout = useCallback(() => {
+    signOut();
+  }, []);
+
   return (
-    <Link as={NextLink} href={href} w="100%" _hover={{ bg }} borderRadius="md">
-      <Flex
-        alignItems="center"
-        py={4}
-        px={{ base: 0, md: 4 }}
-        justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
-      >
-        <Avatar size="xs" src={avatar} name={label} />
-        <Text
-          fontWeight="bold"
-          ml={4}
-          display={{ base: 'block', md: 'none', lg: 'block' }}
+    <Menu isLazy>
+      <MenuButton>
+        <Flex
+          alignItems="center"
+          py={4}
+          px={{ base: 0, md: 4 }}
+          justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
-          {label}
-        </Text>
-      </Flex>
-    </Link>
+          <Avatar size="xs" src={avatar} name={label} />
+          <Text
+            fontWeight="bold"
+            ml={4}
+            display={{ base: 'block', md: 'none', lg: 'block' }}
+          >
+            {label}
+          </Text>
+        </Flex>
+      </MenuButton>
+      <MenuList>
+        <MenuItem as={Link} href="/settings/account">
+          Settings
+        </MenuItem>
+        <MenuDivider />
+        <MenuItem onClick={handleSignout}>Sign out</MenuItem>
+      </MenuList>
+    </Menu>
   );
 }

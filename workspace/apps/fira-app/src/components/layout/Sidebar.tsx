@@ -19,11 +19,11 @@ export function Sidebar() {
           <WordMark size={{ base: 'md', lg: 'xl' }} />
         </Flex>
         <Stack spacing={1}>
-          <SidebarItem label="Net Worth" icon={RiPieChart2Line} href="/" />
+          <SidebarItem label="Net Worth" icon={RiPieChart2Line} href="/networth" />
           <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
         </Stack>
       </Box>
-      <SidebarAccountItem avatar="" label="Harry Hexhash" href="/settings/account" />
+      <SidebarAccountItem avatar="" label="Harry Hexhash" />
     </Flex>
   );
 }

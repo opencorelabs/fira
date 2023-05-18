@@ -1,22 +1,12 @@
-import { Api } from '@fira/api-sdk';
-import { useEffect } from 'react';
-
 export default function Index() {
-  useEffect(() => {
-    (async () => {
-      try {
-        const { api } = new Api({ baseUrl: 'http://localhost:8080' });
-        const response = await api.firaServiceGetApiInfo();
-        console.info('response', response);
-      } catch (error) {
-        console.error('error', error);
-      }
-    })();
-  }, []);
+  return null;
+}
 
-  return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
-  );
+export function getServerSideProps() {
+  return {
+    redirect: {
+      destination: '/networth',
+      permanent: false,
+    },
+  };
 }
