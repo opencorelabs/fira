@@ -29,3 +29,41 @@ func (d *DefaultRegistry) GetBackend(ct CredentialsType) (Backend, error) {
 	}
 	return backend, nil
 }
+
+type BigInterface interface {
+	DoA() string
+	DoB() int
+	DoC() bool
+}
+
+type ImplA struct{}
+
+func (ia *ImplA) DoA() string {
+	return "Doing A"
+}
+
+type ImplB struct{}
+
+func (ib *ImplB) DoB() int {
+	return 123
+}
+
+type ImplC struct{}
+
+func (ic *ImplC) DoC() bool {
+	return true
+}
+
+type CombinedImpl struct {
+	ImplA
+	ImplB
+	ImplC
+}
+
+func BS() {
+	var bi BigInterface
+	bi = &CombinedImpl{}
+	bi.DoA()
+	bi.DoB()
+	bi.DoC()
+}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"testing"
+	"time"
 )
 
 type FiraApiSuite struct {
@@ -32,7 +34,13 @@ func (s *FiraApiSuite) BeforeTest(_, _ string) {
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(s, s))
 
-	s.api = New(s, authReg, auth.TodoJWTManager, s)
+	authJwtMgr := auth.NewAccountJWTManager(func(ctx context.Context) [][]byte {
+		return [][]byte{[]byte("secret")}
+	}, time.Minute, s, s)
+
+	acctSvc := NewAccountService(s, authReg, authJwtMgr, s)
+
+	s.api = New(acctSvc)
 }
 
 func (s *FiraApiSuite) Logger() *zap.Logger {

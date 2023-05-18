@@ -2,10 +2,6 @@ package api
 
 import (
 	"context"
-	"github.com/opencorelabs/fira/internal/auth"
-	"github.com/opencorelabs/fira/internal/auth/verification"
-	"github.com/opencorelabs/fira/internal/logging"
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -14,24 +10,15 @@ import (
 
 type FiraApiService struct {
 	v1.UnimplementedFiraServiceServer
-	authRegistry         auth.Registry
-	logger               *zap.SugaredLogger
-	jwtManager           *auth.JWTManager
-	verificationProvider verification.Provider
+	acctSvc *AccountService
+	appSvc  *AppService
 }
 
 func New(
-	log logging.Provider,
-	authReg auth.Registry,
-	manager *auth.JWTManager,
-	verificationProvider verification.Provider,
+	acctService *AccountService,
 ) v1.FiraServiceServer {
-	return &FiraApiService{
-		authRegistry:         authReg,
-		jwtManager:           manager,
-		verificationProvider: verificationProvider,
-		logger:               log.Logger().Named("api-service").Sugar(),
-	}
+	fs := &FiraApiService{acctSvc: acctService}
+	return fs
 }
 
 func (*FiraApiService) GetApiInfo(context.Context, *v1.GetApiInfoRequest) (*v1.GetApiInfoResponse, error) {
@@ -43,6 +30,62 @@ func (*FiraApiService) GetApiInfo(context.Context, *v1.GetApiInfoRequest) (*v1.G
 		},
 	}, nil
 }
+
+///
+/// Accounts API
+///
+
+func (s *FiraApiService) CreateAccount(ctx context.Context, request *v1.CreateAccountRequest) (*v1.CreateAccountResponse, error) {
+	return s.acctSvc.CreateAccount(ctx, request)
+}
+
+func (s *FiraApiService) VerifyAccount(ctx context.Context, request *v1.VerifyAccountRequest) (*v1.VerifyAccountResponse, error) {
+	return s.acctSvc.VerifyAccount(ctx, request)
+}
+
+func (s *FiraApiService) LoginAccount(ctx context.Context, request *v1.LoginAccountRequest) (*v1.LoginAccountResponse, error) {
+	return s.acctSvc.LoginAccount(ctx, request)
+}
+
+func (s *FiraApiService) BeginPasswordReset(ctx context.Context, request *v1.BeginPasswordResetRequest) (*v1.BeginPasswordResetResponse, error) {
+	return s.acctSvc.BeginPasswordReset(ctx, request)
+}
+
+func (s *FiraApiService) CompletePasswordReset(ctx context.Context, request *v1.CompletePasswordResetRequest) (*v1.CompletePasswordResetResponse, error) {
+	return s.acctSvc.CompletePasswordReset(ctx, request)
+}
+
+func (s *FiraApiService) GetAccount(ctx context.Context, request *v1.GetAccountRequest) (*v1.GetAccountResponse, error) {
+	return s.acctSvc.GetAccount(ctx, request)
+}
+
+///
+/// Apps API
+///
+
+func (s *FiraApiService) CreateApp(ctx context.Context, request *v1.CreateAppRequest) (*v1.CreateAppResponse, error) {
+	return s.appSvc.CreateApp(ctx, request)
+}
+
+func (s *FiraApiService) ListApps(ctx context.Context, request *v1.ListAppsRequest) (*v1.ListAppsResponse, error) {
+	return s.appSvc.ListApps(ctx, request)
+}
+
+func (s *FiraApiService) GetApp(ctx context.Context, request *v1.GetAppRequest) (*v1.GetAppResponse, error) {
+	return s.appSvc.GetApp(ctx, request)
+}
+
+func (s *FiraApiService) RotateAppToken(ctx context.Context, request *v1.RotateAppTokenRequest) (*v1.RotateAppTokenResponse, error) {
+	return s.appSvc.RotateAppToken(ctx, request)
+}
+
+func (s *FiraApiService) InvalidateAppToken(ctx context.Context, request *v1.InvalidateAppTokenRequest) (*v1.InvalidateAppTokenResponse, error) {
+	return s.appSvc.InvalidateAppToken(ctx, request)
+}
+
+///
+/// Link Sessions API
+///
 
 func (s *FiraApiService) CreateLinkSession(ctx context.Context, request *v1.CreateLinkSessionRequest) (*v1.CreateLinkSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")

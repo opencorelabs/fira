@@ -10,10 +10,12 @@ import (
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
 	"github.com/opencorelabs/fira/internal/auth/verification"
+	"github.com/opencorelabs/fira/internal/developer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
+	"time"
 )
 
 func (a *App) StartGRPC(ctx context.Context) error {
@@ -24,13 +26,21 @@ func (a *App) StartGRPC(ctx context.Context) error {
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(a, verificationProvider))
 
-	svc := api.New(a, authReg, auth.TodoJWTManager, verificationProvider)
+	accountJwtManager := auth.NewAccountJWTManager(func(ctx context.Context) [][]byte {
+		return [][]byte{[]byte("dev-secret")}
+	}, 15*time.Minute, a, a)
+
+	appJwtManager := developer.NewAppJWTManager(a, a)
+
+	accountSvc := api.NewAccountService(a, authReg, accountJwtManager, verificationProvider)
+
+	svc := api.New(accountSvc)
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			interceptors.UnaryLoggingInterceptor(a.Logger()),
-			auth.JWTInterceptor(a, a, auth.TodoJWTManager),
 			interceptors.UnaryRecoveryInterceptor(a.Logger()),
+			interceptors.UnaryLoggingInterceptor(a.Logger()),
+			auth.JWTInterceptor(a, accountJwtManager, appJwtManager),
 		),
 	)
 

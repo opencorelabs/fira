@@ -3,78 +3,38 @@ package auth
 import (
 	"context"
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/opencorelabs/fira/internal/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"strings"
-	"time"
 )
 
 var (
 	ErrInvalidToken       = errors.New("invalid token")
 	StandardRejectionCode = status.Error(codes.Unauthenticated, "invalid authorization token")
-	TodoJWTManager        = &JWTManager{
-		secret:   []byte("dev_secret"),
-		duration: time.Hour * 24,
-	}
+	// PublicRoutes are available without any authentication
 	PublicRoutes = map[string]struct{}{
-		"/protos.fira.v1.FiraService/LoginAccount":  {},
-		"/protos.fira.v1.FiraService/CreateAccount": {},
-		"/protos.fira.v1.FiraService/VerifyAccount": {},
+		"/protos.fira.v1.FiraService/LoginAccount":          {},
+		"/protos.fira.v1.FiraService/CreateAccount":         {},
+		"/protos.fira.v1.FiraService/VerifyAccount":         {},
+		"/protos.fira.v1.FiraService/BeginPasswordReset":    {},
+		"/protos.fira.v1.FiraService/CompletePasswordReset": {},
+		"/protos.fira.v1.FiraService/GetApiInfo":            {},
+	}
+	// AccountRoutes are available only with Account authentication
+	AccountRoutes = map[string]struct{}{
+		"/protos.fira.v1.FiraService/GetAccount": {},
+	}
+	// AppRoutes are available only with developer.App authentication
+	AppRoutes = map[string]struct{}{
+		"/protos.fira.v1.FiraService/CreateLinkSession": {},
+		"/protos.fira.v1.FiraService/GetLinkSession":    {},
 	}
 )
 
-type AccountClaims struct {
-	jwt.RegisteredClaims
-	// for account tokens
-	AccountID        string `json:"actid,omitempty"`
-	AccountNamespace string `json:"actns,omitempty"`
-	// for app tokens
-	AppID          string `json:"appid,omitempty"`
-	AppEnvironment string `json:"appenv,omitempty"`
-}
-
-type JWTManager struct {
-	secret   []byte
-	duration time.Duration
-}
-
-func (m *JWTManager) Generate(accountID string, namespace AccountNamespace) (string, error) {
-	claims := AccountClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "fira",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.duration)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-		},
-		AccountID:        accountID,
-		AccountNamespace: string(namespace),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
-	return token.SignedString(m.secret)
-}
-
-func (m *JWTManager) Verify(tokenStr string) (*AccountClaims, error) {
-	claims := &AccountClaims{}
-	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return m.secret, nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !token.Valid {
-		return nil, ErrInvalidToken
-	}
-
-	return claims, nil
-}
-
-func JWTInterceptor(log logging.Provider, accounts AccountStoreProvider, manager *JWTManager) grpc.UnaryServerInterceptor {
+func JWTInterceptor(log logging.Provider, accountJWTManager JWTManager, appJWTManager JWTManager) grpc.UnaryServerInterceptor {
 	logger := log.Logger().Named("jwt-interceptor").Sugar()
 
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
@@ -99,30 +59,26 @@ func JWTInterceptor(log logging.Provider, accounts AccountStoreProvider, manager
 			token = strings.TrimPrefix(token, "Bearer ")
 		}
 
-		claims, verifyErr := manager.Verify(token)
+		var jwtManager JWTManager
+
+		_, isAccountScope := AccountRoutes[info.FullMethod]
+		_, isAppScope := AppRoutes[info.FullMethod]
+
+		if isAccountScope {
+			jwtManager = accountJWTManager
+		} else if isAppScope {
+			jwtManager = appJWTManager
+		}
+
+		logger.Debugw("jwt manager running", "manager", jwtManager, "isaccountscope", isAccountScope, "isappscope", isAppScope)
+
+		if jwtManager == nil {
+			return nil, status.Errorf(codes.Unauthenticated, "invalid authorization scope")
+		}
+
+		var verifyErr error
+		ctx, verifyErr = jwtManager.Verify(ctx, token)
 		if verifyErr != nil {
-			logger.Debugw("token verification failed", "error", verifyErr)
-			return nil, StandardRejectionCode
-		}
-
-		var namespace AccountNamespace
-		if claims.AccountNamespace == string(AccountNamespaceConsumer) {
-			namespace = AccountNamespaceConsumer
-		} else if claims.AccountNamespace == string(AccountNamespaceDeveloper) {
-			namespace = AccountNamespaceDeveloper
-		} else {
-			logger.Debugw("invalid namespace", "namespace", claims.AccountNamespace)
-			return nil, StandardRejectionCode
-		}
-
-		account, accountErr := accounts.AccountStore().FindAccountByID(ctx, namespace, claims.AccountID)
-		if accountErr != nil {
-			logger.Debugw("account not found", "account_id", claims.AccountID)
-			return nil, StandardRejectionCode
-		}
-
-		if !account.Valid {
-			logger.Debugw("account is not valid", "account_id", claims.AccountID)
 			return nil, StandardRejectionCode
 		}
 
