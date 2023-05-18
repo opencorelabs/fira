@@ -1,5 +1,7 @@
 import { Container, Flex } from '@chakra-ui/react';
 
+import { WordMark } from '../WordMark';
+
 type AuthLayoutProps = {
   children: React.ReactNode;
 };
@@ -7,7 +9,9 @@ type AuthLayoutProps = {
 export function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <Flex minH="100vh" direction="column">
-      <header>Fira</header>
+      <header>
+        <WordMark />
+      </header>
       <Flex flex={1} align="center" justify="center">
         <Container maxW="container.xl">
           <Flex justify="center">{children}</Flex>
