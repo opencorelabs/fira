@@ -1,6 +1,7 @@
 package developer
 
 import (
+	"context"
 	"crypto/rand"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
@@ -8,9 +9,10 @@ import (
 )
 
 type AppStore interface {
-	CreateApp(app *App) error
-	GetAppsByAccountID(accountID string) ([]*App, error)
-	GetAppByID(appID string) (*App, error)
+	CreateApp(ctx context.Context, app *App) error
+	UpdateApp(ctx context.Context, app *App) error
+	GetAppsByAccountID(ctx context.Context, accountID string) ([]*App, error)
+	GetAppByID(ctx context.Context, appID string) (*App, error)
 }
 
 type AppStoreProvider interface {
@@ -70,6 +72,10 @@ func (a *App) Rotate(env Environment) error {
 	}
 	a.Tokens[env] = append(a.Tokens[env], tok)
 	return nil
+}
+
+func (a *App) Invalidate(jwt string) error {
+	return fmt.Errorf("not implemented")
 }
 
 func generateToken(env Environment) (tok Token, err error) {

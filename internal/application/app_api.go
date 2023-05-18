@@ -33,8 +33,9 @@ func (a *App) StartGRPC(ctx context.Context) error {
 	appJwtManager := developer.NewAppJWTManager(a, a)
 
 	accountSvc := api.NewAccountService(a, authReg, accountJwtManager, verificationProvider)
+	appSvc := api.NewAppService(a, appJwtManager, a)
 
-	svc := api.New(accountSvc)
+	svc := api.New(accountSvc, appSvc)
 
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(

@@ -23,6 +23,10 @@ var (
 	environKey = struct{}{}
 )
 
+func WithEnvironment(ctx context.Context, env Environment) context.Context {
+	return context.WithValue(ctx, environKey, env)
+}
+
 func EnvironmentFromContext(ctx context.Context) (env Environment, has bool) {
 	val := ctx.Value(environKey)
 	env, has = val.(Environment)

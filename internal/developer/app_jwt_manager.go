@@ -69,7 +69,7 @@ func (a *AppJWTManager) Verify(ctx context.Context, tokenStr string) (context.Co
 		return nil, fmt.Errorf("env claim is empty")
 	}
 
-	app, appErr := a.storeProvider.AppStore().GetAppByID(claims.AppID)
+	app, appErr := a.storeProvider.AppStore().GetAppByID(ctx, claims.AppID)
 	if appErr != nil {
 		return nil, fmt.Errorf("failed to get app by id: %w", appErr)
 	}

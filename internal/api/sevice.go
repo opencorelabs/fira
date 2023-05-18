@@ -16,8 +16,12 @@ type FiraApiService struct {
 
 func New(
 	acctService *AccountService,
+	appService *AppService,
 ) v1.FiraServiceServer {
-	fs := &FiraApiService{acctSvc: acctService}
+	fs := &FiraApiService{
+		acctSvc: acctService,
+		appSvc:  appService,
+	}
 	return fs
 }
 

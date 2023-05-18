@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type AccountService struct {
@@ -174,4 +175,35 @@ func (s *AccountService) CompletePasswordReset(ctx context.Context, request *v1.
 
 func (s *AccountService) GetAccount(ctx context.Context, request *v1.GetAccountRequest) (*v1.GetAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
+
+func accountToApi(account *auth.Account) *v1.Account {
+	var apiNamespace v1.AccountNamespace
+	switch account.Namespace {
+	case auth.AccountNamespaceDeveloper:
+		apiNamespace = v1.AccountNamespace_ACCOUNT_NAMESPACE_DEVELOPER
+	case auth.AccountNamespaceConsumer:
+		apiNamespace = v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER
+	default:
+		apiNamespace = v1.AccountNamespace_ACCOUNT_NAMESPACE_UNSPECIFIED
+	}
+
+	var apiCredentialType v1.AccountCredentialType
+	switch account.CredentialsType {
+	case auth.CredentialsTypeEmailPassword:
+		apiCredentialType = v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_EMAIL
+	default:
+		apiCredentialType = v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_UNSPECIFIED
+	}
+
+	return &v1.Account{
+		Id:             account.ID,
+		Namespace:      apiNamespace,
+		CredentialType: apiCredentialType,
+		Name:           account.Name,
+		Email:          account.Email,
+		AvatarUrl:      account.AvatarURL,
+		CreatedAt:      timestamppb.New(account.CreatedAt),
+		UpdatedAt:      timestamppb.New(account.UpdatedAt),
+	}
 }

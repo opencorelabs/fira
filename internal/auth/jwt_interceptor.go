@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -17,21 +18,26 @@ var (
 	StandardRejectionCode = status.Error(codes.Unauthenticated, "invalid authorization token")
 	// PublicRoutes are available without any authentication
 	PublicRoutes = map[string]struct{}{
-		"/protos.fira.v1.FiraService/LoginAccount":          {},
-		"/protos.fira.v1.FiraService/CreateAccount":         {},
-		"/protos.fira.v1.FiraService/VerifyAccount":         {},
-		"/protos.fira.v1.FiraService/BeginPasswordReset":    {},
-		"/protos.fira.v1.FiraService/CompletePasswordReset": {},
-		"/protos.fira.v1.FiraService/GetApiInfo":            {},
+		v1.FiraService_LoginAccount_FullMethodName:          {},
+		v1.FiraService_CreateAccount_FullMethodName:         {},
+		v1.FiraService_VerifyAccount_FullMethodName:         {},
+		v1.FiraService_BeginPasswordReset_FullMethodName:    {},
+		v1.FiraService_CompletePasswordReset_FullMethodName: {},
+		v1.FiraService_GetApiInfo_FullMethodName:            {},
 	}
 	// AccountRoutes are available only with Account authentication
 	AccountRoutes = map[string]struct{}{
-		"/protos.fira.v1.FiraService/GetAccount": {},
+		v1.FiraService_GetAccount_FullMethodName:         {},
+		v1.FiraService_CreateApp_FullMethodName:          {},
+		v1.FiraService_GetApp_FullMethodName:             {},
+		v1.FiraService_ListApps_FullMethodName:           {},
+		v1.FiraService_RotateAppToken_FullMethodName:     {},
+		v1.FiraService_InvalidateAppToken_FullMethodName: {},
 	}
 	// AppRoutes are available only with developer.App authentication
 	AppRoutes = map[string]struct{}{
-		"/protos.fira.v1.FiraService/CreateLinkSession": {},
-		"/protos.fira.v1.FiraService/GetLinkSession":    {},
+		v1.FiraService_CreateLinkSession_FullMethodName: {},
+		v1.FiraService_GetLinkSession_FullMethodName:    {},
 	}
 )
 
