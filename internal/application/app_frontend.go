@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"os/exec"
 	"path/filepath"
 )
@@ -38,6 +39,9 @@ func (a *App) StartFrontend(ctx context.Context) error {
 	a.StartService(ctx, "next-server", func(ctx context.Context, errChan chan error) Finalizer {
 		cmd := exec.CommandContext(ctx, "yarn", yarnArgs...)
 		cmd.Dir = cliDir
+		cmd.Env = os.Environ()
+
+		a.logger.Named("next-process").Info("next server env", zap.Strings("env", cmd.Env))
 
 		go func() {
 			defer a.PanicRecovery(errChan)

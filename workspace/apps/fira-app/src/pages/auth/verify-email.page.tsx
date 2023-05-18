@@ -6,7 +6,7 @@ import { getServerSession } from 'next-auth/next';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { api } from 'src/lib/fira-api';
+import { getApi } from 'src/lib/fira-api';
 
 import { authOptions } from '../api/auth/[...nextauth].api';
 
@@ -20,7 +20,7 @@ export default function VerifyEmail() {
 
   const handleVerify = useCallback(
     async (data: FormValues) => {
-      const response = await api.firaServiceVerifyAccount({
+      const response = await getApi().firaServiceVerifyAccount({
         // @ts-expect-error type is required
         type: 1,
         namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,

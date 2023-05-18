@@ -1,3 +1,6 @@
 import { Api } from '@fira/api-sdk';
 
-export const { api } = new Api({ baseUrl: 'http://localhost:8080' });
+export function getApi() {
+  const { api } = new Api({ baseUrl: process.env.NEXTAUTH_URL });
+  return api;
+}
