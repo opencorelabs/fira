@@ -8,6 +8,7 @@ import (
 	"github.com/opencorelabs/fira/internal/auth/stores/account_memory"
 	"github.com/opencorelabs/fira/internal/auth/verification"
 	"github.com/opencorelabs/fira/internal/developer"
+	"github.com/opencorelabs/fira/internal/developer/stores/app_memory"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 	"testing"
@@ -32,6 +33,7 @@ func (s *FiraApiSuite) SetupSuite() {
 
 func (s *FiraApiSuite) BeforeTest(_, _ string) {
 	s.acctStore = account_memory.New()
+	s.appStore = app_memory.New()
 
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(s, s))
