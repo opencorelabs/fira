@@ -21,7 +21,7 @@ import (
 func (a *App) StartGRPC(ctx context.Context) error {
 	log := a.Logger().Sugar().Named("startup")
 
-	verificationProvider := verification.NewDefaultProvider(a, a)
+	verificationProvider := verification.NewDefaultProvider(a, a, a)
 
 	authReg := auth.NewDefaultRegistry()
 	authReg.RegisterBackend(auth.CredentialsTypeEmailPassword, email_password.New(a, verificationProvider))
