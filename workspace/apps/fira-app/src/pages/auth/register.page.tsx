@@ -25,6 +25,7 @@ import { getApi } from 'src/lib/fira-api';
 import { authOptions } from '../api/auth/[...nextauth].api';
 
 type FormValues = {
+  name: string;
   email: string;
   password: string;
 };
@@ -51,6 +52,8 @@ export default function Register({
             emailCredential: {
               email: values.email,
               password: values.password,
+              verificationBaseUrl: process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL,
+              name: '',
             },
           },
         });
@@ -77,9 +80,17 @@ export default function Register({
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
           <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+          <FormControl isInvalid={Boolean(errors.name)}>
+            <Input
+              {...register('name', { required: 'Name is required' })}
+              placeholder="Name"
+              type="text"
+            />
+            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+          </FormControl>
           <FormControl isInvalid={Boolean(errors.email)}>
             <Input
-              {...register('email', { required: 'required' })}
+              {...register('email', { required: 'Email is required' })}
               placeholder="Email"
               type="email"
             />
@@ -87,7 +98,13 @@ export default function Register({
           </FormControl>
           <FormControl isInvalid={Boolean(errors.password)}>
             <Input
-              {...register('password', { required: 'required' })}
+              {...register('password', {
+                required: 'Password is required',
+                validate: {
+                  minLength: (value) =>
+                    value.length >= 10 || 'Password must be at least 10 characters',
+                },
+              })}
               placeholder="Password"
               type="password"
             />
