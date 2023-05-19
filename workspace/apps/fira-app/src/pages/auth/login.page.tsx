@@ -51,7 +51,7 @@ export default function Login({
         });
         if (response?.ok && !response?.error) {
           // TODO: validate callback url is on the same domain
-          router.push((router.query?.callbackUrl as string) ?? '/networth');
+          router.push((router.query?.callbackUrl as string) ?? '/dashboard');
         }
 
         response && setResponse(response);
@@ -116,7 +116,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (session) {
     return {
       redirect: {
-        destination: '/networth',
+        destination: '/dashboard',
         permanent: false,
       },
     };

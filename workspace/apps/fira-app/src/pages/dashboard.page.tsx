@@ -1,4 +1,4 @@
-export default function Networth() {
+export default function Dashboard() {
   return (
     <div>
       <h1>Networth</h1>
@@ -6,4 +6,4 @@ export default function Networth() {
   );
 }
 
-Networth.auth = true;
+Dashboard.auth = true;

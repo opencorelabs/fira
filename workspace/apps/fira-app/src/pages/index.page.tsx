@@ -5,7 +5,7 @@ export default function Index() {
 export function getServerSideProps() {
   return {
     redirect: {
-      destination: '/networth',
+      destination: '/dashboard',
       permanent: false,
     },
   };
