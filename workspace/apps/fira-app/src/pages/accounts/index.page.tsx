@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
 
-import { authOptions } from './api/auth/[...nextauth].api';
+import { authOptions } from 'src/pages/api/auth/[...nextauth].api';
 
 export default function Accounts() {
   console.info('useSession()', useSession());

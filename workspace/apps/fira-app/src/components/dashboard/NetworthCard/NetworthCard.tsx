@@ -52,7 +52,7 @@ export function NetworthCard() {
           <StatNumber>$750,000</StatNumber>
           <StatHelpText color="green.500">
             <StatArrow type="increase" />
-            $12,321 (5.23%) last month
+            $12,321 (5.23%)
           </StatHelpText>
         </Stat>
         <StatGroup>
@@ -61,7 +61,7 @@ export function NetworthCard() {
             <StatNumber>$250,000</StatNumber>
             <StatHelpText fontSize="sm" color="green.500">
               <StatArrow type="increase" />
-              $12,321 (5.23%) last month
+              $12,321 (5.23%)
             </StatHelpText>
           </Stat>
           <Stat size="sm">
@@ -69,7 +69,7 @@ export function NetworthCard() {
             <StatNumber>$250,000</StatNumber>
             <StatHelpText fontSize="sm" color="red.500">
               <StatArrow type="decrease" />
-              $(12,321) (-5.23%) last month
+              $(12,321) (-5.23%)
             </StatHelpText>
           </Stat>
           <Stat size="sm">
@@ -77,7 +77,7 @@ export function NetworthCard() {
             <StatNumber>$250,000</StatNumber>
             <StatHelpText fontSize="sm" color="red.500">
               <StatArrow type="decrease" />
-              $(12,321) (-5.23%) last month
+              $(12,321) (-5.23%)
             </StatHelpText>
           </Stat>
         </StatGroup>
