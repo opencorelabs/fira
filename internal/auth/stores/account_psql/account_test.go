@@ -2,9 +2,9 @@ package account_psql_test
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/stores/account_psql"
+	"github.com/opencorelabs/fira/internal/persistence/psql"
 	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
@@ -12,20 +12,27 @@ import (
 
 type PostgresSuite struct {
 	suite.Suite
-	store auth.AccountStore
+	psqlHelper *psql.TestHelper
+	store      auth.AccountStore
 }
 
 func TestPostgresSuite(t *testing.T) {
 	suite.Run(t, new(PostgresSuite))
 }
 
-func (s *PostgresSuite) BeforeTest(_, _ string) {
-	pg, err := pgx.Connect(context.Background(), "postgres://postgres:docker@localhost:5432/fira?sslmode=disable")
-	s.Require().NoError(err)
-	_, err = pg.Exec(context.Background(), "TRUNCATE accounts")
-	s.Require().NoError(err)
+func (s *PostgresSuite) SetupSuite() {
+	s.psqlHelper = psql.NewTestHelper(&s.Suite)
+	s.psqlHelper.Migrate()
+}
 
-	s.store = account_psql.New()
+func (s *PostgresSuite) TearDownSuite() {
+	s.psqlHelper.Close()
+}
+
+func (s *PostgresSuite) BeforeTest(_, _ string) {
+	s.psqlHelper.Reset()
+
+	s.store = account_psql.New(s.psqlHelper, s.psqlHelper)
 }
 
 func (s *PostgresSuite) TestAccountStore_Create_SetsID() {

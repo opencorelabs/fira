@@ -3,105 +3,97 @@ package account_psql
 import (
 	"context"
 	"fmt"
-	"github.com/bwmarrin/snowflake"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencorelabs/fira/internal/auth"
+	"github.com/opencorelabs/fira/internal/persistence/psql"
+	"github.com/opencorelabs/fira/internal/persistence/snowflake"
+
 	"go.uber.org/zap"
 )
 
 type PostgresStore struct {
-	logger    *zap.Logger
-	pool      *pgxpool.Pool
-	snowflake *snowflake.Node
+	logger     *zap.Logger
+	dbProvider psql.Provider
+	sfProvider snowflake.Provider
 }
 
-func New() auth.AccountStore {
-	generator, snowflakeErr := snowflake.NewNode(1)
-	if snowflakeErr != nil {
-		panic(snowflakeErr)
-	}
-	cfg, cfgErr := pgxpool.ParseConfig("postgres://postgres:docker@localhost:5432/fira?sslmode=disable")
-	if cfgErr != nil {
-		panic(cfgErr)
-	}
-	pool, poolErr := pgxpool.NewWithConfig(context.Background(), cfg)
-	if poolErr != nil {
-		panic(poolErr)
-	}
+type QueryRunner interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+}
+
+func New(sfProvider snowflake.Provider, dbProvider psql.Provider) auth.AccountStore {
 	return &PostgresStore{
-		logger:    zap.L().Named("account_psql"),
-		pool:      pool,
-		snowflake: generator,
+		dbProvider: dbProvider,
+		sfProvider: sfProvider,
 	}
 }
 
 func (p *PostgresStore) FindAccountByID(ctx context.Context, namespace auth.AccountNamespace, id string) (*auth.Account, error) {
-	sql := `
-		SELECT ` + p.accountColumns() + `
-		FROM accounts WHERE namespace = $1 AND account_id = $2
-	`
-	row := p.pool.QueryRow(ctx, sql, namespace, id)
-	acct := &auth.Account{}
-	err := p.scanColumns(acct, row)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, auth.ErrNoAccount
-		} else {
-			return nil, fmt.Errorf("error scanning account: %w", err)
-		}
+	sql := `SELECT * FROM accounts WHERE namespace = $1 AND account_id = $2`
+	rows, queryErr := p.dbProvider.DB().Query(ctx, sql, namespace, id)
+	if queryErr != nil {
+		return nil, fmt.Errorf("error querying account: %w", queryErr)
 	}
-	return acct, nil
+	return scanOneAccount(rows)
 }
 
 func (p *PostgresStore) FindByCredentials(ctx context.Context, namespace auth.AccountNamespace, creds map[string]string) (*auth.Account, error) {
-	var acct *auth.Account
-	err := pgx.BeginFunc(ctx, p.pool, func(tx pgx.Tx) error {
-		var findErr error
-		acct, findErr = p.findByCredentials(ctx, tx, namespace, creds)
-		return findErr
-	})
-	return acct, err
+	return p.findByCredentials(ctx, p.dbProvider.DB(), namespace, creds)
 }
 
-func (p *PostgresStore) findByCredentials(ctx context.Context, tx pgx.Tx, namespace auth.AccountNamespace, creds map[string]string) (*auth.Account, error) {
-	sql := `
-	SELECT ` + p.accountColumns() + `
-	FROM accounts WHERE namespace = $1 AND credentials @> $2`
-	row := tx.QueryRow(ctx, sql, namespace, creds)
-	acct := &auth.Account{}
-	err := p.scanColumns(acct, row)
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, auth.ErrNoAccount
-		} else {
-			return nil, fmt.Errorf("error scanning account: %w", err)
-		}
+func (p *PostgresStore) findByCredentials(ctx context.Context, tx psql.DB, namespace auth.AccountNamespace, creds map[string]string) (*auth.Account, error) {
+	sql := `SELECT * FROM accounts WHERE namespace = $1 AND credentials @> $2`
+	rows, queryErr := tx.Query(ctx, sql, namespace, creds)
+	if queryErr != nil {
+		return nil, fmt.Errorf("error querying account: %w", queryErr)
 	}
-	return acct, nil
+	return scanOneAccount(rows)
 }
 
 func (p *PostgresStore) Create(ctx context.Context, account *auth.Account, creds map[string]string) error {
-	return pgx.BeginFunc(ctx, p.pool, func(tx pgx.Tx) error {
+	return pgx.BeginFunc(ctx, p.dbProvider.DB(), func(tx pgx.Tx) error {
 		existing, _ := p.findByCredentials(ctx, tx, account.Namespace, creds)
 		if existing != nil {
 			return auth.ErrAccountExists
 		}
 
-		account.ID = p.snowflake.Generate().String()
+		account.ID = p.sfProvider.Generator().Generate().String()
 
 		if account.Credentials == nil {
 			account.Credentials = make(map[string]string)
 		}
 
-		sql := `INSERT INTO accounts (` + p.accountColumns() + `) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
-		_, err := p.pool.Exec(ctx, sql, p.saveColumns(account)...)
+		sql := `INSERT INTO accounts (
+                	account_id, 
+                	namespace, 
+                	valid, 
+                	credentials_type, 
+                	credentials, 
+                	name, 
+					avatar_url, 
+					email, 
+					created_at, 
+					updated_at
+				) VALUES (
+					$1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+				)`
+		_, err := tx.Exec(ctx, sql,
+			account.ID,
+			account.Namespace,
+			account.Valid,
+			account.CredentialsType,
+			account.Credentials,
+			account.Name,
+			account.AvatarURL,
+			account.Email,
+			account.CreatedAt,
+			account.UpdatedAt,
+		)
 		if err != nil {
 			return fmt.Errorf("error creating account: %w", err)
 		}
 		return nil
 	})
-
 }
 
 func (p *PostgresStore) Update(ctx context.Context, account *auth.Account) error {
@@ -115,57 +107,31 @@ func (p *PostgresStore) Update(ctx context.Context, account *auth.Account) error
 			email = $6,
 			updated_at = $7
 		WHERE namespace = $8 AND account_id = $9`
-	args := p.updateColumns(account)
-	args = append(args, account.Namespace, account.ID)
-	_, err := p.pool.Exec(ctx, sql, args...)
+	_, err := p.dbProvider.DB().Exec(ctx, sql,
+		account.Valid,
+		account.CredentialsType,
+		account.Credentials,
+		account.Name,
+		account.AvatarURL,
+		account.Email,
+		account.UpdatedAt,
+		account.Namespace,
+		account.ID,
+	)
 	if err != nil {
 		return fmt.Errorf("error updating account: %w", err)
 	}
 	return nil
 }
 
-func (p *PostgresStore) accountColumns() string {
-	return "account_id, namespace, valid, credentials_type, credentials, name, avatar_url, email, created_at, updated_at"
-}
-
-func (p *PostgresStore) scanColumns(a *auth.Account, row pgx.Row) error {
-	return row.Scan(
-		&a.ID,
-		&a.Namespace,
-		&a.Valid,
-		&a.CredentialsType,
-		&a.Credentials,
-		&a.Name,
-		&a.AvatarURL,
-		&a.Email,
-		&a.CreatedAt,
-		&a.UpdatedAt,
-	)
-}
-
-func (p *PostgresStore) saveColumns(a *auth.Account) []interface{} {
-	return []interface{}{
-		a.ID,
-		a.Namespace,
-		a.Valid,
-		a.CredentialsType,
-		a.Credentials,
-		a.Name,
-		a.AvatarURL,
-		a.Email,
-		a.CreatedAt,
-		a.UpdatedAt,
+func scanOneAccount(rows pgx.Rows) (*auth.Account, error) {
+	acct, scanErr := pgx.CollectOneRow(rows, pgx.RowToStructByName[auth.Account])
+	if scanErr != nil {
+		if scanErr == pgx.ErrNoRows {
+			return nil, auth.ErrNoAccount
+		} else {
+			return nil, fmt.Errorf("error scanning account: %w", scanErr)
+		}
 	}
-}
-
-func (p *PostgresStore) updateColumns(a *auth.Account) []interface{} {
-	return []interface{}{
-		a.Valid,
-		a.CredentialsType,
-		a.Credentials,
-		a.Name,
-		a.AvatarURL,
-		a.Email,
-		a.UpdatedAt,
-	}
+	return &acct, nil
 }

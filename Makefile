@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := bin/server
 
+export FIRA_MIGRATIONS_DIR=$(shell pwd)/pg/migrations
+
 bin/server: gen
 	@echo "Building server..."
 	@mkdir -p bin
