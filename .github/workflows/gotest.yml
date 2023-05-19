@@ -9,8 +9,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DATABASE: fira
-          POSTGRES_PASSWORD: docker
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
