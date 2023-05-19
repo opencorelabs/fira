@@ -7,6 +7,8 @@ services:
     container_name: fira-dev
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
     volumes:
       - .:/app
       - node_modules:/workspace/node_modules
@@ -14,6 +16,24 @@ services:
       - sdk_modules:/workspace/libs/fira-api-sdk/node_modules
       - next:/workspace/apps/fira-app/.next
       - bin:/app/bin
+    environment:
+      FIRA_POSTGRES_URL: postgres://postgres:docker@postgres:5432/fira?sslmode=disable
+      FIRA_MIGRATIONS_DIR: /app/pg/migrations
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: fira
+      POSTGRES_PASSWORD: docker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname=fira --username=postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
 volumes:
   node_modules:
   app_modules:

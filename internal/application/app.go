@@ -3,6 +3,8 @@ package application
 import (
 	"context"
 	"fmt"
+	"github.com/bwmarrin/snowflake"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/config"
 	"github.com/opencorelabs/fira/internal/developer"
@@ -30,6 +32,9 @@ type App struct {
 	initMtx      *sync.Mutex
 	accountStore auth.AccountStore
 	appStore     developer.AppStore
+
+	pgxPool *pgxpool.Pool
+	sfNode  *snowflake.Node
 }
 
 func NewApp() (*App, error) {

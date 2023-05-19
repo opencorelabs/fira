@@ -67,9 +67,11 @@ COPY --from=client /code/workspace/apps/fira-app/public ./client/public
 COPY --from=client /code/workspace/apps/fira-app/package.json ./client/package.json
 COPY --from=client /code/workspace/apps/fira-app/.next ./client/.next
 COPY --from=client /code/workspace/node_modules ./client/node_modules
+COPY ./pg/migrations ./migrations
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV FIRA_DEBUG=false
 ENV FIRA_CLIENT_DIR=/root/client
+ENV FIRA_MIGRATIONS_DIR=/root/migrations
 
 CMD ["./server"]

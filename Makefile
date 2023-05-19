@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := bin/server
 
+export FIRA_MIGRATIONS_DIR=$(shell pwd)/pg/migrations
+
 bin/server: gen
 	@echo "Building server..."
 	@mkdir -p bin
@@ -52,3 +54,12 @@ testreqs:
 .PHONY: lintreqs
 lintreqs:
 	@which golangci-lint >/dev/null 2>&1 || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+.PHONY: migrate
+migrate: migratereqs
+	@echo "Running migrations..."
+	@migrate -path ./pg/migrations -database "postgres://postgres:docker@localhost:5432/fira?sslmode=disable" up
+
+.PHONY: migratereqs
+migratereqs:
+	@which migrate >/dev/null 2>&1 || go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest

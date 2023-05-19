@@ -5,21 +5,6 @@ import (
 	"errors"
 )
 
-type CredentialsType int
-type AccountNamespace string
-
-const (
-	CredentialsTypeNone CredentialsType = iota
-	CredentialsTypeEmailPassword
-	CredentialsTypeOAuth
-)
-
-const (
-	AccountNamespaceNone      AccountNamespace = ""
-	AccountNamespaceConsumer  AccountNamespace = "consumer"
-	AccountNamespaceDeveloper AccountNamespace = "developer"
-)
-
 var (
 	ErrNoAccount          = errors.New("no account found")
 	ErrAccountExists      = errors.New("account already exists")
