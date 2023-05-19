@@ -12,7 +12,7 @@ export function Sidebar() {
       <Box>
         <Flex
           alignItems="center"
-          px={{ base: 0, lg: 4 }}
+          px={{ base: 4, md: 0, lg: 4 }}
           h="75px"
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >

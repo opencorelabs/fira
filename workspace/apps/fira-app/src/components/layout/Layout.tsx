@@ -46,7 +46,7 @@ export function Layout({ children }: LayoutProps) {
         </Box>
         <Footer />
       </Box>
-      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+      <Drawer placement="left" onClose={onClose} isOpen={isOpen} size="full">
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />

@@ -1,7 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { SessionProvider } from 'next-auth/react';
 
-import { AuthLayout } from './components/auth/Layout';
+import { AuthLayout } from './components/layout/AuthLayout';
 import { Layout as DashboardLayout } from './components/layout/Layout';
 import { ModalProvider } from './context/ModalContext';
 import { theme } from './theme';

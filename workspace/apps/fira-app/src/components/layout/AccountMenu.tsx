@@ -4,9 +4,11 @@ import {
   Button,
   Divider,
   Flex,
+  PlacementWithLogical,
   Portal,
   Switch,
   Text,
+  useBreakpointValue,
   useColorMode,
   useDisclosure,
   VStack,
@@ -27,6 +29,11 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
   const { isOpen, onClose, onToggle } = useDisclosure();
   const router = useRouter();
 
+  const placement: PlacementWithLogical | undefined = useBreakpointValue({
+    base: 'auto',
+    md: 'right-end',
+  });
+
   const handleSignout = useCallback(() => {
     signOut();
   }, []);
@@ -37,15 +44,13 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
   };
 
   return (
-    <Popover isLazy placement="right-end" closeOnBlur onClose={onClose} isOpen={isOpen}>
+    <Popover isLazy placement={placement} closeOnBlur onClose={onClose} isOpen={isOpen}>
       <PopoverTrigger>
-        <Flex
+        <Button
           onClick={onToggle}
-          as={Button}
           variant="ghost"
-          alignItems="center"
-          py={4}
-          px={{ base: 0, md: 4 }}
+          px={4}
+          py={6}
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
           <Avatar size="xs" src={avatar} name={label} />
@@ -56,9 +61,9 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
           >
             {label}
           </Text>
-        </Flex>
+        </Button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent minW={{ base: '100vw', md: '100%' }}>
         <VStack align="flex-start" p={2}>
           <Flex
             as={Button}
