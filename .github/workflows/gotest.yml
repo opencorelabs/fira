@@ -37,8 +37,8 @@ jobs:
       - name: Test
         run: make ci-test
         env:
-          FIRA_POSTGRES_URL=postgres://postgres:docker@postgres:5432/fira?sslmode=disable
-          FIRA_MIGRATIONS_DIR=${GITHUB_WORKSPACE}/pg/migrations
+          FIRA_POSTGRES_URL: postgres://postgres:docker@postgres:5432/fira?sslmode=disable
+          FIRA_MIGRATIONS_DIR: ${GITHUB_WORKSPACE}/pg/migrations
 
       - uses: actions/upload-artifact@v3
         if: success() || failure()
