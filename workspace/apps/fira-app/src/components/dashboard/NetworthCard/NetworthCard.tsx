@@ -47,37 +47,35 @@ export function NetworthCard() {
       </CardHeader>
       <Divider color="gray.200" />
       <CardBody>
-        <Flex align="center">
-          <Stat>
-            <StatLabel>Total</StatLabel>
-            <StatNumber>$750,000</StatNumber>
-            <StatHelpText color="green.500">
-              <StatArrow type="increase" />
-              $12,321 (5.23%) last month
-            </StatHelpText>
-          </Stat>
-        </Flex>
+        <Stat variant="networth" size="xl">
+          <StatLabel>Total</StatLabel>
+          <StatNumber>$750,000</StatNumber>
+          <StatHelpText color="green.500">
+            <StatArrow type="increase" />
+            $12,321 (5.23%) last month
+          </StatHelpText>
+        </Stat>
         <StatGroup>
-          <Stat>
+          <Stat size="sm">
             <StatLabel>Cash</StatLabel>
             <StatNumber>$250,000</StatNumber>
-            <StatHelpText color="green.500">
+            <StatHelpText fontSize="sm" color="green.500">
               <StatArrow type="increase" />
               $12,321 (5.23%) last month
             </StatHelpText>
           </Stat>
-          <Stat>
+          <Stat size="sm">
             <StatLabel>Investments</StatLabel>
             <StatNumber>$250,000</StatNumber>
-            <StatHelpText color="red.500">
+            <StatHelpText fontSize="sm" color="red.500">
               <StatArrow type="decrease" />
               $(12,321) (-5.23%) last month
             </StatHelpText>
           </Stat>
-          <Stat>
+          <Stat size="sm">
             <StatLabel>Crypto</StatLabel>
             <StatNumber>$250,000</StatNumber>
-            <StatHelpText color="red.500">
+            <StatHelpText fontSize="sm" color="red.500">
               <StatArrow type="decrease" />
               $(12,321) (-5.23%) last month
             </StatHelpText>
