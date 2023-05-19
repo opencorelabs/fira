@@ -27,7 +27,7 @@ export default function VerifyEmail() {
         token: data.token,
       });
       console.info('response', response);
-      router.push('/networth');
+      router.push('/dashboard');
     },
     [router]
   );
@@ -58,7 +58,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (session) {
     return {
       redirect: {
-        destination: '/networth',
+        destination: '/dashboard',
         permanent: false,
       },
     };

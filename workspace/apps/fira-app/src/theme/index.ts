@@ -1,5 +1,7 @@
 import { extendTheme, type ThemeConfig } from '@chakra-ui/react';
 
+import { statTheme } from './components/stat.theme';
+
 const colors = {
   primary: {
     50: '#d9fff6',
@@ -20,4 +22,4 @@ const config: ThemeConfig = {
   useSystemColorMode: true,
 };
 
-export const theme = extendTheme({ colors, config });
+export const theme = extendTheme({ colors, config, components: { Stat: statTheme } });

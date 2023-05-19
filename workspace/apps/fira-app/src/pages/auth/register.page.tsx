@@ -112,7 +112,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (session) {
     return {
       redirect: {
-        destination: '/networth',
+        destination: '/dashboard',
         permanent: false,
       },
     };
