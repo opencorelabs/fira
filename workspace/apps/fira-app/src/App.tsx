@@ -3,6 +3,7 @@ import { SessionProvider } from 'next-auth/react';
 
 import { AuthLayout } from './components/auth/Layout';
 import { Layout as DashboardLayout } from './components/layout/Layout';
+import { ModalProvider } from './context/ModalContext';
 import { theme } from './theme';
 import { GlobalStyle } from './theme/GlobalStyle';
 
@@ -12,9 +13,11 @@ export function App({ Component, pageProps }) {
     <SessionProvider session={pageProps.session}>
       <ChakraProvider theme={theme}>
         <GlobalStyle />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <ModalProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ModalProvider>
       </ChakraProvider>
     </SessionProvider>
   );

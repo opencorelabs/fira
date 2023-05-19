@@ -1,9 +1,7 @@
+import { NetworthCard } from 'src/components/dashboard/NetworthCard/NetworthCard';
+
 export default function Dashboard() {
-  return (
-    <div>
-      <h1>Networth</h1>
-    </div>
-  );
+  return <NetworthCard />;
 }
 
 Dashboard.auth = true;

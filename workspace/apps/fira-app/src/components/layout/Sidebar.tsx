@@ -19,7 +19,7 @@ export function Sidebar() {
           <WordMark size={{ base: 'md', lg: 'xl' }} />
         </Flex>
         <Stack spacing={1}>
-          <SidebarItem label="Net Worth" icon={RiPieChart2Line} href="/dashboard" />
+          <SidebarItem label="Dashboard" icon={RiPieChart2Line} href="/dashboard" />
           <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
         </Stack>
       </Box>
