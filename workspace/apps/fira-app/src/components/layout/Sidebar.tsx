@@ -3,7 +3,7 @@ import React from 'react';
 import { RiBankLine, RiPieChart2Line } from 'react-icons/ri';
 
 import { WordMark } from '../WordMark';
-import { SidebarAccountItem } from './SidebarAccountItem';
+import { AccountMenu } from './AccountMenu';
 import { SidebarItem } from './SidebarItem';
 
 export function Sidebar() {
@@ -23,7 +23,7 @@ export function Sidebar() {
           <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
         </Stack>
       </Box>
-      <SidebarAccountItem avatar="" label="Harry Hexhash" />
+      <AccountMenu avatar="" label="Harry Hexhash" />
     </Flex>
   );
 }
