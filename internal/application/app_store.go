@@ -2,7 +2,7 @@ package application
 
 import (
 	"github.com/opencorelabs/fira/internal/auth"
-	"github.com/opencorelabs/fira/internal/auth/stores/account_memory"
+	"github.com/opencorelabs/fira/internal/auth/stores/account_psql"
 	"github.com/opencorelabs/fira/internal/developer"
 	"github.com/opencorelabs/fira/internal/developer/stores/app_memory"
 )
@@ -12,7 +12,7 @@ func (a *App) AccountStore() auth.AccountStore {
 	defer a.initMtx.Unlock()
 
 	if a.accountStore == nil {
-		a.accountStore = account_memory.New()
+		a.accountStore = account_psql.New(a, a)
 	}
 
 	return a.accountStore

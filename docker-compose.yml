@@ -17,7 +17,8 @@ services:
       - next:/workspace/apps/fira-app/.next
       - bin:/app/bin
     environment:
-      POSTGRES_URL: postgres://postgres:docker@postgres:5432/fira?schema=public&sslmode=disable
+      FIRA_POSTGRES_URL: postgres://postgres:docker@postgres:5432/fira?sslmode=disable
+      FIRA_MIGRATIONS_DIR: /app/pg/migrations
 
   postgres:
     image: postgres:15

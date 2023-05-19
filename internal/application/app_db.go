@@ -9,7 +9,17 @@ import (
 	"go.uber.org/zap"
 )
 
-func (a *App) DB() psql.DB {
+func (a *App) StartDB(ctx context.Context) {
+	db := a.DB()
+	a.StartService(ctx, "db-pool", func(ctx context.Context, errChan chan error) Finalizer {
+		return func(ctx context.Context) error {
+			db.Close()
+			return nil
+		}
+	})
+}
+
+func (a *App) DB() psql.DBCloser {
 	a.initMtx.Lock()
 	defer a.initMtx.Unlock()
 

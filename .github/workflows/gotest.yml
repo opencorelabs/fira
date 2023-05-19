@@ -5,6 +5,18 @@ on: [ push ]
 jobs:
   test:
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DATABASE: fira
+          POSTGRES_PASSWORD: docker
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,6 +36,9 @@ jobs:
 
       - name: Test
         run: make ci-test
+        env:
+          FIRA_POSTGRES_URL=postgres://postgres:docker@postgres:5432/fira?sslmode=disable
+          FIRA_MIGRATIONS_DIR=${GITHUB_WORKSPACE}/pg/migrations
 
       - uses: actions/upload-artifact@v3
         if: success() || failure()
