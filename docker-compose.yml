@@ -19,6 +19,8 @@ services:
     environment:
       FIRA_POSTGRES_URL: postgres://postgres:docker@postgres:5432/fira?sslmode=disable
       FIRA_MIGRATIONS_DIR: /app/pg/migrations
+      FIRA_MAILGUN_DOMAIN: ${FIRA_MAILGUN_DOMAIN}
+      FIRA_MAILGUN_API_KEY: ${FIRA_MAILGUN_API_KEY}
 
   postgres:
     image: postgres:15

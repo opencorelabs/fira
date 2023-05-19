@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kelseyhightower/envconfig"
@@ -19,6 +20,8 @@ type Config struct {
 	NodeId        int64  `default:"1" split_words:"true"`
 	PostgresUrl   string `default:"postgres://postgres:docker@localhost:5432/fira?sslmode=disable" split_words:"true"`
 	MigrationsDir string `default:"./pg/migrations" split_words:"true"`
+	MailgunDomain string `default:"" split_words:"true"`
+	MailgunApiKey string `default:"" split_words:"true"`
 	pgpoolConfig  *pgxpool.Config
 }
 
@@ -33,6 +36,10 @@ func Init() (*Config, error) {
 		return nil, fmt.Errorf("unable to parse postgres url: %w", pgpoolErr)
 	}
 	cfg.pgpoolConfig = pgpoolConfig
+	if cfg.Debug {
+		jsonConfig, _ := json.MarshalIndent(cfg, "", "  ")
+		fmt.Println("the config is: ", string(jsonConfig))
+	}
 	return &cfg, nil
 }
 

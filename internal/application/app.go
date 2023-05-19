@@ -8,6 +8,7 @@ import (
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/config"
 	"github.com/opencorelabs/fira/internal/developer"
+	"github.com/opencorelabs/fira/internal/email"
 	"github.com/opencorelabs/fira/internal/logging"
 	"go.uber.org/zap"
 	"net/http"
@@ -35,6 +36,8 @@ type App struct {
 
 	pgxPool *pgxpool.Pool
 	sfNode  *snowflake.Node
+
+	emailSender email.Sender
 }
 
 func NewApp() (*App, error) {

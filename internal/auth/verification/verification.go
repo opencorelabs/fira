@@ -3,6 +3,7 @@ package verification
 import (
 	"context"
 	"github.com/opencorelabs/fira/internal/auth"
+	"github.com/opencorelabs/fira/internal/email"
 	"github.com/opencorelabs/fira/internal/logging"
 )
 
@@ -18,15 +19,17 @@ type Provider interface {
 type DefaultProvider struct {
 	loggingProvider      logging.Provider
 	accountStoreProvider auth.AccountStoreProvider
+	emailProvider        email.Provider
 }
 
-func NewDefaultProvider(loggingProvider logging.Provider, accountStoreProvider auth.AccountStoreProvider) Provider {
+func NewDefaultProvider(loggingProvider logging.Provider, accountStoreProvider auth.AccountStoreProvider, emailProvider email.Provider) Provider {
 	return &DefaultProvider{
 		loggingProvider:      loggingProvider,
 		accountStoreProvider: accountStoreProvider,
+		emailProvider:        emailProvider,
 	}
 }
 
 func (d *DefaultProvider) Email() Verifier {
-	return NewLoggingVerifier(d.loggingProvider, d.accountStoreProvider)
+	return NewEmailVerifier(d.accountStoreProvider, d.emailProvider)
 }
