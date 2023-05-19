@@ -59,7 +59,7 @@ const accounts = [
 
 export function AddAccountModal({ onClose }) {
   return (
-    <Modal isOpen onClose={onClose} size="2xl">
+    <Modal isOpen onClose={onClose} size={{ base: 'full', md: '2xl' }}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Add Account</ModalHeader>
