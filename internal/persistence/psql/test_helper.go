@@ -68,7 +68,8 @@ func (h *TestHelper) Close() {
 
 func (h *TestHelper) Reset() {
 	cmds := []string{
-		"TRUNCATE TABLE accounts",
+		"TRUNCATE TABLE apps CASCADE",
+		"TRUNCATE TABLE accounts CASCADE",
 	}
 	for _, cmd := range cmds {
 		_, err := h.db.Exec(context.Background(), cmd)

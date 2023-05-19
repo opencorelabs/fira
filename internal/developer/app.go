@@ -25,28 +25,19 @@ type AppClaims struct {
 	Environment string `json:"env"`
 }
 
-type Token struct {
-	Key        []byte
-	ValidUntil time.Time
-}
-
 type App struct {
-	ID        string
+	ID        string `db:"app_id"`
 	Name      string
-	AccountID string
-	Tokens    map[Environment][]Token
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	AccountID string `db:"account_id"`
+	Tokens    TokenMap
+	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }
 
 func (a *App) JWT(env Environment) (string, error) {
 	tokens := a.Tokens[env]
 	if len(tokens) == 0 {
-		newTok, tokErr := generateToken(env)
-		if tokErr != nil {
-			return "", fmt.Errorf("failed to generate token: %w", tokErr)
-		}
-		a.Tokens[env] = append(a.Tokens[env], newTok)
+		return "", fmt.Errorf("no tokens for environment: %s", env)
 	}
 	tok := tokens[len(tokens)-1]
 	jwtTok := jwt.NewWithClaims(jwt.SigningMethodHS512, AppClaims{
@@ -66,6 +57,9 @@ func (a *App) JWT(env Environment) (string, error) {
 }
 
 func (a *App) Rotate(env Environment) error {
+	if a.Tokens == nil {
+		a.Tokens = make(TokenMap)
+	}
 	tok, tokGenErr := generateToken(env)
 	if tokGenErr != nil {
 		return fmt.Errorf("failed to generate token: %w", tokGenErr)

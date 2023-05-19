@@ -7,6 +7,7 @@ import (
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/persistence/psql"
 	"github.com/opencorelabs/fira/internal/persistence/snowflake"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -34,6 +35,7 @@ func (p *PostgresStore) FindAccountByID(ctx context.Context, namespace auth.Acco
 	if queryErr != nil {
 		return nil, fmt.Errorf("error querying account: %w", queryErr)
 	}
+	defer rows.Close()
 	return scanOneAccount(rows)
 }
 
@@ -47,6 +49,7 @@ func (p *PostgresStore) findByCredentials(ctx context.Context, tx psql.DB, names
 	if queryErr != nil {
 		return nil, fmt.Errorf("error querying account: %w", queryErr)
 	}
+	defer rows.Close()
 	return scanOneAccount(rows)
 }
 
@@ -58,6 +61,8 @@ func (p *PostgresStore) Create(ctx context.Context, account *auth.Account, creds
 		}
 
 		account.ID = p.sfProvider.Generator().Generate().String()
+		account.CreatedAt = time.Now()
+		account.UpdatedAt = time.Now()
 
 		if account.Credentials == nil {
 			account.Credentials = make(map[string]string)
@@ -97,6 +102,7 @@ func (p *PostgresStore) Create(ctx context.Context, account *auth.Account, creds
 }
 
 func (p *PostgresStore) Update(ctx context.Context, account *auth.Account) error {
+	account.UpdatedAt = time.Now()
 	sql := `
 		UPDATE accounts SET
 			valid = $1,
