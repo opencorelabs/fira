@@ -4,7 +4,7 @@ import (
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/stores/account_psql"
 	"github.com/opencorelabs/fira/internal/developer"
-	"github.com/opencorelabs/fira/internal/developer/stores/app_memory"
+	"github.com/opencorelabs/fira/internal/developer/stores/app_psql"
 )
 
 func (a *App) AccountStore() auth.AccountStore {
@@ -23,7 +23,7 @@ func (a *App) AppStore() developer.AppStore {
 	defer a.initMtx.Unlock()
 
 	if a.appStore == nil {
-		a.appStore = app_memory.New()
+		a.appStore = app_psql.New(a, a)
 	}
 
 	return a.appStore
