@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/verification"
@@ -27,10 +28,18 @@ func New(storeProvider auth.AccountStoreProvider, verifProvider verification.Pro
 	}
 }
 
+func isPasswordStrong(password string) bool {
+	return len(password) >= 10
+}
+
 func (e *EmailPasswordBackend) Register(ctx context.Context, namespace auth.AccountNamespace, credentials map[string]string) (*auth.Account, error) {
 	d, dErr := decode(credentials)
 	if dErr != nil {
 		return nil, dErr
+	}
+
+	if !isPasswordStrong(d.Password) {
+		return nil, fmt.Errorf("your password is weak. password should have at least 10 characters")
 	}
 
 	pw, pwErr := bcrypt.GenerateFromPassword([]byte(d.Password), bcrypt.DefaultCost)
