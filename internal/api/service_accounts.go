@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"strconv"
 )
 
 type AccountService struct {
@@ -41,6 +42,8 @@ func (s *AccountService) decodeLoginCredential(c *v1.LoginCredential) (map[strin
 		credType = auth.CredentialsTypeEmailPassword
 		credential["email"] = c.EmailCredential.Email
 		credential["password"] = c.EmailCredential.Password
+		credential["verification_base_url"] = c.EmailCredential.VerificationBaseUrl
+		credential["verify"] = strconv.FormatBool(c.EmailCredential.Verify)
 	case v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_OAUTH_GITHUB:
 		credType = auth.CredentialsTypeOAuth
 		credential["provider"] = "github"

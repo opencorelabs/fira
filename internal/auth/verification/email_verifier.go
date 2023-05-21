@@ -2,10 +2,11 @@ package verification
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/email"
-	"math/rand"
 	"time"
 )
 
@@ -22,15 +23,20 @@ func NewEmailVerifier(storeProvider auth.AccountStoreProvider, emailProvider ema
 }
 
 func (l *EmailVerifier) SendVerificationToken(ctx context.Context, account *auth.Account) (map[string]string, error) {
-	tok := fmt.Sprintf("%d", rand.Int63n(9999999))
+	tok, tokErr := uuid.NewRandom()
+	if tokErr != nil {
+		return nil, fmt.Errorf("error generating token: %w", tokErr)
+	}
+	tokEncoded := base64.RawURLEncoding.EncodeToString(tok[:])
 	err := l.emailer.Sender().SendOne(ctx, "auth@mg.opencorelabs.org", account.Credentials["email"], "Verify your email", "email-verification", map[string]string{
-		"verification_token": tok,
+		"verification_token":    tokEncoded,
+		"verification_base_url": account.Credentials["verification_base_url"],
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error sending email: %w", err)
 	}
 	return map[string]string{
-		"email_verification_token":           tok,
+		"email_verification_token":           tokEncoded,
 		"email_verification_token_timestamp": time.Now().Format(time.RFC3339Nano),
 	}, nil
 }
