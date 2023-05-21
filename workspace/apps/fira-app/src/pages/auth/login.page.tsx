@@ -48,11 +48,13 @@ export default function Login({
         const response = await signIn('credentials', {
           ...values,
           redirect: false,
-        });
-        if (response?.ok && !response?.error) {
           // TODO: validate callback url is on the same domain
-          router.push((router.query?.callbackUrl as string) ?? '/dashboard');
-        }
+          callbackUrl: (router.query?.callbackUrl as string) ?? '/dashboard',
+        });
+        // if (response?.ok && !response?.error) {
+
+        //   router.push((router.query?.callbackUrl as string) ?? '/dashboard');
+        // }
 
         response && setResponse(response);
       } catch (error) {
