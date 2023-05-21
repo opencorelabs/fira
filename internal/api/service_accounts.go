@@ -177,7 +177,14 @@ func (s *AccountService) CompletePasswordReset(ctx context.Context, request *v1.
 }
 
 func (s *AccountService) GetAccount(ctx context.Context, request *v1.GetAccountRequest) (*v1.GetAccountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+	acct, has := auth.AccountFromContext(ctx)
+	if !has {
+		return nil, status.Errorf(codes.Unauthenticated, "unauthenticated")
+	}
+	resp := &v1.GetAccountResponse{
+		Account: accountToApi(acct),
+	}
+	return resp, nil
 }
 
 func accountToApi(account *auth.Account) *v1.Account {
