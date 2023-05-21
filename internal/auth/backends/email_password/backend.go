@@ -47,6 +47,7 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, namespace auth.Acco
 			"email":    d.Email,
 			"password": fmt.Sprintf("%x", pw),
 		},
+		Email: d.Email,
 	}
 
 	if saveErr := e.storeProvider.AccountStore().Create(ctx, acct, uniqueCredentials); saveErr != nil {
