@@ -11,12 +11,11 @@ import {
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { getServerSession } from 'next-auth';
-import { getCsrfToken, signIn } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { authOptions } from 'src/pages/api/auth/[...nextauth].api';
+import { login } from 'src/lib/auth';
+import { withSessionSsr } from 'src/lib/session';
 
 type FormValues = {
   email: string;
@@ -30,9 +29,7 @@ type SignInResponse = {
   url: null | string;
 };
 
-export default function Login({
-  csrfToken,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Login(_: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [response, setResponse] = useState<SignInResponse | null>(null);
   const router = useRouter();
   const {
@@ -45,19 +42,11 @@ export default function Login({
     async (values: FormValues) => {
       try {
         setResponse(null);
-        const response = await signIn('credentials', {
-          ...values,
-          redirect: false,
-          // TODO: validate callback url is on the same domain
-          callbackUrl: (router.query?.callbackUrl as string) ?? '/dashboard',
-        });
-        // if (response?.ok && !response?.error) {
-
-        //   router.push((router.query?.callbackUrl as string) ?? '/dashboard');
-        // }
-
+        const response = await login(values);
+        router.push((router.query?.callbackUrl as string) ?? '/dashboard');
         response && setResponse(response);
       } catch (error) {
+        console.error(error.message);
         console.error(error);
       }
     },
@@ -71,7 +60,7 @@ export default function Login({
       <Heading>Login</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
-          <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+          {/* <input name="csrfToken" type="hidden" defaultValue={csrfToken} /> */}
           <FormControl isInvalid={Boolean(errors.email)}>
             <Input
               {...register('email', { required: 'required' })}
@@ -113,18 +102,12 @@ export default function Login({
   );
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-  if (session) {
-    return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false,
-      },
-    };
-  }
-  const csrfToken = await getCsrfToken(context);
+export const getServerSideProps = withSessionSsr(async function getServerSideProps(
+  context: GetServerSidePropsContext
+) {
+  console.info('context', context.req.session);
+  // const csrfToken = await getCsrfToken(context);
   return {
-    props: { csrfToken },
+    props: {},
   };
-}
+});

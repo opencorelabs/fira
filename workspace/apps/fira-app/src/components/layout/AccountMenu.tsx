@@ -15,7 +15,6 @@ import {
 } from '@chakra-ui/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
 import { useCallback } from 'react';
 import { RiLogoutBoxRLine, RiMoonLine, RiSettings2Line } from 'react-icons/ri';
 
@@ -35,7 +34,8 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
   });
 
   const handleSignout = useCallback(() => {
-    signOut();
+    // signOut();
+    // Callsignout route
   }, []);
 
   const handleLink = (href: string) => () => {

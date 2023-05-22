@@ -1,10 +1,8 @@
-import { getServerSession } from 'next-auth';
-import { useSession } from 'next-auth/react';
+import { GetServerSidePropsContext } from 'next';
 
-import { authOptions } from 'src/pages/api/auth/[...nextauth].api';
+import { withSessionSsr } from 'src/lib/session';
 
 export default function Accounts() {
-  console.info('useSession()', useSession());
   return (
     <div>
       <h1>Accounts</h1>
@@ -13,11 +11,11 @@ export default function Accounts() {
 }
 
 Accounts.auth = true;
-
-export const getServerSideProps = async (context) => {
-  const session = await getServerSession(context.req, context.res, authOptions);
-  console.info('session', session);
+export const getServerSideProps = withSessionSsr(async function getServerSideProps(
+  context: GetServerSidePropsContext
+) {
+  console.info('context', context.req.session);
   return {
     props: {},
   };
-};
+});
