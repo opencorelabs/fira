@@ -1,4 +1,6 @@
-# fira
+![fira_logo_black](https://github.com/opencorelabs/fira/assets/100637767/9e50503c-5c76-4a9b-b944-e4dc623bca60)
+
+Fira - an open source personal financial management tool
 
 ## Community
 Join our Discord:
