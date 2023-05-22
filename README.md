@@ -1,5 +1,9 @@
 # fira
 
+## Community
+Join our Discord:
+https://discord.gg/uGFwMGDGku
+
 ## Development Guide
 
 Tech Stack:
