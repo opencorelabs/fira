@@ -18,6 +18,8 @@ import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { RiLogoutBoxRLine, RiMoonLine, RiSettings2Line } from 'react-icons/ri';
 
+import { logout } from 'src/lib/auth';
+
 type AccountMenuProps = {
   label: string;
   avatar: string;
@@ -33,9 +35,8 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
     md: 'right-end',
   });
 
-  const handleSignout = useCallback(() => {
-    // signOut();
-    // Callsignout route
+  const handleLogout = useCallback(async () => {
+    await logout();
   }, []);
 
   const handleLink = (href: string) => () => {
@@ -99,7 +100,7 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
             justifyContent="flex-start"
             w="100%"
             variant="ghost"
-            onClick={handleSignout}
+            onClick={handleLogout}
           >
             Sign out
           </Flex>

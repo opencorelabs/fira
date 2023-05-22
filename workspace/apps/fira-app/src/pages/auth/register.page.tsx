@@ -8,18 +8,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import {
-  V1AccountCredentialType,
-  V1AccountNamespace,
-  V1CreateAccountResponse,
-} from '@fira/api-sdk';
+import { V1CreateAccountResponse } from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { getApi } from 'src/lib/fira-api';
-import { withSessionSsr } from 'src/lib/session';
+import { signup } from 'src/lib/auth';
+import { withSessionSsr } from 'src/lib/session/session';
 
 type FormValues = {
   name: string;
@@ -46,25 +42,12 @@ export default function Register(
           process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL
         );
         setResponse(null);
-        const response = await getApi().firaServiceCreateAccount({
-          namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-          credential: {
-            credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
-            emailCredential: {
-              email: values.email,
-              password: values.password,
-              verificationBaseUrl: process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL,
-              name: '',
-            },
-          },
-        });
+        const response = await signup(values);
+
         if (!response.ok && response.error) {
           throw response.error;
         }
-
         setResponse(response.data);
-        console.info('response', response);
-
         router.push('/auth/verify-email');
       } catch (error) {
         console.error(error);

@@ -4,7 +4,7 @@ import { GetServerSidePropsContext } from 'next';
 import { useCallback } from 'react';
 
 import { getApi } from 'src/lib/fira-api';
-import { withSessionSsr } from 'src/lib/session';
+import { withSessionSsr } from 'src/lib/session/session';
 
 export default function VerifyEmail() {
   const handleRequestVerifyLink = useCallback(async () => {
@@ -29,24 +29,29 @@ export default function VerifyEmail() {
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
   context: GetServerSidePropsContext
 ) {
-  console.info('context.req.session', context.req.session);
-  if (context.query?.verification_token) {
-    // Send validation request to API and rediect to dashboard
-    const response = await getApi().firaServiceVerifyAccount({
-      // @ts-expect-error type is required
-      type: 1,
-      namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-      token: context.query.verification_token as string,
-    });
-    console.info('response', response);
-  }
-
-  if (context.req.session?.user?.verified) {
+  try {
+    if (context.query?.verification_token) {
+      // Send validation request to API and rediect to dashboard
+      const response = await getApi().firaServiceVerifyAccount({
+        // @ts-expect-error type is required
+        type: 1,
+        namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
+        token: context.query.verification_token as string,
+      });
+      if (!response.ok) {
+        throw new Error('response.error');
+      }
+      return {
+        redirect: {
+          destination: '/dashboard',
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    // TODO: Return error message to client
     return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false,
-      },
+      props: {},
     };
   }
 
