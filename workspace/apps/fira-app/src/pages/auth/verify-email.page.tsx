@@ -1,16 +1,10 @@
 import { Box, Button, Container, Text } from '@chakra-ui/react';
 import { V1AccountNamespace } from '@fira/api-sdk';
 import { GetServerSidePropsContext } from 'next';
-import { getServerSession } from 'next-auth/next';
 import { useCallback } from 'react';
 
 import { getApi } from 'src/lib/fira-api';
-
-import { authOptions } from '../api/auth/[...nextauth].api';
-
-type FormValues = {
-  token: string;
-};
+import { withSessionSsr } from 'src/lib/session';
 
 export default function VerifyEmail() {
   const handleRequestVerifyLink = useCallback(async () => {
@@ -24,7 +18,7 @@ export default function VerifyEmail() {
         <Text>
           Didn't get an email?{' '}
           <Button variant="link" onClick={handleRequestVerifyLink}>
-            Request a verification link
+            Request a new verification link
           </Button>
         </Text>
       </Box>
@@ -32,8 +26,11 @@ export default function VerifyEmail() {
   );
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  if (context.query?.token) {
+export const getServerSideProps = withSessionSsr(async function getServerSideProps(
+  context: GetServerSidePropsContext
+) {
+  console.info('context.req.session', context.req.session);
+  if (context.query?.verification_token) {
     // Send validation request to API and rediect to dashboard
     const response = await getApi().firaServiceVerifyAccount({
       // @ts-expect-error type is required
@@ -42,16 +39,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       token: context.query.verification_token as string,
     });
     console.info('response', response);
-    return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false,
-      },
-    };
   }
 
-  const session = await getServerSession(context.req, context.res, authOptions);
-  if (session) {
+  if (context.req.session?.user?.verified) {
     return {
       redirect: {
         destination: '/dashboard',
@@ -63,4 +53,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {},
   };
-}
+});

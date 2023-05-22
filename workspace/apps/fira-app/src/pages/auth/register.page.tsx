@@ -15,14 +15,11 @@ import {
 } from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
-import { getServerSession } from 'next-auth/next';
-import { getCsrfToken } from 'next-auth/react';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { getApi } from 'src/lib/fira-api';
-
-import { authOptions } from '../api/auth/[...nextauth].api';
+import { withSessionSsr } from 'src/lib/session';
 
 type FormValues = {
   name: string;
@@ -30,9 +27,9 @@ type FormValues = {
   password: string;
 };
 
-export default function Register({
-  csrfToken,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Register(
+  _: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
   const [response, setResponse] = useState<V1CreateAccountResponse | null>(null);
   const router = useRouter();
   const {
@@ -44,6 +41,10 @@ export default function Register({
   const onSubmit = useCallback(
     async (values: FormValues) => {
       try {
+        console.info(
+          'process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL',
+          process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL
+        );
         setResponse(null);
         const response = await getApi().firaServiceCreateAccount({
           namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
@@ -79,7 +80,7 @@ export default function Register({
       <Heading>Register</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
-          <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
+          {/* <input name="csrfToken" type="hidden" defaultValue={csrfToken} /> */}
           <FormControl isInvalid={Boolean(errors.name)}>
             <Input
               {...register('name', { required: 'Name is required' })}
@@ -124,9 +125,10 @@ export default function Register({
   );
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerSession(context.req, context.res, authOptions);
-  if (session) {
+export const getServerSideProps = withSessionSsr(async function getServerSideProps(
+  context: GetServerSidePropsContext
+) {
+  if (context.req.session?.user?.verified) {
     return {
       redirect: {
         destination: '/dashboard',
@@ -134,8 +136,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     };
   }
-  const csrfToken = await getCsrfToken(context);
+  // const csrfToken = await getCsrfToken(context);
   return {
-    props: { csrfToken },
+    props: {},
   };
-}
+});
