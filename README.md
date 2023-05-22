@@ -1,6 +1,6 @@
 # fira
 
-## Development Guide
+## Community
 Join our Discord:
 https://discord.gg/uGFwMGDGku
 
