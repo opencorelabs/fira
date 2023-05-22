@@ -16,39 +16,34 @@ export default withSessionRoute(async function (
     return res.status(405).send('Method Not Allowed');
   }
 
-  const data = req.body;
-  const response = await getApi().firaServiceCreateAccount({
-    namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-    credential: {
-      credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
-      emailCredential: {
-        email: data.email,
-        name: data.name,
-        password: data.password,
-        verificationBaseUrl: process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL,
+  try {
+    const data = req.body;
+    const response = await getApi().firaServiceCreateAccount({
+      namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
+      credential: {
+        credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
+        emailCredential: {
+          email: data.email,
+          name: data.name,
+          password: data.password,
+          verificationBaseUrl: process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL,
+        },
       },
-    },
-  });
+    });
 
-  if (!response.ok) {
-    return res.status(response.status).send(response.statusText);
+    if (!response.ok) {
+      return res.status(response.status).send(response.statusText);
+    }
+    req.session.user = {
+      token: response.data.jwt,
+      status: response.data.status,
+      verified:
+        response.data.status ===
+        V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK,
+    };
+    await req.session.save();
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.error?.message ?? 'something went wrong' });
   }
-
-  const me = await getApi().firaServiceGetAccount({
-    headers: {
-      authorization: `Bearer ${response.data.jwt}`,
-    },
-  });
-
-  console.info('me', me);
-
-  req.session.user = {
-    id: me.data.id,
-    token: response.data.jwt,
-    verified:
-      response.data.status === V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK,
-  };
-  await req.session.save();
-
-  res.status(response.status).json(response.data);
 });
