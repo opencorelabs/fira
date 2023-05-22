@@ -15,7 +15,7 @@ import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { login } from 'src/lib/auth';
-import { withSessionSsr } from 'src/lib/session';
+import { withSessionSsr } from 'src/lib/session/session';
 
 type FormValues = {
   email: string;
@@ -107,6 +107,16 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
 ) {
   console.info('context', context.req.session);
   // const csrfToken = await getCsrfToken(context);
+
+  if (context.req.session?.user?.verified) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {},
   };
