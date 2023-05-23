@@ -37,7 +37,8 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
 
   const handleLogout = useCallback(async () => {
     await logout();
-  }, []);
+    router.push('/');
+  }, [router]);
 
   const handleLink = (href: string) => () => {
     router.push(href);
