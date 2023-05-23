@@ -14,7 +14,7 @@ type Provider interface {
 type Config struct {
 	Debug         bool   `default:"true"`
 	BindHttp      string `default:"localhost:8080" split_words:"true"`
-	ClientDir     string `default:"./client" split_words:"true"`
+	ClientDir     string `default:"./workspace" split_words:"true"`
 	FrontendUrl   string `default:"http://localhost:3000" split_words:"true"`
 	GrpcUrl       string `default:"localhost:5567"`
 	NodeId        int64  `default:"1" split_words:"true"`
