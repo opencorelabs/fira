@@ -24,7 +24,6 @@ export const middleware = async (req: NextRequest) => {
   if (hasMatch) {
     return NextResponse.next();
   }
-
   const { user } = session;
 
   // if user is not logged in, redirect to login page
