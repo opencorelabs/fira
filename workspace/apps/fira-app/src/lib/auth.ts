@@ -32,7 +32,7 @@ export async function signup(data: RegisterRequest, options = {}) {
 }
 
 export async function logout() {
-  const response = await fetch('/api/auth/loutout', {
+  const response = await fetch('/api/auth/logout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
