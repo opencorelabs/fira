@@ -37,16 +37,8 @@ export default function Register(
   const onSubmit = useCallback(
     async (values: FormValues) => {
       try {
-        console.info(
-          'process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL',
-          process.env.NEXT_PUBLIC_VERIFICATION_BASE_URL
-        );
         setResponse(null);
         const response = await signup(values);
-
-        if (!response.ok && response.error) {
-          throw response.error;
-        }
         setResponse(response.data);
         router.push('/auth/verify-email');
       } catch (error) {

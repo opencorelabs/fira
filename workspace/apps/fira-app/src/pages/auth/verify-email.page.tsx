@@ -38,9 +38,12 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
         namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
         token: context.query.verification_token as string,
       });
-      if (!response.ok) {
-        throw new Error('response.error');
-      }
+      context.req.session.user = {
+        ...context.req.session.user,
+        verified: true,
+        token: response.data.jwt,
+      };
+      await context.req.session.save();
       return {
         redirect: {
           destination: '/dashboard',
@@ -49,6 +52,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
       };
     }
   } catch (error) {
+    console.error('\n\nerror', error);
     // TODO: Return error message to client
     return {
       props: {},
