@@ -10,7 +10,6 @@ export async function login(data: LoginRequest, options = {}) {
     body: JSON.stringify(data),
     ...options,
   });
-  if (!response.ok) throw new Error();
   return response.json();
 }
 
@@ -27,15 +26,12 @@ export async function signup(data: RegisterRequest, options = {}) {
     body: JSON.stringify(data),
     ...options,
   });
-  if (!response.ok) throw new Error();
   return response.json();
 }
 
 export async function logout() {
-  const response = await fetch('/api/auth/logout', {
+  return fetch('/api/auth/logout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
-  if (!response.ok) throw new Error();
-  return response.json();
 }

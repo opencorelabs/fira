@@ -12,14 +12,6 @@ Dashboard.auth = true;
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
   context: GetServerSidePropsContext
 ) {
-  // if (!context.req.session?.user?.verified) {
-  //   return {
-  //     redirect: {
-  //       destination: '/auth/verify-email',
-  //       permanent: false,
-  //     },
-  //   };
-  // }
   console.info('dashboard context.req.session', context.req.session);
   return {
     props: {},

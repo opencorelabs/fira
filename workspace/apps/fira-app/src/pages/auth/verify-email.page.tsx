@@ -1,4 +1,4 @@
-import { Box, Button, Container, Text } from '@chakra-ui/react';
+import { Box, Button, Container, Text, useToast } from '@chakra-ui/react';
 import { V1AccountNamespace } from '@fira/api-sdk';
 import { GetServerSidePropsContext } from 'next';
 import { useCallback } from 'react';
@@ -7,9 +7,15 @@ import { getApi } from 'src/lib/fira-api';
 import { withSessionSsr } from 'src/lib/session/session';
 
 export default function VerifyEmail() {
+  const toast = useToast();
   const handleRequestVerifyLink = useCallback(async () => {
-    //
-  }, []);
+    toast({
+      title: 'Not Implemented',
+      status: 'error',
+      duration: 4000,
+      isClosable: true,
+    });
+  }, [toast]);
 
   return (
     <Container maxW="container.xl">
@@ -56,6 +62,15 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
     // TODO: Return error message to client
     return {
       props: {},
+    };
+  }
+
+  if (!context.req.session?.user) {
+    return {
+      redirect: {
+        destination: '/auth/login',
+        permanent: false,
+      },
     };
   }
 

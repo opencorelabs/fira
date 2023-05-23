@@ -1,4 +1,7 @@
 import {
+  HttpResponse,
+  RpcStatus,
+  V1Account,
   V1AccountCredentialType,
   V1AccountNamespace,
   V1AccountRegistrationStatus,
@@ -16,40 +19,52 @@ export default withSessionRoute(async function (
     return res.status(405).send('Method Not Allowed');
   }
 
-  const credentials = req.body;
-  const response = await getApi().firaServiceLoginAccount({
-    namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-    credential: {
-      credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
-      emailCredential: {
-        email: credentials?.email,
-        password: credentials?.password,
+  try {
+    const data = req.body;
+    const response = await getApi().firaServiceLoginAccount({
+      namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
+      credential: {
+        credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
+        emailCredential: {
+          email: data?.email,
+          password: data?.password,
+          verify: true,
+        },
       },
-    },
-  });
+    });
 
-  if (!response.ok) {
-    return res.status(response.status).send(response.statusText);
+    if (response.error) {
+      return res
+        .status(response.status)
+        .json({ error: response.error ?? response.statusText });
+    }
+
+    let me: HttpResponse<V1Account, RpcStatus> | null = null;
+    if (
+      response.data.status === V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK
+    ) {
+      me = await getApi().firaServiceGetAccount({
+        headers: {
+          authorization: `Bearer ${response.data.jwt}`,
+        },
+      });
+    }
+
+    req.session.user = {
+      token: response.data.jwt,
+      verified:
+        response.data.status ===
+        V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK,
+      status: response.data.status,
+      ...(me ? { id: me.data.id } : {}),
+      ...(me ? { name: me.data.name } : {}),
+      ...(me ? { avatarUrl: me.data.avatarUrl } : {}),
+    };
+
+    await req.session.save();
+
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.error?.message ?? 'something went wrong' });
   }
-
-  const me = await getApi().firaServiceGetAccount({
-    headers: {
-      authorization: `Bearer ${response.data.jwt}`,
-    },
-  });
-
-  console.info('me', me);
-
-  req.session.user = {
-    id: me.data.id,
-    token: response.data.jwt,
-    verified:
-      response.data.status === V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK,
-    status: response.data.status,
-    name: me.data.name,
-    avatar: me.data.avatarUrl,
-  };
-  await req.session.save();
-
-  res.status(response.status).json(response.data);
 });
