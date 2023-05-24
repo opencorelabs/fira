@@ -17,7 +17,7 @@ export function Sidebar() {
           h="75px"
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
-          <WordMark width="300px" />
+          <WordMark />
         </Flex>
         <Stack spacing={1}>
           <SidebarItem label="Dashboard" icon={RiPieChart2Line} href="/dashboard" />
