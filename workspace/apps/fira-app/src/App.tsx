@@ -5,7 +5,8 @@ import { LandingLayout } from 'src/components/layouts/landing/LandingLayout';
 import { LoggedOutLayout } from 'src/components/layouts/loggedout/Layout';
 import { ModalProvider } from 'src/context/ModalContext';
 import { theme } from 'src/theme';
-import { GlobalStyle } from 'src/theme/GlobalStyle';
+
+import { GlobalStyle } from './theme/GlobalStyle';
 
 function getLayout(Component) {
   if (Component.authenticated) {
