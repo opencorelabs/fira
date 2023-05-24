@@ -22,7 +22,17 @@ type Config struct {
 	MigrationsDir string `default:"./pg/migrations" split_words:"true"`
 	MailgunDomain string `default:"" split_words:"true"`
 	MailgunApiKey string `default:"" split_words:"true"`
-	pgpoolConfig  *pgxpool.Config
+
+	LocalPostgres struct {
+		Enable       bool   `default:"true" `
+		BinariesPath string `default:"./pg/bin" split_words:"true"`
+		DataPath     string `default:"./pg/data" split_words:"true"`
+		Username     string `default:"postgres" split_words:"true"`
+		Password     string `default:"docker" split_words:"true"`
+		Database     string `default:"fira" split_words:"true"`
+	}
+
+	pgpoolConfig *pgxpool.Config
 }
 
 func Init() (*Config, error) {
