@@ -10,5 +10,5 @@ export default withSessionRoute(async function handler(
     return res.status(405).send('Method Not Allowed');
   }
   req.session.destroy();
-  res.status(204);
+  res.status(200).json({ result: 'ok' });
 });
