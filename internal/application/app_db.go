@@ -83,7 +83,7 @@ func (a *App) StartDB(ctx context.Context) {
 		a.Logger().Fatal("unable to query db")
 	}
 
-	migrateErr := psql.Migrate(a.cfg.MigrationsDir, a.cfg.PostgresUrl)
+	migrateErr := psql.Migrate(a, a.cfg.MigrationsDir, a.cfg.PostgresUrl)
 	if migrateErr != nil {
 		a.Logger().Fatal("unable to migrate database", zap.Error(migrateErr))
 	}

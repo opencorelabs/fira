@@ -5,27 +5,30 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"os"
+	"github.com/opencorelabs/fira/internal/logging"
+	"go.uber.org/zap"
 	"path/filepath"
 )
 
-func Migrate(migrationsDir, psqlUrl string) error {
-	fmt.Println("Migrating database...")
-	fmt.Println("Migrations dir:", migrationsDir)
+func Migrate(logger logging.Provider, migrationsDir, psqlUrl string) error {
+	log := logger.Logger().Named("pg-migrator")
+	log.Info("migrating database...")
+	absMigrationsDir := migrationsDir
 	if !filepath.IsAbs(migrationsDir) {
 		var pathErr error
-		migrationsDir, pathErr = filepath.Abs(migrationsDir)
+		absMigrationsDir, pathErr = filepath.Abs(migrationsDir)
 		if pathErr != nil {
 			return fmt.Errorf("unable to get absolute path for migrations dir: %w", pathErr)
 		}
-		fmt.Println("Absolute migrations dir:", migrationsDir)
 	}
 
 	source := fmt.Sprintf("file://%s", migrationsDir)
 
-	fmt.Println("Migrations source: ", source)
-
-	fmt.Println("Migrations dsn: ", psqlUrl)
+	log.Info("migrations config",
+		zap.String("dir", migrationsDir),
+		zap.String("absDir", absMigrationsDir),
+		zap.String("source", source),
+	)
 
 	m, err := migrate.New(source, psqlUrl)
 	if err != nil {
@@ -35,18 +38,20 @@ func Migrate(migrationsDir, psqlUrl string) error {
 		defer func() {
 			_, closeErr := m.Close()
 			if closeErr != nil {
-				fmt.Println("Migrator closed with error:", closeErr)
+				log.Warn("migrator closed with error:", zap.Error(closeErr))
 			}
 		}()
 	}
 
-	m.Log = &mgLog{verbose: true}
+	m.Log = &mgLog{verbose: true, log: log}
 
 	merr := m.Up()
 	if merr != nil && merr != migrate.ErrNoChange {
 		return fmt.Errorf("unable to migrate: %w", merr)
+	} else if merr == migrate.ErrNoChange {
+		log.Info("database already up to date")
 	} else {
-		fmt.Println("Migrations done - no migrations")
+		log.Info("migration complete")
 	}
 
 	return nil
@@ -54,15 +59,16 @@ func Migrate(migrationsDir, psqlUrl string) error {
 
 // mgLog is a dummy logger for migrate
 type mgLog struct {
+	log     *zap.Logger
 	verbose bool
 }
 
 func (l *mgLog) Printf(format string, v ...interface{}) {
-	_, _ = fmt.Fprintf(os.Stderr, format, v...)
+	l.log.Info(fmt.Sprintf(format, v...))
 }
 
 func (l *mgLog) Println(args ...interface{}) {
-	_, _ = fmt.Fprintln(os.Stderr, args...)
+	l.log.Info(fmt.Sprint(args...))
 }
 
 func (l *mgLog) Verbose() bool {
@@ -70,8 +76,7 @@ func (l *mgLog) Verbose() bool {
 }
 
 func (l *mgLog) fatal(args ...interface{}) {
-	l.Println(args...)
-	os.Exit(1)
+	l.log.Fatal(fmt.Sprint(args...))
 }
 
 func (l *mgLog) fatalErr(err error) {
