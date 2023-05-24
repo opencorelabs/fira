@@ -1,13 +1,24 @@
 import { ChakraProvider } from '@chakra-ui/react';
 
-import { AuthLayout } from './components/layout/AuthLayout';
-import { Layout as DashboardLayout } from './components/layout/Layout';
-import { ModalProvider } from './context/ModalContext';
-import { theme } from './theme';
-import { GlobalStyle } from './theme/GlobalStyle';
+import { DashboardLayout } from 'src/components/layouts/dashboard/DashboardLayout';
+import { LandingLayout } from 'src/components/layouts/landing/LandingLayout';
+import { LoggedOutLayout } from 'src/components/layouts/loggedout/Layout';
+import { ModalProvider } from 'src/context/ModalContext';
+import { theme } from 'src/theme';
+import { GlobalStyle } from 'src/theme/GlobalStyle';
+
+function getLayout(Component) {
+  if (Component.authenticated) {
+    return DashboardLayout;
+  }
+  if (Component.landing) {
+    return LandingLayout;
+  }
+  return LoggedOutLayout;
+}
 
 export function App({ Component, pageProps }) {
-  const Layout = Component.auth ? DashboardLayout : AuthLayout;
+  const Layout = getLayout(Component);
   return (
     <ChakraProvider theme={theme}>
       <GlobalStyle />

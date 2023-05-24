@@ -20,7 +20,7 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-export function Layout({ children }: LayoutProps) {
+export function DashboardLayout({ children }: LayoutProps) {
   const sidebarWidth = useBreakpointValue({ base: '100%', md: '75px', lg: '240px' });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const bg = useColorModeValue('white', 'gray.800');

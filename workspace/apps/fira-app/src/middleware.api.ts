@@ -13,6 +13,7 @@ const strings = [
   '/public',
   '/favicon.ico',
   '/robots.txt',
+  '/images',
 ];
 
 export const middleware = async (req: NextRequest) => {

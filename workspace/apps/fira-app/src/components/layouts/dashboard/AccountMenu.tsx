@@ -20,12 +20,7 @@ import { RiLogoutBoxRLine, RiMoonLine, RiSettings2Line } from 'react-icons/ri';
 
 import { logout } from 'src/lib/auth';
 
-type AccountMenuProps = {
-  label: string;
-  avatar: string;
-};
-
-export function AccountMenu({ label, avatar }: AccountMenuProps) {
+export function AccountMenu() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onClose, onToggle } = useDisclosure();
   const router = useRouter();
@@ -45,6 +40,8 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
     onClose();
   };
 
+  const name = 'John Doe';
+
   return (
     <Popover isLazy placement={placement} closeOnBlur onClose={onClose} isOpen={isOpen}>
       <PopoverTrigger>
@@ -55,13 +52,13 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
           py={6}
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
-          <Avatar size="xs" src={avatar} name={label} />
+          <Avatar size="xs" src={'avatar'} name={name} />
           <Text
             fontWeight="bold"
             ml={4}
             display={{ base: 'block', md: 'none', lg: 'block' }}
           >
-            {label}
+            {name}
           </Text>
         </Button>
       </PopoverTrigger>
