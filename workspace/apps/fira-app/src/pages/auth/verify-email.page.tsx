@@ -22,7 +22,7 @@ export default function VerifyEmail() {
       <Box>
         <Text>Verify Email</Text>
         <Text>
-          Didn't get an email?{' '}
+          Didn't recieve an email?{' '}
           <Button variant="link" onClick={handleRequestVerifyLink}>
             Request a new verification link
           </Button>
