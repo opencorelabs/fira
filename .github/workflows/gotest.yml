@@ -38,6 +38,7 @@ jobs:
       - name: Test
         run: make ci-test
         env:
+          FIRA_EMBEDDED_POSTGRES_ENABLE: 'false'
           FIRA_POSTGRES_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
           FIRA_MIGRATIONS_DIR: ${GITHUB_WORKSPACE}/pg/migrations
 
