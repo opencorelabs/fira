@@ -59,26 +59,6 @@ export default function Index() {
           objectFit="cover"
         />
       </Box>
-      <ButtonGroup>
-        <Button
-          as={Link}
-          href="/auth/login"
-          colorScheme="primary"
-          variant="outline"
-          px={8}
-        >
-          Login
-        </Button>
-        <Button
-          as={Link}
-          href="/auth/register"
-          colorScheme="primary"
-          variant="solid"
-          px={8}
-        >
-          Register
-        </Button>
-      </ButtonGroup>
     </VStack>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, Container, Flex, HStack, IconButton } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Container, Flex, IconButton } from '@chakra-ui/react';
 import Link from 'next/link';
 import { FaDiscord, FaGithub } from 'react-icons/fa';
 
@@ -14,7 +14,27 @@ export function LandingHeader() {
               <WordMark fill="white" />
             </Link>
           </Box>
-          <HStack gap={0}>
+          <ButtonGroup>
+            <Button
+              as={Link}
+              href="/auth/login"
+              colorScheme="primary"
+              variant="outline"
+              px={8}
+              size="sm"
+            >
+              Login
+            </Button>
+            <Button
+              as={Link}
+              href="/auth/register"
+              colorScheme="primary"
+              variant="outline"
+              px={8}
+              size="sm"
+            >
+              Register
+            </Button>
             <IconButton
               as={Link}
               href="https://discord.gg/uGFwMGDGku"
@@ -39,7 +59,7 @@ export function LandingHeader() {
               icon={<FaGithub />}
               _hover={{ transform: 'scale(1.05)' }}
             />
-          </HStack>
+          </ButtonGroup>
         </Flex>
       </Container>
     </header>
