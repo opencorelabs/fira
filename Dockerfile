@@ -10,7 +10,11 @@ RUN go mod download all
 COPY . /code
 
 RUN mkdir bin
-RUN go build -o ./bin/server ./cmd/server 
+RUN go build -o ./bin/server ./cmd/server
+
+RUN mkdir bin/pg
+ENV FIRA_EMBEDDED_POSTGRES_BINARIES_PATH=/code/bin/pg
+RUN go run ./cmd/bootstrap
 
 # build the client deps
 FROM node:16-alpine as clientdeps
@@ -58,6 +62,7 @@ WORKDIR /root/
 
 # copy backend resources
 COPY --from=backend /code/bin/server ./
+COPY --from=backend /code/bin/pg ./pg
 COPY dist ./dist
 COPY gen ./gen
 
@@ -67,11 +72,12 @@ COPY --from=client /code/workspace/apps/fira-app/public ./client/public
 COPY --from=client /code/workspace/apps/fira-app/package.json ./client/package.json
 COPY --from=client /code/workspace/apps/fira-app/.next ./client/.next
 COPY --from=client /code/workspace/node_modules ./client/node_modules
-COPY ./pg/migrations ./migrations
+COPY ./pg/migrations ./pg/migrations
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV FIRA_DEBUG=false
 ENV FIRA_CLIENT_DIR=/root/client
-ENV FIRA_MIGRATIONS_DIR=/root/migrations
+ENV FIRA_MIGRATIONS_DIR=/root/pg/migrations
+ENV FIRA_EMBEDDED_POSTGRES_BINARIES_PATH=/root/pg/bin
 
 CMD ["./server"]
