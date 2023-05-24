@@ -12,7 +12,7 @@ export function LoggedOutLayout({ children }: AuthLayoutProps) {
   return (
     <Flex minH="100vh" direction="column">
       <header>
-        <WordMark fill="black" />
+        <WordMark />
       </header>
       <Flex flex={1} align="center" justify="center">
         <Container maxW="container.xl">

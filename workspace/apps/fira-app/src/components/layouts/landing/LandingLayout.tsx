@@ -1,4 +1,4 @@
-import { Container, Flex } from '@chakra-ui/react';
+import { Flex, LightMode } from '@chakra-ui/react';
 
 import { Footer } from '../Footer';
 import { LandingHeader } from './Header';
@@ -9,14 +9,14 @@ type LandingLayoutProps = {
 
 export function LandingLayout({ children }: LandingLayoutProps) {
   return (
-    <Flex minH="100vh" direction="column" bg="black">
-      <LandingHeader />
-      <Flex flex={1} align="center" justify="center">
-        <Container maxW="container.xl">
-          <Flex justify="center">{children}</Flex>
-        </Container>
+    <LightMode>
+      <Flex minH="100vh" direction="column" bg="black">
+        <LandingHeader />
+        <Flex as="main" flex={1} align="center" justify="center">
+          {children}
+        </Flex>
+        <Footer />
       </Flex>
-      <Footer />
-    </Flex>
+    </LightMode>
   );
 }
