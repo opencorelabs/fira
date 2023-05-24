@@ -7,7 +7,7 @@ export default function Dashboard() {
   return <NetworthCard />;
 }
 
-Dashboard.auth = true;
+Dashboard.authenticated = true;
 
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
   context: GetServerSidePropsContext

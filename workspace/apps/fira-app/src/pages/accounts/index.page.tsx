@@ -6,4 +6,4 @@ export default function Accounts() {
   );
 }
 
-Accounts.auth = true;
+Accounts.authenticated = true;

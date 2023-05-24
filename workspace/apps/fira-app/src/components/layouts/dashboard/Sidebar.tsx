@@ -2,7 +2,8 @@ import { Box, Flex, Stack } from '@chakra-ui/react';
 import React from 'react';
 import { RiBankLine, RiPieChart2Line } from 'react-icons/ri';
 
-import { WordMark } from '../WordMark';
+import { WordMark } from 'src/components/WordMark';
+
 import { AccountMenu } from './AccountMenu';
 import { SidebarItem } from './SidebarItem';
 
@@ -16,14 +17,14 @@ export function Sidebar() {
           h="75px"
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
-          <WordMark size={{ base: 'md', lg: 'xl' }} />
+          <WordMark width="300px" />
         </Flex>
         <Stack spacing={1}>
           <SidebarItem label="Dashboard" icon={RiPieChart2Line} href="/dashboard" />
           <SidebarItem label="Accounts" icon={RiBankLine} href="/accounts" />
         </Stack>
       </Box>
-      <AccountMenu avatar="" label="Harry Hexhash" />
+      <AccountMenu />
     </Flex>
   );
 }
