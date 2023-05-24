@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/opencorelabs/fira/internal/application"
-	"github.com/opencorelabs/fira/internal/persistence/psql"
 	"os"
 )
 
@@ -19,11 +18,6 @@ func main() {
 	log := app.Logger().Named("startup").Sugar()
 
 	app.StartDB(ctx)
-
-	migrateErr := psql.Migrate(app.Config().MigrationsDir, app.Config().PostgresUrl)
-	if migrateErr != nil {
-		log.Fatalw("unable to migrate database", "error", migrateErr)
-	}
 
 	startFrontendError := app.StartFrontend(ctx)
 	if startFrontendError != nil {

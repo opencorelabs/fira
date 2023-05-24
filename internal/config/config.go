@@ -18,19 +18,20 @@ type Config struct {
 	FrontendUrl   string `default:"http://localhost:3000" split_words:"true"`
 	GrpcUrl       string `default:"localhost:5567"`
 	NodeId        int64  `default:"1" split_words:"true"`
-	PostgresUrl   string `default:"postgres://postgres:docker@localhost:5432/fira?sslmode=disable" split_words:"true"`
+	PostgresUrl   string `default:"postgres://postgres:docker@localhost:5432/fira?sslmode=disable&connect_timeout=15" split_words:"true"`
 	MigrationsDir string `default:"./pg/migrations" split_words:"true"`
 	MailgunDomain string `default:"" split_words:"true"`
 	MailgunApiKey string `default:"" split_words:"true"`
 
-	LocalPostgres struct {
-		Enable       bool   `default:"true" `
+	EmbeddedPostgres struct {
+		Enable       bool   `default:"true"`
 		BinariesPath string `default:"./pg/bin" split_words:"true"`
 		DataPath     string `default:"./pg/data" split_words:"true"`
-		Username     string `default:"postgres" split_words:"true"`
-		Password     string `default:"docker" split_words:"true"`
-		Database     string `default:"fira" split_words:"true"`
-	}
+		Port         int    `default:"5432"`
+		Username     string `default:"postgres"`
+		Password     string `default:"docker"`
+		Database     string `default:"fira"`
+	} `envconfig:"EMBEDDED_POSTGRES"`
 
 	pgpoolConfig *pgxpool.Config
 }

@@ -10,40 +10,84 @@ import (
 	"github.com/opencorelabs/fira/internal/persistence/snowflake"
 	"go.uber.org/zap"
 	"io"
+	"sync"
+	"time"
 )
 
 func (a *App) StartDB(ctx context.Context) {
-	if a.cfg.LocalPostgres.Enable {
+	if a.cfg.EmbeddedPostgres.Enable {
+		startChan := make(chan struct{})
+		defer close(startChan)
+		semOnce := sync.Once{}
+
 		a.StartService(ctx, "embedded-postgres", func(ctx context.Context, errChan chan error) Finalizer {
-			defer a.PanicRecovery(errChan)
-
-			logBuf := newBuf()
-			postgres := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
-				Username(a.cfg.LocalPostgres.Username).
-				Password(a.cfg.LocalPostgres.Password).
-				Database(a.cfg.LocalPostgres.Database).
-				Version(embeddedpostgres.V15).
-				RuntimePath("/tmp/pg-runtime").
-				DataPath(a.cfg.LocalPostgres.DataPath).
-				BinariesPath(a.cfg.LocalPostgres.BinariesPath).
-				Logger(logBuf),
-			)
-
+			var postgres *embeddedpostgres.EmbeddedPostgres
 			logger := a.Logger().Named("embedded-postgres")
 
-			go a.pipeToLogger(logBuf, zap.InfoLevel, logger, errChan)
+			go func() {
+				defer a.PanicRecovery(errChan)
 
-			logger.Info("starting embedded postgres")
+				logBuf := newBuf()
+				postgres = embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
+					Username(a.cfg.EmbeddedPostgres.Username).
+					Password(a.cfg.EmbeddedPostgres.Password).
+					Database(a.cfg.EmbeddedPostgres.Database).
+					Port(uint32(a.cfg.EmbeddedPostgres.Port)).
+					Version(embeddedpostgres.V15).
+					RuntimePath("/tmp/pg-runtime").
+					DataPath(a.cfg.EmbeddedPostgres.DataPath).
+					BinariesPath(a.cfg.EmbeddedPostgres.BinariesPath).
+					Logger(logBuf),
+				)
 
-			errChan <- postgres.Start()
+				go a.pipeToLogger(logBuf, zap.InfoLevel, logger, errChan)
+
+				logger.Info("starting embedded postgres")
+
+				startErr := postgres.Start()
+
+				if startErr == nil {
+					semOnce.Do(func() {
+						startChan <- struct{}{}
+					})
+				} else {
+					errChan <- startErr
+				}
+			}()
 
 			return func(ctx context.Context) error {
-				return postgres.Stop()
+				if postgres != nil {
+					logger.Info("stopping embedded postgres")
+					return postgres.Stop()
+				}
+				return nil
 			}
 		})
+
+		select {
+		case <-time.After(15 * time.Second):
+			a.Logger().Fatal("unable to start embedded postgres")
+		case <-startChan:
+			a.Logger().Info("embedded postgres started")
+		}
 	}
 
 	db := a.DB()
+	rows, qErr := db.Query(ctx, "SELECT 1")
+	if qErr != nil {
+		a.Logger().Fatal("unable to query db", zap.Error(qErr))
+	}
+	defer rows.Close()
+	has := rows.Next()
+	if !has {
+		a.Logger().Fatal("unable to query db")
+	}
+
+	migrateErr := psql.Migrate(a.cfg.MigrationsDir, a.cfg.PostgresUrl)
+	if migrateErr != nil {
+		a.Logger().Fatal("unable to migrate database", zap.Error(migrateErr))
+	}
+
 	a.StartService(ctx, "db-pool", func(ctx context.Context, errChan chan error) Finalizer {
 		return func(ctx context.Context) error {
 			db.Close()

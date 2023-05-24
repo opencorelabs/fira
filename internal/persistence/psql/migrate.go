@@ -31,12 +31,22 @@ func Migrate(migrationsDir, psqlUrl string) error {
 	if err != nil {
 		return fmt.Errorf("unable to create migrator: %w", err)
 	}
+	if m != nil {
+		defer func() {
+			_, closeErr := m.Close()
+			if closeErr != nil {
+				fmt.Println("Migrator closed with error:", closeErr)
+			}
+		}()
+	}
 
 	m.Log = &mgLog{verbose: true}
 
 	merr := m.Up()
 	if merr != nil && merr != migrate.ErrNoChange {
 		return fmt.Errorf("unable to migrate: %w", merr)
+	} else {
+		fmt.Println("Migrations done - no migrations")
 	}
 
 	return nil
