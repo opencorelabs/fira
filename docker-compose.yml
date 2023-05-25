@@ -4,41 +4,29 @@ services:
     build:
       context: .
       dockerfile: dev.Dockerfile
+      args:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
     container_name: fira-dev
+    user: "${PUID}:${PGID}"
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres
     volumes:
       - .:/app
-      - node_modules:/workspace/node_modules
-      - app_modules:/workspace/apps/fira-app/node_modules
-      - sdk_modules:/workspace/libs/fira-api-sdk/node_modules
-      - next:/workspace/apps/fira-app/.next
-      - bin:/app/bin
+      - node_modules:/home/devuser/app/workspace/node_modules
+      - next:/home/devuser/app/workspace/apps/fira-app/.next
+      - bin:/home/devuser/app/bin
+      - pg_data:/home/devuser/pg
     environment:
-      FIRA_POSTGRES_URL: postgres://postgres:docker@postgres:5432/fira?sslmode=disable
-      FIRA_MIGRATIONS_DIR: /app/pg/migrations
+      FIRA_EMBEDDED_POSTGRES_BINARIES_PATH: /home/devuser/pg/bin
+      FIRA_EMBEDDED_POSTGRES_DATA_PATH: /home/devuser/pg/data
+      FIRA_POSTGRES_URL: postgres://postgres:docker@localhost:5432/fira?sslmode=disable
+      FIRA_MIGRATIONS_DIR: /home/devuser/app/pg/migrations
       FIRA_MAILGUN_DOMAIN: ${FIRA_MAILGUN_DOMAIN}
       FIRA_MAILGUN_API_KEY: ${FIRA_MAILGUN_API_KEY}
 
-  postgres:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_DB: fira
-      POSTGRES_PASSWORD: docker
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready --dbname=fira --username=postgres"]
-      interval: 1s
-      timeout: 5s
-      retries: 10
-    ports:
-      - "5432:5432"
-
 volumes:
   node_modules:
-  app_modules:
-  sdk_modules:
   bin:
   next:
+  pg_data:

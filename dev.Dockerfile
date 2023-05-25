@@ -1,13 +1,39 @@
 FROM golang:1.20-buster
 
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+ARG USERNAME=devuser
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+ARG PUID=$USER_UID
+ARG PGID=$USER_GID
+
+RUN groupadd --gid $USER_GID $USERNAME
+RUN useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+RUN groupmod -o -g $PGID "$USERNAME"
+RUN usermod -o -u $PUID "$USERNAME"
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y git make openssh-client nodejs && \
+    apt-get install -y git make openssh-client nodejs sudo && \
     go install github.com/cosmtrek/air@latest
 
-WORKDIR /app
+RUN echo "$USERNAME:$USERNAME" | chpasswd -e
+RUN usermod -aG sudo $USERNAME
+RUN echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+USER $USERNAME
+
+RUN mkdir /home/$USERNAME/go
+RUN mkdir /home/$USERNAME/app
+RUN mkdir /home/$USERNAME/npm
+RUN npm config set prefix /home/$USERNAME/npm
+
+WORKDIR /home/$USERNAME/app
+
+ENV PATH="/home/$USERNAME/npm/bin:/home/$USERNAME/go/bin:${PATH}"
+ENV NODE_PATH="/home/$USERNAME/npm/lib/node_modules:${NODE_PATH}"
+
+ENV GOPATH=/home/$USERNAME/go
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV FIRA_DEBUG=true
 ENV FIRA_CLIENT_DIR=/app/workspace/apps/fira-app
@@ -20,17 +46,14 @@ RUN mkdir workspace
 
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
-
-# libs
-COPY workspace/libs/fira-api-sdk ./workspace/libs/fira-api-sdk/
-
-# apps
-COPY workspace/apps/fira-app ./workspace/apps/fira-app/
+COPY workspace/libs ./workspace/libs
+COPY workspace/apps ./workspace/apps
+RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 RUN make reqs
 
 COPY . .
 
-WORKDIR /app/
-
-CMD ["air"]
+ENV USERNAME=$USERNAME
+ENTRYPOINT ["/bin/sh", "scripts/entrypoint.sh"]
+CMD ["./bin/server"]

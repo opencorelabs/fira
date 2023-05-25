@@ -17,7 +17,7 @@ ENV FIRA_EMBEDDED_POSTGRES_BINARIES_PATH=/code/bin/pg
 RUN go run ./cmd/bootstrap
 
 # build the client deps
-FROM node:16-alpine as clientdeps
+FROM node:20-alpine as clientdeps
 RUN apk add --no-cache libc6-compat nasm autoconf automake bash libltdl libtool gcc make g++ zlib-dev
 WORKDIR /code
 # root workspace
@@ -26,10 +26,10 @@ COPY workspace/libs/fira-api-sdk ./workspace/libs/fira-api-sdk/
 COPY workspace/apps/fira-app ./workspace/apps/fira-app/
 
 WORKDIR /code/workspace
-RUN yarn install --pure-lockfile --non-interactive --cache-folder ./ycache; rm -rf ./ycache
+RUN yarn install --pure-lockfile --non-interactive
 
 # build the client app
-FROM node:16-alpine as client
+FROM node:20-alpine as client
 
 ARG NEXTAUTH_URL
 
@@ -54,7 +54,7 @@ RUN yarn workspace @fira/api-sdk build
 RUN yarn workspace @fira/app build
 
 # final request serving image
-FROM node:16-alpine
+FROM node:20-alpine
 
 RUN apk --no-cache add ca-certificates
 
