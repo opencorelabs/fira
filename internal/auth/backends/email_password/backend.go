@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-
 	"github.com/mitchellh/mapstructure"
 	"github.com/opencorelabs/fira/internal/auth"
 	"github.com/opencorelabs/fira/internal/auth/verification"
@@ -12,9 +11,8 @@ import (
 )
 
 type Data struct {
-	Email               string
-	Password            string
-	VerificationBaseUrl string
+	Email    string
+	Password string
 }
 
 type EmailPasswordBackend struct {
@@ -46,9 +44,8 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, namespace auth.Acco
 		Namespace:       namespace,
 		CredentialsType: auth.CredentialsTypeEmailPassword,
 		Credentials: map[string]string{
-			"email":                 d.Email,
-			"password":              fmt.Sprintf("%x", pw),
-			"verification_base_url": credentials["verification_base_url"],
+			"email":    d.Email,
+			"password": fmt.Sprintf("%x", pw),
 		},
 		Email: d.Email,
 	}
