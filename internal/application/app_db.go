@@ -34,7 +34,7 @@ func (a *App) StartDB(ctx context.Context) {
 					Database(a.cfg.EmbeddedPostgres.Database).
 					Port(uint32(a.cfg.EmbeddedPostgres.Port)).
 					Version(embeddedpostgres.V15).
-					RuntimePath("/tmp/pg-runtime").
+					RuntimePath(a.cfg.EmbeddedPostgres.RuntimePath).
 					DataPath(a.cfg.EmbeddedPostgres.DataPath).
 					BinariesPath(a.cfg.EmbeddedPostgres.BinariesPath).
 					Logger(logBuf),

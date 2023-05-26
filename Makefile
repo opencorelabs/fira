@@ -1,13 +1,13 @@
-.DEFAULT_GOAL := bin/server
+.DEFAULT_GOAL := bin/fira
 
 export FIRA_MIGRATIONS_DIR=$(shell pwd)/pg/migrations
 export PUID=$(shell id -u)
 export PGID=$(shell id -g)
 
-bin/server: gen
-	@echo "Building server..."
+bin/fira: gen
+	@echo "Building fira..."
 	@mkdir -p bin
-	@go build -o bin/server ./cmd/server
+	@go build -o bin/fira ./cmd/fira
 
 .PHONY: gen
 gen: protoreqs
@@ -43,6 +43,11 @@ dev:
 	@echo "Starting dev server in docker..."
 	@docker-compose up -d --build --remove-orphans dev
 	@docker-compose logs -f dev
+
+.PHONY: dev-env
+dev-env:
+	@echo "Entering development environment in docker..."
+	@docker-compose run --rm -it --build dev bash
 
 .PHONY: ci-test
 ci-test: testreqs

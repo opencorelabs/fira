@@ -3,8 +3,8 @@ testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
-  args_bin = []
-  bin = "./bin/server"
+#  args_bin = ["./bin/fira", "serve"]
+#  bin = "./scripts/entrypoint-dev.sh"
   cmd = "make"
   delay = 0
   exclude_dir = ["workspace", "gen", "bin", "vendor", "testdata", "pg/data", "pg/bin"]
@@ -12,11 +12,11 @@ tmp_dir = "tmp"
   exclude_regex = ["_test.go"]
   exclude_unchanged = false
   follow_symlink = false
-  full_bin = ""
+  full_bin = "sh ./scripts/entrypoint-dev.sh ./bin/fira serve"
   include_dir = []
   include_ext = ["go", "proto", "yaml", "yml"]
   include_file = []
-  kill_delay = "0s"
+  kill_delay = "2s"
   log = "build-errors.log"
   poll = false
   poll_interval = 0

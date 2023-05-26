@@ -4,24 +4,18 @@ services:
     build:
       context: .
       dockerfile: dev.Dockerfile
-      args:
-        PUID: "${PUID}"
-        PGID: "${PGID}"
     container_name: fira-dev
-    user: "${PUID}:${PGID}"
     ports:
       - "8080:8080"
     volumes:
-      - .:/app
-      - node_modules:/home/devuser/app/workspace/node_modules
-      - next:/home/devuser/app/workspace/apps/fira-app/.next
-      - bin:/home/devuser/app/bin
-      - pg_data:/home/devuser/pg
+      - .:/home/lib/fira/app
+      - node_modules:/home/lib/fira/app/workspace/node_modules
+      - next:/home/lib/fira/app/workspace/apps/fira-app/.next
+      - bin:/home/lib/fira/app/bin
+      - pg_data:/var/run/fira
     environment:
-      FIRA_EMBEDDED_POSTGRES_BINARIES_PATH: /home/devuser/pg/bin
-      FIRA_EMBEDDED_POSTGRES_DATA_PATH: /home/devuser/pg/data
       FIRA_POSTGRES_URL: postgres://postgres:docker@localhost:5432/fira?sslmode=disable
-      FIRA_MIGRATIONS_DIR: /home/devuser/app/pg/migrations
+      FIRA_MIGRATIONS_DIR: /home/lib/fira/app/pg/migrations
       FIRA_MAILGUN_DOMAIN: ${FIRA_MAILGUN_DOMAIN}
       FIRA_MAILGUN_API_KEY: ${FIRA_MAILGUN_API_KEY}
 

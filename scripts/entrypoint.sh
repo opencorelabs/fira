@@ -1,5 +1,5 @@
 #!/bin/sh
 
-sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/pg
+chown -R "$USERNAME:$USERNAME" "$DATA"
 
-exec "$@"
+su-exec "$USERNAME" "$@"

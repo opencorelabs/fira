@@ -25,6 +25,7 @@ type Config struct {
 
 	EmbeddedPostgres struct {
 		Enable       bool   `default:"true"`
+		RuntimePath  string `default:"/tmp/pg-runtime" split_words:"true"`
 		BinariesPath string `default:"./pg/bin" split_words:"true"`
 		DataPath     string `default:"./pg/data" split_words:"true"`
 		Port         int    `default:"5432"`
@@ -47,10 +48,10 @@ func Init() (*Config, error) {
 		return nil, fmt.Errorf("unable to parse postgres url: %w", pgpoolErr)
 	}
 	cfg.pgpoolConfig = pgpoolConfig
-	if cfg.Debug {
-		jsonConfig, _ := json.MarshalIndent(cfg, "", "  ")
-		fmt.Println("the config is: ", string(jsonConfig))
-	}
+	//if cfg.Debug {
+	jsonConfig, _ := json.MarshalIndent(cfg, "", "  ")
+	fmt.Println("the config is: ", string(jsonConfig))
+	//}
 	return &cfg, nil
 }
 
