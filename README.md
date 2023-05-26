@@ -30,23 +30,19 @@ Any time you make changes, to either the server or the client, the changes will 
 To run the project and its dependencies natively, you'll need the following tools and configuration:
 
 * Go 1.20 or later, installed with `$GOPATH/bin` added to your `$PATH` (this is usually `$HOME/go/bin`).
-* NodeJS 16 and the latest Yarn
+* NodeJS 20 and the latest Yarn
 
-When working directly on the client, you can `cd` into the `client` directory and do most development there. Here is how it would look:
+When working directly on the client, you can `cd` into the `workspace` directory and do most development there. Here is how it would look:
 
 ```shell
-cd client
-yarn install
-yarn run dev
+cd workspace
+# build libs
+yarn workspace @fira/api-sdk build
+# run app
+yarn workspace @fira/app dev
 ```
 
 This will run the server with auto reloading and all the Next.js niceties. 
-
-For working on the API server, you will want to be running in the root of the repository. Install the Go tools necessary for development:
-
-```shell
-./scripts/install-tools.sh
-```
 
 Then you can run the server directly:
 
