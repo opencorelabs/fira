@@ -15,26 +15,31 @@ export function LandingHeader() {
             </Link>
           </Box>
           <ButtonGroup>
-            <Button
-              as={Link}
-              href="/auth/login"
-              colorScheme="primary"
-              variant="outline"
-              px={8}
-              size="sm"
-            >
-              Login
-            </Button>
-            <Button
-              as={Link}
-              href="/auth/register"
-              colorScheme="primary"
-              variant="outline"
-              px={8}
-              size="sm"
-            >
-              Register
-            </Button>
+            {/* TODO: Enable this with build/env var */}
+            {process.env.NODE_ENV === 'development' && (
+              <>
+                <Button
+                  as={Link}
+                  href="/auth/login"
+                  colorScheme="primary"
+                  variant="outline"
+                  px={8}
+                  size="sm"
+                >
+                  Login
+                </Button>
+                <Button
+                  as={Link}
+                  href="/auth/register"
+                  colorScheme="primary"
+                  variant="outline"
+                  px={8}
+                  size="sm"
+                >
+                  Register
+                </Button>
+              </>
+            )}
             <IconButton
               as={Link}
               href="https://discord.gg/uGFwMGDGku"

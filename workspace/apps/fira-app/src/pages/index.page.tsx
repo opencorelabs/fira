@@ -34,8 +34,6 @@ export default function Index() {
           as={Link}
           href="https://github.com/opencorelabs/fira"
           rightIcon={<Icon as={FaStar} color="yellow.500" />}
-          colorScheme="github"
-          variant="outline"
         >
           Star us on Github
         </Button>
