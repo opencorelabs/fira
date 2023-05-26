@@ -15,16 +15,12 @@ import {
 } from '@chakra-ui/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { signOut } from 'next-auth/react';
 import { useCallback } from 'react';
 import { RiLogoutBoxRLine, RiMoonLine, RiSettings2Line } from 'react-icons/ri';
 
-type AccountMenuProps = {
-  label: string;
-  avatar: string;
-};
+import { logout } from 'src/lib/auth';
 
-export function AccountMenu({ label, avatar }: AccountMenuProps) {
+export function AccountMenu() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onClose, onToggle } = useDisclosure();
   const router = useRouter();
@@ -34,14 +30,17 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
     md: 'right-end',
   });
 
-  const handleSignout = useCallback(() => {
-    signOut();
-  }, []);
+  const handleLogout = useCallback(async () => {
+    await logout();
+    router.push('/');
+  }, [router]);
 
   const handleLink = (href: string) => () => {
     router.push(href);
     onClose();
   };
+
+  const name = 'John Doe';
 
   return (
     <Popover isLazy placement={placement} closeOnBlur onClose={onClose} isOpen={isOpen}>
@@ -53,13 +52,13 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
           py={6}
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
-          <Avatar size="xs" src={avatar} name={label} />
+          <Avatar size="xs" src={'avatar'} name={name} />
           <Text
             fontWeight="bold"
             ml={4}
             display={{ base: 'block', md: 'none', lg: 'block' }}
           >
-            {label}
+            {name}
           </Text>
         </Button>
       </PopoverTrigger>
@@ -99,7 +98,7 @@ export function AccountMenu({ label, avatar }: AccountMenuProps) {
             justifyContent="flex-start"
             w="100%"
             variant="ghost"
-            onClick={handleSignout}
+            onClick={handleLogout}
           >
             Sign out
           </Flex>

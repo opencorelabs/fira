@@ -6,4 +6,4 @@ export default function SettingsAccount() {
   );
 }
 
-SettingsAccount.auth = true;
+SettingsAccount.authenticated = true;
