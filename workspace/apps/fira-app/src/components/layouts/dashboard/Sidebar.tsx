@@ -9,7 +9,7 @@ import { SidebarItem } from './SidebarItem';
 
 export function Sidebar() {
   return (
-    <Flex direction="column" justify="space-between" h="100%" pb={2}>
+    <Flex direction="column" justify="space-between" h="100%">
       <Box>
         <Flex
           alignItems="center"

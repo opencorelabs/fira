@@ -14,7 +14,6 @@ type HeaderProps = {
 
 export function Header({ onOpen }: HeaderProps) {
   const { colorMode, toggleColorMode } = useColorMode();
-  const bg = useColorModeValue('white', 'gray.800');
 
   return (
     <Flex
@@ -23,7 +22,6 @@ export function Header({ onOpen }: HeaderProps) {
       justify={{ base: 'space-between', md: 'flex-end' }}
       py={4}
       px={6}
-      bg={bg}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.600')}
     >
