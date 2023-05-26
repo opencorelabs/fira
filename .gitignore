@@ -24,3 +24,5 @@ go.work
 /tmp
 junit-out.xml
 coverage.out
+/pg/data
+/pg/bin

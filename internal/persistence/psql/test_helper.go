@@ -10,6 +10,7 @@ import (
 	"github.com/opencorelabs/fira/internal/config"
 	"github.com/opencorelabs/fira/internal/persistence/snowflake"
 	"github.com/stretchr/testify/suite"
+	"go.uber.org/zap"
 	"strings"
 )
 
@@ -56,7 +57,7 @@ func (h *TestHelper) Migrate() {
 	_, schemaErr := h.db.Exec(context.Background(), fmt.Sprintf(`DROP SCHEMA IF EXISTS %s; CREATE SCHEMA %s`, h.schemaName, h.schemaName))
 	h.s.Require().NoErrorf(schemaErr, "error creating schema %s", h.schemaName)
 
-	migrateErr := Migrate(h.migrationsDir, h.pgUrl)
+	migrateErr := Migrate(h, h.migrationsDir, h.pgUrl)
 	h.s.Require().NoErrorf(migrateErr, "error migrating database")
 }
 
@@ -90,4 +91,8 @@ func (h *TestHelper) randSchemaName() string {
 	_, readErr := rand.Read(buff)
 	h.s.Require().NoErrorf(readErr, "error generating random schema name")
 	return fmt.Sprintf("test_%s", hex.EncodeToString(buff))
+}
+
+func (h *TestHelper) Logger() *zap.Logger {
+	return zap.L()
 }
