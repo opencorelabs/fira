@@ -16,6 +16,7 @@ primary_region = "sea"
 [build.args]
   NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
   NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
+  NODE_OPTIONS= "--max_old_space_size=4096"
 
 [env]
   FIRA_BIND_HTTP = "0.0.0.0:8080"
@@ -23,3 +24,4 @@ primary_region = "sea"
   FIRA_EMBEDDED_POSTGRES_ENABLE = "false"
   NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
   NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
+  NODE_OPTIONS= "--max_old_space_size=4096"
