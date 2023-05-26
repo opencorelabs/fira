@@ -23,37 +23,37 @@ const accounts = [
     id: '1',
     name: 'Bank of America',
     type: 'bank',
-    logo: './logos/bankofamerica.svg',
+    logo: './app/logos/bankofamerica.svg',
   },
   {
     id: '2',
     name: 'Chase',
     type: 'bank',
-    logo: './logos/chase.svg',
+    logo: './app/logos/chase.svg',
   },
   {
     id: '3',
     name: 'Wells Fargo',
     type: 'bank',
-    logo: './logos/wellsfargo.svg',
+    logo: './app/logos/wellsfargo.svg',
   },
   {
     id: '4',
     name: 'Vanguard',
     type: 'brokerage',
-    logo: './logos/vanguard.svg',
+    logo: './app/logos/vanguard.svg',
   },
   {
     id: '5',
     name: 'Coinbase',
     type: 'crypto',
-    logo: './logos/coinbase.svg',
+    logo: './app/logos/coinbase.svg',
   },
   {
     id: '6',
     name: 'Robinhood',
     type: 'brokerage',
-    logo: './logos/robinhood.svg',
+    logo: './app/logos/robinhood.svg',
   },
 ];
 

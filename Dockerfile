@@ -27,10 +27,10 @@ RUN yarn install --pure-lockfile --non-interactive --cache-folder ./ycache; rm -
 # build the client app
 FROM node:16-alpine as client
 
-ARG NEXTAUTH_URL
+ARG BASE_URL
 
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV NEXTAUTH_URL=$NEXTAUTH_URL
+ENV BASE_URL=$BASE_URL
 
 WORKDIR /code
 
