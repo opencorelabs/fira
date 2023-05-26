@@ -36,6 +36,15 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
   context: GetServerSidePropsContext
 ) {
   try {
+    if (context.req.session?.user?.verified) {
+      return {
+        redirect: {
+          destination: '/dashboard',
+          permanent: false,
+        },
+      };
+    }
+
     if (context.query?.verification_token) {
       // Send validation request to API and rediect to dashboard
       const response = await getApi().firaServiceVerifyAccount({
