@@ -48,10 +48,10 @@ func Init() (*Config, error) {
 		return nil, fmt.Errorf("unable to parse postgres url: %w", pgpoolErr)
 	}
 	cfg.pgpoolConfig = pgpoolConfig
-	//if cfg.Debug {
-	jsonConfig, _ := json.MarshalIndent(cfg, "", "  ")
-	fmt.Println("the config is: ", string(jsonConfig))
-	//}
+	if cfg.Debug {
+		jsonConfig, _ := json.MarshalIndent(cfg, "", "  ")
+		fmt.Println("the config is: ", string(jsonConfig))
+	}
 	return &cfg, nil
 }
 
