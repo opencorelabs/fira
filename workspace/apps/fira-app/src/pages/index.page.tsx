@@ -48,7 +48,7 @@ export default function Index() {
       </ButtonGroup>
       <Box>
         <LandingImage
-          src="/app/images/fira-screenshot.png"
+          src="/images/fira-screenshot.png"
           alt="Fira Screenshot"
           width={700}
           height={555}
