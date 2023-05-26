@@ -28,7 +28,7 @@ func (a *App) StartFrontend(ctx context.Context) error {
 	if a.cfg.Debug {
 		yarnArgs = append(yarnArgs, "workspace", "@fira/app", "dev")
 	} else {
-		yarnArgs = append(yarnArgs, "run", "start")
+		yarnArgs = append(yarnArgs, "NODE_OPTIONS=\"--max_old_space_size=4096\"", "run", "start")
 	}
 
 	feUrl, feUrlErr := url.Parse(a.cfg.FrontendUrl)
