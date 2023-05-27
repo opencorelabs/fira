@@ -29,6 +29,11 @@ ENV PATH="$HOME/npm/bin:$HOME/go/bin:${PATH}"
 ENV NODE_PATH="$HOME/npm/lib/node_modules:${NODE_PATH}"
 ENV GOPATH=$HOME/go
 
+VOLUME $HOME/app/workspace/node_modules
+VOLUME $HOME/app/workspace/apps/fira-app/.next
+VOLUME $GOPATH
+VOLUME $DATA
+
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV FIRA_DEBUG=true
 ENV FIRA_CLIENT_DIR=$HOME/app/workspace
@@ -39,18 +44,13 @@ ENV FIRA_EMBEDDED_POSTGRES_RUNTIME_PATH=$DATA/runtime
 
 COPY go.mod go.sum Makefile ./
 
-# Setup workspace
-RUN mkdir workspace
-
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
 COPY workspace/libs ./workspace/libs
 COPY workspace/apps ./workspace/apps
-RUN chown -R $USERNAME:$USERNAME $HOME
 
 RUN make reqs
 
 COPY . .
 
-# ENTRYPOINT ["/bin/sh", "scripts/entrypoint-dev.sh"]
 CMD ["air"]
