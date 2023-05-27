@@ -14,10 +14,13 @@ primary_region = "sea"
   min_machines_running = 1
 
 [build.args]
-  NEXTAUTH_URL = "https://fira.opencorelabs.org"
+  NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
+  NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
 
 [env]
   FIRA_BIND_HTTP = "0.0.0.0:8080"
   NODE_ENV = "production"
-  NEXTAUTH_URL = "https://fira.opencorelabs.org"
   FIRA_EMBEDDED_POSTGRES_ENABLE = "false"
+  NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
+  NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
+  NODE_OPTIONS = "--max-old-space-size=128"

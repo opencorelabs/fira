@@ -9,18 +9,8 @@ services:
       - "8080:8080"
     volumes:
       - .:/home/lib/fira/app
-      - node_modules:/home/lib/fira/app/workspace/node_modules
-      - next:/home/lib/fira/app/workspace/apps/fira-app/.next
-      - bin:/home/lib/fira/app/bin
-      - pg_data:/var/run/fira
     environment:
       FIRA_POSTGRES_URL: postgres://postgres:docker@localhost:5432/fira?sslmode=disable
       FIRA_MIGRATIONS_DIR: /home/lib/fira/app/pg/migrations
       FIRA_MAILGUN_DOMAIN: ${FIRA_MAILGUN_DOMAIN}
       FIRA_MAILGUN_API_KEY: ${FIRA_MAILGUN_API_KEY}
-
-volumes:
-  node_modules:
-  bin:
-  next:
-  pg_data:

@@ -20,10 +20,11 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-export function Layout({ children }: LayoutProps) {
+export function DashboardLayout({ children }: LayoutProps) {
   const sidebarWidth = useBreakpointValue({ base: '100%', md: '75px', lg: '240px' });
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const bg = useColorModeValue('white', 'gray.800');
+  const sidebarBg = useColorModeValue('white', 'gray.800');
+  const mainBg = useColorModeValue('gray.100', 'gray.800');
 
   return (
     <Flex height="100vh">
@@ -31,7 +32,7 @@ export function Layout({ children }: LayoutProps) {
         as="nav"
         width={sidebarWidth}
         maxWidth={sidebarWidth}
-        bg={bg}
+        bg={sidebarBg}
         borderRightWidth="1px"
         borderRightColor={useColorModeValue('gray.200', 'gray.600')}
         display={{ base: 'none', md: 'block' }}
@@ -39,18 +40,18 @@ export function Layout({ children }: LayoutProps) {
       >
         <Sidebar />
       </Box>
-      <Box flex={1} overflow="auto">
+      <Flex flex={1} overflow="auto" bg={mainBg} minH="100vh" direction="column">
         <Header onOpen={onOpen} />
-        <Box as="main" p={6}>
+        <Box as="main" p={6} flex={1}>
           {children}
         </Box>
         <Footer />
-      </Box>
+      </Flex>
       <Drawer placement="left" onClose={onClose} isOpen={isOpen} size="full">
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerBody bg={bg}>
+          <DrawerBody bg={sidebarBg}>
             <Sidebar />
           </DrawerBody>
         </DrawerContent>
