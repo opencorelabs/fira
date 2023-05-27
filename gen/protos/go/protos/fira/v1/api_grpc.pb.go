@@ -31,6 +31,7 @@ const (
 	FiraService_InvalidateAppToken_FullMethodName    = "/protos.fira.v1.FiraService/InvalidateAppToken"
 	FiraService_CompletePasswordReset_FullMethodName = "/protos.fira.v1.FiraService/CompletePasswordReset"
 	FiraService_GetAccount_FullMethodName            = "/protos.fira.v1.FiraService/GetAccount"
+	FiraService_GetInstitutions_FullMethodName       = "/protos.fira.v1.FiraService/GetInstitutions"
 	FiraService_CreateLinkSession_FullMethodName     = "/protos.fira.v1.FiraService/CreateLinkSession"
 	FiraService_GetLinkSession_FullMethodName        = "/protos.fira.v1.FiraService/GetLinkSession"
 )
@@ -63,6 +64,7 @@ type FiraServiceClient interface {
 	CompletePasswordReset(ctx context.Context, in *CompletePasswordResetRequest, opts ...grpc.CallOption) (*CompletePasswordResetResponse, error)
 	// Retrieve the account information for the currently logged in account holder.
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*GetAccountResponse, error)
+	GetInstitutions(ctx context.Context, in *GetInstitutionsRequest, opts ...grpc.CallOption) (*GetInstitutionsResponse, error)
 	// Create a new link session. This will return a URL to redirect the user to where they will be able to select a
 	// financial institution to connect to and log in.
 	CreateLinkSession(ctx context.Context, in *CreateLinkSessionRequest, opts ...grpc.CallOption) (*CreateLinkSessionResponse, error)
@@ -186,6 +188,15 @@ func (c *firaServiceClient) GetAccount(ctx context.Context, in *GetAccountReques
 	return out, nil
 }
 
+func (c *firaServiceClient) GetInstitutions(ctx context.Context, in *GetInstitutionsRequest, opts ...grpc.CallOption) (*GetInstitutionsResponse, error) {
+	out := new(GetInstitutionsResponse)
+	err := c.cc.Invoke(ctx, FiraService_GetInstitutions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *firaServiceClient) CreateLinkSession(ctx context.Context, in *CreateLinkSessionRequest, opts ...grpc.CallOption) (*CreateLinkSessionResponse, error) {
 	out := new(CreateLinkSessionResponse)
 	err := c.cc.Invoke(ctx, FiraService_CreateLinkSession_FullMethodName, in, out, opts...)
@@ -232,6 +243,7 @@ type FiraServiceServer interface {
 	CompletePasswordReset(context.Context, *CompletePasswordResetRequest) (*CompletePasswordResetResponse, error)
 	// Retrieve the account information for the currently logged in account holder.
 	GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error)
+	GetInstitutions(context.Context, *GetInstitutionsRequest) (*GetInstitutionsResponse, error)
 	// Create a new link session. This will return a URL to redirect the user to where they will be able to select a
 	// financial institution to connect to and log in.
 	CreateLinkSession(context.Context, *CreateLinkSessionRequest) (*CreateLinkSessionResponse, error)
@@ -279,6 +291,9 @@ func (UnimplementedFiraServiceServer) CompletePasswordReset(context.Context, *Co
 }
 func (UnimplementedFiraServiceServer) GetAccount(context.Context, *GetAccountRequest) (*GetAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
+}
+func (UnimplementedFiraServiceServer) GetInstitutions(context.Context, *GetInstitutionsRequest) (*GetInstitutionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInstitutions not implemented")
 }
 func (UnimplementedFiraServiceServer) CreateLinkSession(context.Context, *CreateLinkSessionRequest) (*CreateLinkSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateLinkSession not implemented")
@@ -515,6 +530,24 @@ func _FiraService_GetAccount_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FiraService_GetInstitutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInstitutionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FiraServiceServer).GetInstitutions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FiraService_GetInstitutions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FiraServiceServer).GetInstitutions(ctx, req.(*GetInstitutionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FiraService_CreateLinkSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateLinkSessionRequest)
 	if err := dec(in); err != nil {
@@ -605,6 +638,10 @@ var FiraService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccount",
 			Handler:    _FiraService_GetAccount_Handler,
+		},
+		{
+			MethodName: "GetInstitutions",
+			Handler:    _FiraService_GetInstitutions_Handler,
 		},
 		{
 			MethodName: "CreateLinkSession",

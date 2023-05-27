@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package protos.fira.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/opencorelabs/fira/gen/protos/go/protos/v1;v1";
+
+enum InstitutionSimpleStatus {
+  INSTITUTION_SIMPLE_STATUS_UNSPECIFIED = 0;
+  INSTITUTION_SIMPLE_STATUS_GREEN = 1;
+  INSTITUTION_SIMPLE_STATUS_YELLOW = 2;
+  INSTITUTION_SIMPLE_STATUS_RED = 3;
+}
+
+message Institution {
+  string id = 1;
+  string name = 2;
+  string website = 3;
+  string logo = 5;
+  string primary_color = 6;
+  bool oauth = 7;
+  google.protobuf.Timestamp created_at = 50;
+  google.protobuf.Timestamp updated_at = 51;
+  InstitutionSimpleStatus simple_status = 90;
+  string notice = 91;
+}

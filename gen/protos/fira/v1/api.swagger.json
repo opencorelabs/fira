@@ -411,6 +411,50 @@
         ]
       }
     },
+    "/api/v1/institutions": {
+      "get": {
+        "operationId": "FiraService_GetInstitutions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/v1Institution"
+              }
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "searchString",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "countryCodes",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "FiraService"
+        ]
+      }
+    },
     "/api/v1/link": {
       "post": {
         "summary": "Create a new link session. This will return a URL to redirect the user to where they will be able to select a\nfinancial institution to connect to and log in.",
@@ -831,6 +875,18 @@
         }
       }
     },
+    "v1GetInstitutionsResponse": {
+      "type": "object",
+      "properties": {
+        "institutions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Institution"
+          }
+        }
+      }
+    },
     "v1GetLinkSessionResponse": {
       "type": "object",
       "properties": {
@@ -838,6 +894,53 @@
           "$ref": "#/definitions/v1LinkSession"
         }
       }
+    },
+    "v1Institution": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "logo": {
+          "type": "string"
+        },
+        "primaryColor": {
+          "type": "string"
+        },
+        "oauth": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "simpleStatus": {
+          "$ref": "#/definitions/v1InstitutionSimpleStatus"
+        },
+        "notice": {
+          "type": "string"
+        }
+      }
+    },
+    "v1InstitutionSimpleStatus": {
+      "type": "string",
+      "enum": [
+        "INSTITUTION_SIMPLE_STATUS_UNSPECIFIED",
+        "INSTITUTION_SIMPLE_STATUS_GREEN",
+        "INSTITUTION_SIMPLE_STATUS_YELLOW",
+        "INSTITUTION_SIMPLE_STATUS_RED"
+      ],
+      "default": "INSTITUTION_SIMPLE_STATUS_UNSPECIFIED"
     },
     "v1InvalidateAppTokenResponse": {
       "type": "object"

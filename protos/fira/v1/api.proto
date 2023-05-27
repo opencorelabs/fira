@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "protos/fira/v1/account-requests.proto";
 import "protos/fira/v1/app-requests.proto";
+import "protos/fira/v1/institution-requests.proto";
 
 option go_package = "github.com/opencorelabs/fira/gen/protos/go/protos/v1;v1";
 
@@ -198,6 +199,13 @@ service FiraService {
     option (google.api.http) = {
       get: "/api/v1/accounts/me"
       response_body: "account"
+    };
+  }
+
+  rpc GetInstitutions(GetInstitutionsRequest) returns (GetInstitutionsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/institutions"
+      response_body: "institutions"
     };
   }
 
