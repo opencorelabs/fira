@@ -1,4 +1,4 @@
-import { Container, Flex } from '@chakra-ui/react';
+import { Container, DarkMode, Flex } from '@chakra-ui/react';
 
 import { Footer } from './Footer';
 import { Header } from './Header';
@@ -9,14 +9,16 @@ type AuthLayoutProps = {
 
 export function LoggedOutLayout({ children }: AuthLayoutProps) {
   return (
-    <Flex minH="100vh" direction="column">
-      <Header />
-      <Flex flex={1} align="center" justify="center">
-        <Container maxW="container.xl">
-          <Flex justify="center">{children}</Flex>
-        </Container>
+    <DarkMode>
+      <Flex minH="100vh" direction="column" bg="gray.900">
+        <Header />
+        <Flex flex={1} align="center" justify="center">
+          <Container maxW="container.xl">
+            <Flex justify="center">{children}</Flex>
+          </Container>
+        </Flex>
+        <Footer />
       </Flex>
-      <Footer />
-    </Flex>
+    </DarkMode>
   );
 }
