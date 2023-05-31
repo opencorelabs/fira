@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { V1CreateAccountResponse } from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -86,8 +87,19 @@ export default function Register(
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          <Button size="sm" w="full" type="submit" colorScheme="blue">
+          <Button size="sm" w="full" type="submit" colorScheme="primary">
             Sign up
+          </Button>
+          <Button
+            as={Link}
+            variant="ghost"
+            size="sm"
+            w="full"
+            type="submit"
+            colorScheme="primary"
+            href="/auth/login"
+          >
+            Have an account? Login
           </Button>
           {!!response?.errorMessage && (
             <Text color="red">

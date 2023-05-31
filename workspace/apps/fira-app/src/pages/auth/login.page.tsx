@@ -77,7 +77,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          <Button size="sm" w="full" type="submit" colorScheme="blue">
+          <Button size="sm" w="full" type="submit" colorScheme="primary">
             Login
           </Button>
           <Button
@@ -86,7 +86,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
             size="sm"
             w="full"
             type="submit"
-            colorScheme="blue"
+            colorScheme="primary"
             href="/auth/register"
           >
             Don't have an account? Sign up

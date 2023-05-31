@@ -1,16 +1,16 @@
 import { Flex } from '@chakra-ui/react';
 
 import { Footer } from './Footer';
-import { LandingHeader } from './Header';
+import { Header } from './Header';
 
-type LandingLayoutProps = {
+type LayoutProps = {
   children: React.ReactNode;
 };
 
-export function LandingLayout({ children }: LandingLayoutProps) {
+export function Layout({ children }: LayoutProps) {
   return (
     <Flex minH="100vh" direction="column" bg="black">
-      <LandingHeader />
+      <Header />
       <Flex as="main" flex={1} align="center" justify="center">
         {children}
       </Flex>

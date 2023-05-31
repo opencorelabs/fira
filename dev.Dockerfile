@@ -31,6 +31,7 @@ ENV GOPATH=$HOME/go
 
 VOLUME $HOME/app/workspace/node_modules
 VOLUME $HOME/app/workspace/apps/fira-app/.next
+VOLUME $HOME/app/workspace/apps/fira-site/.next
 VOLUME $GOPATH
 VOLUME $DATA
 

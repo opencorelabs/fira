@@ -4,7 +4,7 @@ import { FaDiscord, FaGithub } from 'react-icons/fa';
 
 import { WordMark } from 'src/components/WordMark';
 
-export function LandingHeader() {
+export function Header() {
   return (
     <header>
       <Container maxW="container.xl" py={6}>

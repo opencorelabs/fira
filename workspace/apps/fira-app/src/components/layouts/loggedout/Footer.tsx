@@ -4,7 +4,7 @@ import { WordMark } from 'src/components/WordMark';
 
 export function Footer() {
   return (
-    <Flex as="footer" p={6} bg="black">
+    <Flex as="footer" p={6} bg="gray.900">
       <Container maxW="container.xl">
         <Flex
           align="center"
