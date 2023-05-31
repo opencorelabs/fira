@@ -19,10 +19,13 @@
 
 # Go workspace file
 go.work
+
 .idea
 /bin
 /tmp
 junit-out.xml
 coverage.out
+
 /pg/data
 /pg/bin
+.env

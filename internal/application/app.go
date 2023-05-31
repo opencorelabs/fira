@@ -6,6 +6,7 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencorelabs/fira/internal/auth"
+	"github.com/opencorelabs/fira/internal/backend"
 	"github.com/opencorelabs/fira/internal/config"
 	"github.com/opencorelabs/fira/internal/developer"
 	"github.com/opencorelabs/fira/internal/email"
@@ -38,6 +39,8 @@ type App struct {
 	sfNode  *snowflake.Node
 
 	emailSender email.Sender
+
+	backend backend.Interface
 }
 
 func NewApp() (*App, error) {

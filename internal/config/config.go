@@ -34,6 +34,12 @@ type Config struct {
 		Database     string `default:"fira"`
 	} `envconfig:"EMBEDDED_POSTGRES"`
 
+	Plaid struct {
+		ClientId     string `default:"" split_words:"true"`
+		ClientSecret string `default:"" split_words:"true"`
+		Environment  string `default:"https://sandbox.plaid.com" split_words:"true"`
+	} `envconfig:"PLAID"`
+
 	pgpoolConfig *pgxpool.Config
 }
 

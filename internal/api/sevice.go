@@ -10,17 +10,20 @@ import (
 
 type FiraApiService struct {
 	v1.UnimplementedFiraServiceServer
-	acctSvc *AccountService
-	appSvc  *AppService
+	acctSvc   *AccountService
+	appSvc    *AppService
+	finAggSvc *FinancialAggregatorService
 }
 
 func New(
 	acctService *AccountService,
 	appService *AppService,
+	finAggService *FinancialAggregatorService,
 ) v1.FiraServiceServer {
 	fs := &FiraApiService{
-		acctSvc: acctService,
-		appSvc:  appService,
+		acctSvc:   acctService,
+		appSvc:    appService,
+		finAggSvc: finAggService,
 	}
 	return fs
 }
@@ -97,4 +100,12 @@ func (s *FiraApiService) CreateLinkSession(ctx context.Context, request *v1.Crea
 
 func (s *FiraApiService) GetLinkSession(ctx context.Context, request *v1.GetLinkSessionRequest) (*v1.GetLinkSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
+
+///
+/// Financial aggregator API
+///
+
+func (s *FiraApiService) GetInstitutions(ctx context.Context, request *v1.GetInstitutionsRequest) (*v1.GetInstitutionsResponse, error) {
+	return s.finAggSvc.GetInstitutions(ctx, request)
 }

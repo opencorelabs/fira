@@ -38,6 +38,7 @@ var (
 	AppRoutes = map[string]struct{}{
 		v1.FiraService_CreateLinkSession_FullMethodName: {},
 		v1.FiraService_GetLinkSession_FullMethodName:    {},
+		v1.FiraService_GetInstitutions_FullMethodName:   {},
 	}
 )
 
