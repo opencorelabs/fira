@@ -47,5 +47,5 @@ This will run the server with auto reloading and all the Next.js niceties.
 Then you can run the server directly:
 
 ```shell
-go run ./cmd/server
+go run ./cmd/fira serve
 ```
