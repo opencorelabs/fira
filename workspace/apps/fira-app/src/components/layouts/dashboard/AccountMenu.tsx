@@ -50,6 +50,7 @@ export function AccountMenu() {
           variant="ghost"
           px={4}
           py={6}
+          mb={2}
           justifyContent={{ base: 'flex-start', md: 'center', lg: 'flex-start' }}
         >
           <Avatar size="xs" src={'avatar'} name={name} />
