@@ -15,7 +15,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { routes } from 'src/config/routes';
+import { PAGE_ROUTES } from 'src/config/routes';
 import { signup } from 'src/lib/auth';
 import { withSessionSsr } from 'src/lib/session/session';
 
@@ -42,7 +42,7 @@ export default function Register(
         setResponse(null);
         const response = await signup(values);
         setResponse(response.data);
-        router.push('/auth/verify-email');
+        router.push(PAGE_ROUTES.VERIFY_EMAIL);
       } catch (error) {
         console.error(error);
       }
@@ -57,12 +57,12 @@ export default function Register(
       <Heading>Register</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
-          {/* <input name="csrfToken" type="hidden" defaultValue={csrfToken} /> */}
           <FormControl isInvalid={Boolean(errors.name)}>
             <Input
               {...register('name', { required: 'Name is required' })}
               placeholder="Name"
               type="text"
+              bg="gray.700"
             />
             <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
           </FormControl>
@@ -71,6 +71,7 @@ export default function Register(
               {...register('email', { required: 'Email is required' })}
               placeholder="Email"
               type="email"
+              bg="gray.700"
             />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
@@ -85,6 +86,7 @@ export default function Register(
               })}
               placeholder="Password"
               type="password"
+              bg="gray.700"
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
@@ -119,7 +121,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
   if (context.req.session?.user?.verified) {
     return {
       redirect: {
-        destination: routes.dashboard,
+        destination: PAGE_ROUTES.DASHBOARD,
         permanent: false,
       },
     };

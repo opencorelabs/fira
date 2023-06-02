@@ -3,7 +3,7 @@ import { V1AccountNamespace } from '@fira/api-sdk';
 import { GetServerSidePropsContext } from 'next';
 import { useCallback } from 'react';
 
-import { routes } from 'src/config/routes';
+import { PAGE_ROUTES } from 'src/config/routes';
 import { getApi } from 'src/lib/fira-api';
 import { withSessionSsr } from 'src/lib/session/session';
 
@@ -40,7 +40,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
     if (context.req.session?.user?.verified) {
       return {
         redirect: {
-          destination: routes.dashboard,
+          destination: PAGE_ROUTES.DASHBOARD,
           permanent: false,
         },
       };
@@ -62,7 +62,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
       await context.req.session.save();
       return {
         redirect: {
-          destination: routes.dashboard,
+          destination: PAGE_ROUTES.DASHBOARD,
           permanent: false,
         },
       };
@@ -78,7 +78,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
   if (!context.req.session?.user) {
     return {
       redirect: {
-        destination: routes.login,
+        destination: PAGE_ROUTES.LOGIN,
         permanent: false,
       },
     };

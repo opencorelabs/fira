@@ -3,7 +3,7 @@ import { getIronSession } from 'iron-session/edge';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { routes } from 'src/config/routes';
+import { PAGE_ROUTES } from 'src/config/routes';
 import { options } from 'src/lib/session/utils';
 
 const strings = [
@@ -30,12 +30,12 @@ export const middleware = async (req: NextRequest) => {
 
   // if user is not logged in, redirect to login page
   if (!user) {
-    return NextResponse.redirect(new URL(routes.login, req.url));
+    return NextResponse.redirect(new URL(PAGE_ROUTES.LOGIN, req.url));
   }
 
   // if user is not verified, redirect to verify-email page
   if (!user?.verified) {
-    return NextResponse.redirect(new URL(routes.verifyEmail, req.url));
+    return NextResponse.redirect(new URL(PAGE_ROUTES.VERIFY_EMAIL, req.url));
   }
 
   return res;
