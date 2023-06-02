@@ -67,6 +67,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
               placeholder="Email"
               type="email"
               bg="gray.700"
+              color="gray.100"
             />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
@@ -76,6 +77,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
               placeholder="Password"
               type="password"
               bg="gray.700"
+              color="gray.100"
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>

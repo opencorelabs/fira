@@ -1,4 +1,4 @@
-import { Box, Button, Container, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Text, useToast } from '@chakra-ui/react';
 import { V1AccountNamespace } from '@fira/api-sdk';
 import { GetServerSidePropsContext } from 'next';
 import { useCallback } from 'react';
@@ -20,15 +20,22 @@ export default function VerifyEmail() {
 
   return (
     <Container maxW="container.xl">
-      <Box>
-        <Text>Verify Email</Text>
-        <Text>
-          Didn't recieve an email?{' '}
-          <Button variant="link" onClick={handleRequestVerifyLink} colorScheme="primary">
-            Request a new verification link
-          </Button>
-        </Text>
-      </Box>
+      <Flex justify="space-between">
+        <Box>
+          <Heading color="gray.500">Verify Email</Heading>
+          <Text color="gray.500">
+            Didn't recieve an email?{' '}
+            <Button
+              variant="link"
+              onClick={handleRequestVerifyLink}
+              colorScheme="primary"
+            >
+              Request a new verification link
+            </Button>
+          </Text>
+        </Box>
+        <Box></Box>
+      </Flex>
     </Container>
   );
 }

@@ -30,12 +30,12 @@ export const middleware = async (req: NextRequest) => {
 
   // if user is not logged in, redirect to login page
   if (!user) {
-    return NextResponse.redirect(new URL(PAGE_ROUTES.LOGIN, req.url));
+    return NextResponse.redirect(new URL(`/app${PAGE_ROUTES.LOGIN}`, req.url));
   }
 
   // if user is not verified, redirect to verify-email page
   if (!user?.verified) {
-    return NextResponse.redirect(new URL(PAGE_ROUTES.VERIFY_EMAIL, req.url));
+    return NextResponse.redirect(new URL(`/app${PAGE_ROUTES.VERIFY_EMAIL}`, req.url));
   }
 
   return res;

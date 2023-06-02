@@ -54,7 +54,7 @@ export default function Register(
 
   return (
     <VStack h="full" align="center" justify="center">
-      <Heading>Register</Heading>
+      <Heading color="gray.500">Register</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
           <FormControl isInvalid={Boolean(errors.name)}>
@@ -72,6 +72,7 @@ export default function Register(
               placeholder="Email"
               type="email"
               bg="gray.700"
+              color="gray.100"
             />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
@@ -87,6 +88,7 @@ export default function Register(
               placeholder="Password"
               type="password"
               bg="gray.700"
+              color="gray.100"
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
