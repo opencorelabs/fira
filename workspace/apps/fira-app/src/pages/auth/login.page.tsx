@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { routes } from 'src/config/routes';
 import { login } from 'src/lib/auth';
 import { withSessionSsr } from 'src/lib/session/session';
 
@@ -105,13 +106,10 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
   context: GetServerSidePropsContext
 ) {
-  console.info('context', context.req.session);
-  // const csrfToken = await getCsrfToken(context);
-
   if (context.req.session?.user?.verified) {
     return {
       redirect: {
-        destination: '/dashboard',
+        destination: routes.dashboard,
         permanent: false,
       },
     };

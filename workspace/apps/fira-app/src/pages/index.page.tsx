@@ -1,3 +1,5 @@
+import { routes } from 'src/config/routes';
+
 export default function Index() {
   return null;
 }
@@ -5,7 +7,7 @@ export default function Index() {
 export async function getServerSideProps() {
   return {
     redirect: {
-      destination: '/dashboard',
+      destination: routes.dashboard,
       permanent: false,
     },
   };
