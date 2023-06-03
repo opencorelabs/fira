@@ -7,6 +7,7 @@ import (
 	"github.com/opencorelabs/fira/internal/auth/backends/email_password"
 	"github.com/opencorelabs/fira/internal/auth/stores/account_memory"
 	"github.com/opencorelabs/fira/internal/auth/verification"
+	"github.com/opencorelabs/fira/internal/backend"
 	"github.com/opencorelabs/fira/internal/developer"
 	"github.com/opencorelabs/fira/internal/developer/stores/app_memory"
 	"github.com/stretchr/testify/suite"
@@ -46,8 +47,9 @@ func (s *FiraApiSuite) BeforeTest(_, _ string) {
 
 	acctSvc := NewAccountService(s, authReg, authJwtMgr, s)
 	appSvc := NewAppService(s, appJwtMgr, s)
+	finAggSvc := NewFinancialAggregatorService(s)
 
-	s.api = New(acctSvc, appSvc)
+	s.api = New(acctSvc, appSvc, finAggSvc)
 }
 
 func (s *FiraApiSuite) Logger() *zap.Logger {
@@ -64,4 +66,8 @@ func (s *FiraApiSuite) AppStore() developer.AppStore {
 
 func (s *FiraApiSuite) Email() verification.Verifier {
 	return verification.NewLoggingVerifier(s, s)
+}
+
+func (s *FiraApiSuite) Backend() backend.Interface {
+	return nil
 }
