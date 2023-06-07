@@ -134,7 +134,4 @@ func (a *App) StartHTTP(ctx context.Context) {
 	})
 
 	a.mux.Handle("/swagger-ui/", http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./dist/swagger-ui"))))
-
-	// Serve the marketing site if we're not in debug mode
-	a.mux.Handle("/site", http.StripPrefix("/site", http.FileServer(http.Dir("./dist/fira-site"))))
 }

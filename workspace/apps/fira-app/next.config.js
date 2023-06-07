@@ -7,6 +7,12 @@ const config = {
     domains: [process.env.NEXT_PUBLIC_BASE_URL],
     path: '/_next/image',
   },
+  rewrites: async () => [
+    {
+      source: '/',
+      destination: process.env.NEXT_PUBLIC_BASE_PATH,
+    },
+  ],
 };
 
 module.exports = config;
