@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "rm -rf out/",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

@@ -94,6 +94,7 @@ COPY --from=client /code/workspace/apps/fira-app/public ./client/public
 COPY --from=client /code/workspace/apps/fira-app/package.json ./client/package.json
 COPY --from=client /code/workspace/apps/fira-app/.next ./client/.next
 COPY --from=client /code/workspace/node_modules ./client/node_modules
+COPY --from=client /code/workspace/apps/fira-site/out ./dist/fira-site
 COPY ./pg/migrations ./pg/migrations
 COPY ./scripts/entrypoint.sh ./entrypoint.sh
 

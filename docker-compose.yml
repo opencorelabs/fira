@@ -9,7 +9,6 @@ services:
       - "8080:8080"
     volumes:
       - .:/home/lib/fira/app
-      - .:/home/lib/fira/site
     environment:
       FIRA_POSTGRES_URL: postgres://postgres:docker@localhost:5432/fira?sslmode=disable
       FIRA_MIGRATIONS_DIR: /home/lib/fira/app/pg/migrations
