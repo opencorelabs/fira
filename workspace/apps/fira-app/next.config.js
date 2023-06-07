@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 const config = {
   reactStrictMode: true,
   pageExtensions: ['page.tsx', 'api.ts'],
@@ -7,12 +8,14 @@ const config = {
     domains: [process.env.NEXT_PUBLIC_BASE_URL],
     path: '/_next/image',
   },
-  rewrites: async () => [
-    {
-      source: '/',
-      destination: process.env.NEXT_PUBLIC_BASE_PATH,
-    },
-  ],
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        destination: process.env.NEXT_PUBLIC_BASE_PATH,
+      },
+    ];
+  },
 };
 
 module.exports = config;

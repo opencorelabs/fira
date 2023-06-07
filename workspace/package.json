@@ -9,6 +9,8 @@
     "apps/*"
   ],
   "devDependencies": {
+    "@types/node": "20.1.0",
+    "@types/react": "18.2.6",
     "@types/jest": "^29.5.1",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
@@ -24,5 +26,11 @@
     "prettier": "^2.8.7",
     "ts-jest": "^29.1.0",
     "typescript": "5.0.4"
+  },
+  "dependencies": {
+    "next": "^13.4.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sharp": "^0.32.1"
   }
 }

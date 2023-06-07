@@ -18,9 +18,8 @@ RUN apk add --no-cache libc6-compat nasm autoconf automake bash libltdl libtool 
 WORKDIR /code
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
-COPY workspace/libs/fira-api-sdk ./workspace/libs/fira-api-sdk/
-COPY workspace/apps/fira-app ./workspace/apps/fira-app/
-COPY workspace/apps/fira-site ./workspace/apps/fira-site/
+COPY workspace/libs ./workspace/libs
+COPY workspace/apps ./workspace/apps
 
 WORKDIR /code/workspace
 RUN yarn install --pure-lockfile --non-interactive
@@ -29,10 +28,12 @@ RUN yarn install --pure-lockfile --non-interactive
 FROM node:20-alpine as client
 
 ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_BASE_PATH
 ARG NEXT_PUBLIC_VERIFICATION_BASE_URL
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 ENV NEXT_PUBLIC_VERIFICATION_BASE_URL=$NEXT_PUBLIC_VERIFICATION_BASE_URL
 
 WORKDIR /code
@@ -42,10 +43,7 @@ RUN mkdir workspace
 COPY --from=clientdeps /code/workspace/node_modules ./workspace/node_modules
 COPY --from=clientdeps /code/workspace/package.json ./workspace/package.json
 COPY --from=clientdeps /code/workspace/yarn.lock ./workspace/yarn.lock
-COPY ./workspace/.eslintrc.js ./workspace/.eslintrc.js
-COPY ./workspace/libs/fira-api-sdk ./workspace/libs/fira-api-sdk/
-COPY ./workspace/apps/fira-app ./workspace/apps/fira-app/
-COPY ./workspace/apps/fira-site ./workspace/apps/fira-site/
+COPY ./workspace ./workspace
 
 WORKDIR /code/workspace
 # build libs
