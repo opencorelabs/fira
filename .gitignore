@@ -26,3 +26,7 @@ junit-out.xml
 coverage.out
 /pg/data
 /pg/bin
+.env
+.venv
+.DS_Store
+__pycache__
