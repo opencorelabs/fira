@@ -1,8 +1,9 @@
-import { Box, Button, Container, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, Text, useToast } from '@chakra-ui/react';
 import { V1AccountNamespace } from '@fira/api-sdk';
 import { GetServerSidePropsContext } from 'next';
 import { useCallback } from 'react';
 
+import { PAGE_ROUTES } from 'src/config/routes';
 import { getApi } from 'src/lib/fira-api';
 import { withSessionSsr } from 'src/lib/session/session';
 
@@ -19,15 +20,22 @@ export default function VerifyEmail() {
 
   return (
     <Container maxW="container.xl">
-      <Box>
-        <Text>Verify Email</Text>
-        <Text>
-          Didn't recieve an email?{' '}
-          <Button variant="link" onClick={handleRequestVerifyLink} colorScheme="primary">
-            Request a new verification link
-          </Button>
-        </Text>
-      </Box>
+      <Flex justify="space-between">
+        <Box>
+          <Heading color="gray.500">Verify Email</Heading>
+          <Text color="gray.500">
+            Didn't recieve an email?{' '}
+            <Button
+              variant="link"
+              onClick={handleRequestVerifyLink}
+              colorScheme="primary"
+            >
+              Request a new verification link
+            </Button>
+          </Text>
+        </Box>
+        <Box></Box>
+      </Flex>
     </Container>
   );
 }
@@ -39,7 +47,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
     if (context.req.session?.user?.verified) {
       return {
         redirect: {
-          destination: '/dashboard',
+          destination: PAGE_ROUTES.DASHBOARD,
           permanent: false,
         },
       };
@@ -61,7 +69,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
       await context.req.session.save();
       return {
         redirect: {
-          destination: '/dashboard',
+          destination: PAGE_ROUTES.DASHBOARD,
           permanent: false,
         },
       };
@@ -77,7 +85,7 @@ export const getServerSideProps = withSessionSsr(async function getServerSidePro
   if (!context.req.session?.user) {
     return {
       redirect: {
-        destination: '/auth/login',
+        destination: PAGE_ROUTES.LOGIN,
         permanent: false,
       },
     };

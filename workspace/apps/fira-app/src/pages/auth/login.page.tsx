@@ -14,6 +14,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { PAGE_ROUTES } from 'src/config/routes';
 import { login } from 'src/lib/auth';
 import { withSessionSsr } from 'src/lib/session/session';
 
@@ -43,7 +44,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
       try {
         setResponse(null);
         const response = await login(values);
-        router.push((router.query?.callbackUrl as string) ?? '/dashboard');
+        router.push((router.query?.callbackUrl as string) ?? PAGE_ROUTES.DASHBOARD);
         response && setResponse(response);
       } catch (error) {
         console.error(error.message);
@@ -57,15 +58,16 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
 
   return (
     <VStack h="full" align="center" justify="center">
-      <Heading>Login</Heading>
+      <Heading color="gray.500">Login</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
-          {/* <input name="csrfToken" type="hidden" defaultValue={csrfToken} /> */}
           <FormControl isInvalid={Boolean(errors.email)}>
             <Input
               {...register('email', { required: 'required' })}
               placeholder="Email"
               type="email"
+              bg="gray.700"
+              color="gray.100"
             />
             <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
@@ -74,6 +76,8 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
               {...register('password', { required: 'required' })}
               placeholder="Password"
               type="password"
+              bg="gray.700"
+              color="gray.100"
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
@@ -105,13 +109,10 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
   context: GetServerSidePropsContext
 ) {
-  console.info('context', context.req.session);
-  // const csrfToken = await getCsrfToken(context);
-
   if (context.req.session?.user?.verified) {
     return {
       redirect: {
-        destination: '/dashboard',
+        destination: PAGE_ROUTES.DASHBOARD,
         permanent: false,
       },
     };

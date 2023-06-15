@@ -1,10 +1,12 @@
+import { API_WITH_BASEPATH } from 'src/config/routes';
+
 type LoginRequest = {
   email: string;
   password: string;
 };
 
 export async function login(data: LoginRequest, options = {}) {
-  const response = await fetch('/api/auth/login', {
+  const response = await fetch(API_WITH_BASEPATH.LOGIN, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -20,7 +22,7 @@ type RegisterRequest = {
 };
 
 export async function signup(data: RegisterRequest, options = {}) {
-  const response = await fetch('/api/auth/register', {
+  const response = await fetch(API_WITH_BASEPATH.REGISTER, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -30,7 +32,7 @@ export async function signup(data: RegisterRequest, options = {}) {
 }
 
 export async function logout() {
-  const response = await fetch('/api/auth/logout', {
+  const response = await fetch(API_WITH_BASEPATH.LOGOUT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });

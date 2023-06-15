@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"github.com/opencorelabs/fira/internal/application"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
-	"os"
 )
 
 func main() {
@@ -47,7 +48,6 @@ func main() {
 					return nil
 				},
 			},
-
 			{
 				Name:  "bootstrap",
 				Usage: "Bootstrap the embedded database environment",

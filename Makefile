@@ -37,6 +37,9 @@ clientreqs:
 	@which yarn >/dev/null 2>&1 || npm install -g yarn
 	@cd ./workspace && yarn install --pure-lockfile --non-interactive
 	@cd ./workspace && yarn workspace @fira/api-sdk build
+	@cd ./workspace && yarn workspace @fira/site build
+	@mkdir -p ./dist/fira-site
+	@cp -r ./workspace/apps/fira-site/out ./dist/fira-site
 
 .PHONY: dev
 dev:

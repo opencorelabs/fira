@@ -26,3 +26,5 @@ junit-out.xml
 coverage.out
 /pg/data
 /pg/bin
+
+/dist/fira-site
