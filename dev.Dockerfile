@@ -3,6 +3,7 @@ FROM alpine:3.18
 RUN apk add --no-cache \
     bash \
     python3 \
+    py3-pip \
     curl \
     git \
     nginx \
@@ -12,7 +13,7 @@ RUN apk add --no-cache \
     supervisor \
     yarn
 
-RUN mkdir /fira
+RUN mkdir -p /fira/backend
 
 WORKDIR /fira
 
@@ -23,13 +24,21 @@ VOLUME /data
 
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV DEBUG=true
+ENV DB_DIR=/data
+ENV DJANGO_SUPERUSER_USERNAME=admin
+ENV DJANGO_SUPERUSER_PASSWORD=password
+ENV DJANGO_SUPERUSER_EMAIL=dev@opencorelabs.org
 
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
 COPY workspace/libs ./workspace/libs
 COPY workspace/apps ./workspace/apps
 
-RUN cd workspace && yarn install --pure-lockfile --non-interactive
+RUN --mount=type=cache,target=/root/.yarn cd workspace && YARN_CACHE_FOLDER=/root/.yarn yarn install --pure-lockfile --non-interactive
+
+COPY backend/requirements.txt ./backend/
+
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r backend/requirements.txt
 
 COPY conf/dev-nginx.conf /etc/nginx/nginx.conf
 COPY conf/dev-supervisord.conf /etc/supervisor/conf.d/supervisord.conf

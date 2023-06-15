@@ -11,22 +11,30 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# set default DB_DIR to the parent directory of the project unless set in the environment
+DB_DIR = Path(os.environ.setdefault('DB_DIR', str(Path(__file__).parent.parent.absolute())))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bks3o4#6$03ejz!i!c%xsa9cr_@%z0x=9+9^+(3uq^z93c&u%5'
+SECRET_KEY = os.environ.setdefault('SECRET_KEY', 'django-insecure-bks3o4#6$03ejz!i!c%xsa9cr_@%z0x=9+9^+(3uq^z93c&u%5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.setdefault('DEBUG', 'true') == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost'
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080'
+]
 
 # Application definition
 
@@ -37,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'backend',  # for the mgmt commands
     'accounts',
 ]
 
@@ -77,7 +86,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_DIR / 'db.sqlite3',
     }
 }
 
@@ -116,7 +125,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'adminstatic/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
