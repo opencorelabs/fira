@@ -1,4 +1,6 @@
-# fira
+# Fira
+
+Fira is an open-source personal financial management system designed for self-hosting. It allows you to visualize all your personal financial data securely on your own infrasturcture. Fira is under active development and considered pre-release software. Use at your own risk.
 
 ## Community
 Join our Discord:
