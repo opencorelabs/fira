@@ -55,6 +55,8 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 # Application definition
 
+AUTH_USER_MODEL = 'accounts.User'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -101,6 +103,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
+        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),
         conn_max_age=600,
         conn_health_checks=True,
     ),

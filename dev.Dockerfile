@@ -4,6 +4,7 @@ RUN apk add --no-cache \
     bash \
     python3 \
     py3-pip \
+    py3-psycopg2 \
     curl \
     git \
     nginx \
@@ -28,6 +29,7 @@ ENV DB_DIR=/data
 ENV DJANGO_SUPERUSER_USERNAME=admin
 ENV DJANGO_SUPERUSER_PASSWORD=password
 ENV DJANGO_SUPERUSER_EMAIL=dev@opencorelabs.org
+ENV DATABASE_URL=sqlite:////data/db.sqlite3
 
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/

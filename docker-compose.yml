@@ -9,22 +9,6 @@ services:
       - "8080:8080"
     volumes:
       - .:/fira
-    depends_on:
-      - postgres
     environment:
-      DATABASE_URL: postgres://postgres:docker@localhost:5432/fira?sslmode=disable
       FIRA_MAILGUN_DOMAIN: ${FIRA_MAILGUN_DOMAIN}
       FIRA_MAILGUN_API_KEY: ${FIRA_MAILGUN_API_KEY}
-  postgres:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: fira
-
-volumes:
-  pgdata:
