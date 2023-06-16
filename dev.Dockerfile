@@ -26,9 +26,8 @@ VOLUME /data
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV DEBUG=true
 ENV DB_DIR=/data
-ENV DJANGO_SUPERUSER_USERNAME=admin
 ENV DJANGO_SUPERUSER_PASSWORD=password
-ENV DJANGO_SUPERUSER_EMAIL=dev@opencorelabs.org
+ENV DJANGO_SUPERUSER_EMAIL=admin@opencorelabs.org
 ENV DATABASE_URL=sqlite:////data/db.sqlite3
 
 # root workspace

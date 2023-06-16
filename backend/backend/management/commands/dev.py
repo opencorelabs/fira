@@ -10,9 +10,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         call_command('migrate')
         User = get_user_model()
-        username = os.environ.setdefault('DJANGO_SUPERUSER_USERNAME', 'admin')
         password = os.environ.setdefault('DJANGO_SUPERUSER_PASSWORD', 'admin')
         email = os.environ.setdefault('DJANGO_SUPERUSER_EMAIL', 'test@test.net')
-        if not User.objects.filter(username=username).exists():
-            User.objects.create_superuser(username=username, password=password, email=email)
+        if not User.objects.filter(email=email).exists():
+            User.objects.create_superuser(email=email, password=password)
         call_command('runserver')
