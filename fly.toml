@@ -7,7 +7,7 @@ app = "fira"
 primary_region = "sea"
 
 [http_service]
-  internal_port = 8080
+  internal_port = 80
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
@@ -18,9 +18,8 @@ primary_region = "sea"
   NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
 
 [env]
-  FIRA_BIND_HTTP = "0.0.0.0:8080"
   NODE_ENV = "production"
-  FIRA_EMBEDDED_POSTGRES_ENABLE = "false"
+  HOST = "fira.opencorelabs.org"
   NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
   NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
   NODE_OPTIONS = "--max-old-space-size=128"
