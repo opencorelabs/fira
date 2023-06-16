@@ -1,0 +1,5 @@
+django==4.2.2
+tzdata
+sentry-sdk
+dj-database-url
+django-ninja
