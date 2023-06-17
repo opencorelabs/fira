@@ -10,6 +10,7 @@ var (
 	ErrAccountExists      = errors.New("account already exists")
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrUnknownAuthorizer  = errors.New("unknown authorizer")
+	ErrWeakPassword       = errors.New("password should have at least 10 characters")
 )
 
 type AccountStore interface {
