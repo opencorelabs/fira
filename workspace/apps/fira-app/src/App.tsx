@@ -1,24 +1,29 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { SessionProvider } from 'next-auth/react';
 
-import { AuthLayout } from './components/layout/AuthLayout';
-import { Layout as DashboardLayout } from './components/layout/Layout';
-import { ModalProvider } from './context/ModalContext';
-import { theme } from './theme';
+import { DashboardLayout } from 'src/components/layouts/dashboard/DashboardLayout';
+import { LoggedOutLayout } from 'src/components/layouts/loggedout/Layout';
+import { ModalProvider } from 'src/context/ModalContext';
+import { theme } from 'src/theme';
+
 import { GlobalStyle } from './theme/GlobalStyle';
 
+function getLayout(Component) {
+  if (Component.authenticated) {
+    return DashboardLayout;
+  }
+  return LoggedOutLayout;
+}
+
 export function App({ Component, pageProps }) {
-  const Layout = Component.auth ? DashboardLayout : AuthLayout;
+  const Layout = getLayout(Component);
   return (
-    <SessionProvider session={pageProps.session}>
-      <ChakraProvider theme={theme}>
-        <GlobalStyle />
-        <ModalProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </ModalProvider>
-      </ChakraProvider>
-    </SessionProvider>
+    <ChakraProvider theme={theme}>
+      <GlobalStyle />
+      <ModalProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </ModalProvider>
+    </ChakraProvider>
   );
 }

@@ -12,8 +12,9 @@ import (
 )
 
 type Data struct {
-	Email    string
-	Password string
+	Email               string
+	Password            string
+	VerificationBaseUrl string
 }
 
 type EmailPasswordBackend struct {
@@ -53,9 +54,11 @@ func (e *EmailPasswordBackend) Register(ctx context.Context, namespace auth.Acco
 		Namespace:       namespace,
 		CredentialsType: auth.CredentialsTypeEmailPassword,
 		Credentials: map[string]string{
-			"email":    d.Email,
-			"password": fmt.Sprintf("%x", pw),
+			"email":                 d.Email,
+			"password":              fmt.Sprintf("%x", pw),
+			"verification_base_url": credentials["verification_base_url"],
 		},
+		Email: d.Email,
 	}
 
 	if saveErr := e.storeProvider.AccountStore().Create(ctx, acct, uniqueCredentials); saveErr != nil {

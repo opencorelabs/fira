@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"io"
 	"net/http"
 	"net/http/httputil"
@@ -13,6 +11,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func (a *App) StartFrontend(ctx context.Context) error {

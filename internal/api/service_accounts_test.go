@@ -88,6 +88,23 @@ func (s *FiraApiSuite) Test_LoginAccount_WrongPassword() {
 	s.Equal(codes.Unauthenticated, stat.Code(), "status code is not unauthenticated")
 }
 
+func (s *FiraApiSuite) Test_GetAccountMe() {
+	s.verifiedAccount()
+
+	// "login" by providing the account to the context
+	acct, getErr := s.acctStore.FindByCredentials(context.Background(), auth.AccountNamespaceConsumer, map[string]string{"email": "pnwx@opencorelabs.org"})
+	s.Require().NoErrorf(getErr, "failed to get account")
+	ctx := auth.WithAccount(context.Background(), acct)
+
+	req := &v1.GetAccountRequest{}
+	resp, err := s.api.GetAccount(ctx, req)
+	s.Require().NoErrorf(err, "failed to get account")
+	s.Require().NotNil(resp, "response is nil")
+	s.Require().Equal("pnwx@opencorelabs.org", resp.Account.Email, "email is not correct")
+	s.Require().Equal(v1.AccountCredentialType_ACCOUNT_CREDENTIAL_TYPE_EMAIL, resp.Account.CredentialType, "credential type is not correct")
+	s.Require().Equal(v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER, resp.Account.Namespace, "namespace is not correct")
+}
+
 func (s *FiraApiSuite) createAccount() (*v1.CreateAccountResponse, error) {
 	req := &v1.CreateAccountRequest{
 		Namespace: v1.AccountNamespace_ACCOUNT_NAMESPACE_CONSUMER,
