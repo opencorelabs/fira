@@ -5,10 +5,8 @@ import {
   FormErrorMessage,
   Heading,
   Input,
-  Text,
   VStack,
 } from '@chakra-ui/react';
-import { V1CreateAccountResponse } from '@fira/api-sdk';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -28,7 +26,7 @@ type FormValues = {
 export default function Register(
   _: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-  const [response, setResponse] = useState<V1CreateAccountResponse | null>(null);
+  const [, setResponse] = useState<null | Record<string, unknown>>(null);
   const router = useRouter();
   const {
     handleSubmit,
@@ -106,11 +104,13 @@ export default function Register(
           >
             Have an account? Login
           </Button>
+          {/* 
+          // TODO: Implement error handling
           {!!response?.errorMessage && (
             <Text color="red">
-              {response.errorMessage} - Status {response.status}
+              {response?.errorMessage} - Status {response?.status}
             </Text>
-          )}
+          )} */}
         </VStack>
       </Box>
     </VStack>

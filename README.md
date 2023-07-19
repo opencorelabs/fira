@@ -38,8 +38,6 @@ When working directly on the client, you can `cd` into the `workspace` directory
 
 ```shell
 cd workspace
-# build libs
-yarn workspace @fira/api-sdk build
 # run app
 yarn workspace @fira/app dev
 ```

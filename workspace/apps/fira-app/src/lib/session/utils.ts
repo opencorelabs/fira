@@ -1,5 +1,3 @@
-import { V1AccountRegistrationStatus } from '@fira/api-sdk';
-
 declare module 'iron-session' {
   interface IronSessionData {
     user?: {
@@ -8,7 +6,8 @@ declare module 'iron-session' {
       token?: string;
       name?: string;
       avatar?: string;
-      status?: V1AccountRegistrationStatus;
+      // TODO: remove this
+      // status?: V1AccountRegistrationStatus;
     };
   }
 }
