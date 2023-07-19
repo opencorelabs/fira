@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -80,9 +81,15 @@ func (a *App) StartFrontend(ctx context.Context) error {
 	// proxy requests to the next subprocess
 	proxy := httputil.NewSingleHostReverseProxy(feUrl)
 
-	a.mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		proxy.ServeHTTP(writer, request)
-	})
+	handler := func(writer http.ResponseWriter, request *http.Request) {
+		if strings.HasPrefix(request.URL.Path, "/app") {
+			proxy.ServeHTTP(writer, request)
+		} else {
+			http.StripPrefix("/", http.FileServer(http.Dir("./dist/fira-site"))).ServeHTTP(writer, request)
+		}
+	}
+
+	a.mux.HandleFunc("/", handler)
 
 	return nil
 }

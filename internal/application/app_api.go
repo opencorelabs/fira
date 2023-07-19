@@ -3,6 +3,10 @@ package application
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/http"
+	"time"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	v1 "github.com/opencorelabs/fira/gen/protos/go/protos/fira/v1"
 	"github.com/opencorelabs/fira/internal/api"
@@ -13,9 +17,6 @@ import (
 	"github.com/opencorelabs/fira/internal/developer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"net"
-	"net/http"
-	"time"
 )
 
 func (a *App) StartGRPC(ctx context.Context) error {
