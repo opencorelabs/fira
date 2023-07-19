@@ -28,3 +28,8 @@ coverage.out
 /pg/bin
 
 /dist/fira-site
+.env
+.venv
+.DS_Store
+__pycache__
+*.sqlite3
