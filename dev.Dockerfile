@@ -1,56 +1,51 @@
-FROM golang:1.20-buster
+FROM alpine:3.18
 
-ENV USERNAME=devuser
-ENV HOME=/home/lib/fira
-ENV DATA=/var/run/fira
+RUN apk add --no-cache \
+    bash \
+    python3 \
+    py3-pip \
+    py3-psycopg2 \
+    curl \
+    git \
+    nginx \
+    nodejs \
+    npm \
+    openssh \
+    supervisor \
+    yarn
 
-RUN set -eux; \
-	addgroup --gid 70 $USERNAME; \
-	adduser --uid 70 --gid 70 --home $HOME --shell /bin/sh $USERNAME; \
-	mkdir -p $HOME/bin; \
-	chown -R $USERNAME:$USERNAME $HOME
+RUN mkdir -p /fira/backend
 
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y git make openssh-client nodejs sudo gosu && \
-    go install github.com/cosmtrek/air@latest
+WORKDIR /fira
 
-RUN mkdir $HOME/go
-RUN mkdir $HOME/app
-RUN mkdir $HOME/npm
-RUN npm config set prefix $HOME/npm
-
-WORKDIR $HOME/app
-
-RUN chown -R $USERNAME:$USERNAME $HOME
-
-ENV PATH="$HOME/npm/bin:$HOME/go/bin:${PATH}"
-ENV NODE_PATH="$HOME/npm/lib/node_modules:${NODE_PATH}"
-ENV GOPATH=$HOME/go
-
-VOLUME $HOME/app/workspace/node_modules
-VOLUME $HOME/app/workspace/apps/fira-app/.next
-VOLUME $GOPATH
-VOLUME $DATA
+VOLUME /fira/workspace/node_modules
+VOLUME /fira/workspace/apps/fira-app/.next
+VOLUME /fira/workspace/apps/fira-site/.next
+VOLUME /data
 
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV FIRA_DEBUG=true
-ENV FIRA_CLIENT_DIR=$HOME/app/workspace
-ENV FIRA_BIND_HTTP=0.0.0.0:8080
-ENV FIRA_EMBEDDED_POSTGRES_DATA_PATH=$DATA/data
-ENV FIRA_EMBEDDED_POSTGRES_BINARIES_PATH=$DATA/bin
-ENV FIRA_EMBEDDED_POSTGRES_RUNTIME_PATH=$DATA/runtime
-
-COPY go.mod go.sum Makefile ./
+ENV DEBUG=true
+ENV DB_DIR=/data
+ENV DJANGO_SUPERUSER_PASSWORD=password
+ENV DJANGO_SUPERUSER_EMAIL=admin@opencorelabs.org
+ENV DATABASE_URL=sqlite:////data/db.sqlite3
 
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
 COPY workspace/libs ./workspace/libs
 COPY workspace/apps ./workspace/apps
 
-RUN make reqs
+RUN --mount=type=cache,target=/root/.yarn cd workspace && YARN_CACHE_FOLDER=/root/.yarn yarn install --pure-lockfile --non-interactive
+
+COPY backend/requirements.txt ./backend/
+
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r backend/requirements.txt
+
+COPY conf/dev-nginx.conf /etc/nginx/nginx.conf
+COPY conf/dev-supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 8080
 
 COPY . .
 
-CMD ["air"]
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
