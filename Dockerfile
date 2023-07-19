@@ -46,8 +46,6 @@ COPY --from=clientdeps /code/workspace/yarn.lock ./workspace/yarn.lock
 COPY ./workspace ./workspace
 
 WORKDIR /code/workspace
-# build libs
-RUN yarn workspace @fira/api-sdk build
 # build apps
 RUN yarn workspace @fira/app build
 RUN yarn workspace @fira/site build
