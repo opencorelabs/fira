@@ -21,7 +21,4 @@ export const API_ROUTES = {
   HEALTH_CHECK: '/api/health-check',
 };
 
-export const API_WITH_BASEPATH = makeRoutes(
-  API_ROUTES,
-  process.env.NEXT_PUBLIC_BASE_PATH
-);
+export const API_WITH_BASEPATH = makeRoutes(API_ROUTES);
