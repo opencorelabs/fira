@@ -7,7 +7,7 @@ import { PAGE_ROUTES } from 'src/config/routes';
 import { options } from 'src/lib/session/utils';
 
 const strings = [
-  '/api',
+  '/private-api',
   '/auth',
   '/_next',
   '/static',
