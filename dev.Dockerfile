@@ -20,7 +20,6 @@ WORKDIR /fira
 
 VOLUME /fira/workspace/node_modules
 VOLUME /fira/workspace/apps/fira-app/.next
-VOLUME /fira/workspace/apps/fira-site/.next
 VOLUME /data
 
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -32,7 +31,6 @@ ENV DATABASE_URL=sqlite:////data/db.sqlite3
 
 # root workspace
 COPY workspace/package.json workspace/yarn.lock ./workspace/
-COPY workspace/libs ./workspace/libs
 COPY workspace/apps ./workspace/apps
 
 RUN --mount=type=cache,target=/root/.yarn cd workspace && YARN_CACHE_FOLDER=/root/.yarn yarn install --pure-lockfile --non-interactive
