@@ -1,98 +1,61 @@
-from ninja import Router, Schema
-from .models import User
+from typing import List
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from ninja import Schema, Router
+from ninja_jwt.authentication import JWTAuth
+from .models import Account, AccountType, AccountTypeSubType
 
 router = Router(tags=['Accounts'])
 
+class AccountRequest(Schema):
+    name: str
+    type_id: str
+    subtype_id: str
 
-class EmailPasswordRegistration(Schema):
-    full_name: str
-    email_address: str
-    password: str
-    verification_url: str
+class AccountResponse(Schema):
+    name: str
+    id: int
+    type_id: str
+    subtype_id: str
 
+@router.post("/accounts", response=AccountResponse, auth=JWTAuth())
+def create_account(request, payload: AccountRequest):
+    at = get_object_or_404(AccountType, id=payload.type_id)
+    ast = get_object_or_404(AccountTypeSubType, id=payload.subtype_id)
+    account = Account.objects.create(user=request.user,name=payload.name,type=at,subtype=ast)
+    return account
 
-class EmailVerification(Schema):
-    resend_to_email: str
-    verification_code: str
-
-
-class EmailPasswordLogin(Schema):
-    email_address: str
-    password: str
-
-
-class Token(Schema):
-    jwt: str
-
-
-class Account(Schema):
-    email_address: str
-    full_name: str
-    verified: bool
-
-
-class InputError(Schema):
-    fields: dict[str, list[str]]  # map fields to list of errors
-    message: str
-
-
-@router.post('/register', response={201: Account, 400: InputError})
-def create_account(request, data: EmailPasswordRegistration):
-    if User.objects.filter(email=data.email_address).exists():
-        return 400, InputError(
-            fields={'email_address': ['Email address already in use']},
-            message='Email address already in use'
-        )
-    user = User.objects.create_user(
-        email=data.email_address,
-        password=data.password,
-        full_name=data.full_name
-    )
-    return 201, Account(
-        email_address=user.email,
-        full_name=user.full_name,
-        verified=user.verified
-    )
-
-
-@router.post('/verify', response={200: Account, 400: InputError})
-def verify_account(request, data: EmailVerification):
-    user = User.objects.filter(verification_code=data.verification_code).first()
-    if user is None:
-        return 400, InputError(
-            fields={'verification_code': ['Invalid verification code']},
-            message='Invalid verification code'
-        )
-    user.verified = True
-    user.save()
-    return 200, Account(
-        email_address=user.email,
-        full_name=user.full_name,
-        verified=user.verified
-    )
-
-
-@router.post('/login', response={200: Token, 400: InputError})
-def login(request, data: EmailPasswordLogin):
-    user = User.objects.filter(email=data.email_address).first()
-    if user is None:
-        return 400, InputError(
-            fields={'email_address': ['Email address not found']},
-            message='Email address not found'
-        )
-    if not user.check_password(data.password):
-        return 400, InputError(
-            fields={'password': ['Incorrect password']},
-            message='Incorrect password'
-        )
-    return 200, Token(jwt=user.get_jwt())
-
-
-@router.get('/me', response={200: Account})
-def get_me(request):
+@router.get("/accounts/", response=List[AccountResponse], auth=JWTAuth())
+def get_accounts(request):
     user = request.auth
-    return 200, Account(
-        email_address=user.email,
-        full_name=user.full_name,
-        verified=user.verified
-    )
+    accounts = user.account_set.all()
+    return accounts
+
+@router.get("/accounts/{account_id}", response=AccountResponse, auth=JWTAuth())
+def get_account(request, account_id: int):
+    user = request.auth
+    account = get_object_or_404(Account, Q(user_id=user.id) & Q(id=account_id))
+    return account
+
+@router.put("/accounts/{account_id}", response=AccountResponse, auth=JWTAuth())
+def update_account(request, account_id: int, payload: AccountRequest):
+    user = request.auth
+    account = get_object_or_404(Account, Q(user_id=user.id) & Q(id=account_id))
+    for attr, value in payload.dict().items():
+        setattr(account, attr, value)
+    account.save()
+    return account
+
+@router.delete("/accounts/", response={204: None}, auth=JWTAuth())
+def delete_accounts(request):
+    user = request.auth
+    user.account_set.all().delete()
+    return 204
+
+
+@router.delete("/accounts/{account_id}", response={204: None}, auth=JWTAuth())
+def delete_account(request, account_id: int):
+    user = request.auth
+    account = get_object_or_404(Account, Q(user_id=user.id) & Q(id=account_id))
+    account.delete()
+    return 204

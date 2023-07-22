@@ -1,40 +1,43 @@
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+from core.models import TimeStampedModel
+from users.models import User
 
+class AccountType(TimeStampedModel):
+    id = models.CharField(max_length=15, primary_key=True)
+    name = models.CharField(max_length=31,null=False, blank=False)
+    is_asset = models.BooleanField(null=False)
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('verified', True)
-        return self.create_user(email, password, **extra_fields)
-
-
-class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(unique=True)
-    full_name = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    verified = models.BooleanField(default=False)
-
-    objects = UserManager()
-
-    USERNAME_FIELD = 'email'
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='unique account type name')
+        ]
 
     def __str__(self):
-        return self.email
+        return self.name
 
-    def get_full_name(self):
-        return self.full_name
+class AccountTypeSubType(TimeStampedModel):
+    id = models.CharField(max_length=15, primary_key=True)
+    name = models.CharField(max_length=31, null=False, blank=False)
+    account_type = models.ManyToManyField(AccountType)
 
-    def get_short_name(self):
-        return self.email
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='unique account sub type name')
+        ]
+
+    def __str__(self):
+        return self.name
+
+class Account(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    name = models.CharField(max_length=255, null=False, blank=False) 
+    type = models.ForeignKey(AccountType, on_delete=models.RESTRICT, null=False)
+    subtype = models.ForeignKey(AccountTypeSubType, on_delete=models.RESTRICT, null=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'name'], name='unique user account names')
+        ]
+      
+    def __str__(self):
+        return self.user.email + ': ' + self.name

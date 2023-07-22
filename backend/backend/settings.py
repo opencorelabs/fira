@@ -55,7 +55,7 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 # Application definition
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,8 +64,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ninja_extra',
+    'ninja_jwt',
+    'core',
     'backend',  # for the mgmt commands
     'accounts',
+    'balances',
+    'users',
 ]
 
 MIDDLEWARE = [
