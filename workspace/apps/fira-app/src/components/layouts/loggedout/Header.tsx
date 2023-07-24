@@ -7,9 +7,9 @@ export function Header() {
   return (
     <header>
       <Container maxW="container.xl" py={4}>
-      <Link href="/">
-        <WordMark />
-      </Link>
+        <Link href="/">
+          <WordMark />
+        </Link>
       </Container>
     </header>
   );
