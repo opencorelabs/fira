@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'backend',  # for the mgmt commands
     'accounts',
+    'core'
 ]
 
 MIDDLEWARE = [
