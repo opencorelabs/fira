@@ -16,12 +16,10 @@ primary_region = "sea"
 [build.args]
   NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
   NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
-  NEXT_PUBLIC_BASE_PATH = "/app"
 
 [env]
   NODE_ENV = "production"
   HOST = "fira.opencorelabs.org"
   NEXT_PUBLIC_BASE_URL = "https://fira.opencorelabs.org"
-  NEXT_PUBLIC_BASE_PATH = "/app"
   NEXT_PUBLIC_VERIFICATION_BASE_URL = "https://fira.opencorelabs.org/auth/verify-email"
   NODE_OPTIONS = "--max-old-space-size=128"

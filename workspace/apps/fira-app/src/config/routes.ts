@@ -14,14 +14,11 @@ export const PAGE_ROUTES = {
 };
 
 export const API_ROUTES = {
-  LOGIN: '/api/auth/login',
-  LOGOUT: '/api/auth/logout',
-  REGISTER: '/api/auth/register',
-  VERIFY_EMAIL: '/api/auth/verify-email',
-  HEALTH_CHECK: '/api/health-check',
+  LOGIN: '/private-api/auth/login',
+  LOGOUT: '/private-api/auth/logout',
+  REGISTER: '/private-api/auth/register',
+  VERIFY_EMAIL: '/private-api/auth/verify-email',
+  HEALTH_CHECK: '/private-api/health-check',
 };
 
-export const API_WITH_BASEPATH = makeRoutes(
-  API_ROUTES,
-  process.env.NEXT_PUBLIC_BASE_PATH
-);
+export const API_WITH_BASEPATH = makeRoutes(API_ROUTES);
