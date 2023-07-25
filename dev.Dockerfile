@@ -20,6 +20,7 @@ WORKDIR /fira
 
 VOLUME /fira/workspace/node_modules
 VOLUME /fira/workspace/apps/fira-app/.next
+VOLUME /fira/workspace/apps/fira-app/node_modules
 VOLUME /data
 
 ENV NEXT_TELEMETRY_DISABLED 1
