@@ -3,3 +3,6 @@ tzdata
 sentry-sdk
 dj-database-url
 django-ninja
+django-ninja-extra
+django-ninja-jwt
+six
