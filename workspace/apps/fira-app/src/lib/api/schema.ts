@@ -4,17 +4,21 @@
  */
 
 export interface paths {
+  '/api/token/pair': {
+    /** Obtain Token */
+    post: operations['3f863343_controller_obtain_token'];
+  };
+  '/api/token/refresh': {
+    /** Refresh Token */
+    post: operations['8c53b0cc_controller_refresh_token'];
+  };
+  '/api/token/verify': {
+    /** Verify Token */
+    post: operations['293284fd_controller_verify_token'];
+  };
   '/api/accounts/register': {
     /** Create Account */
     post: operations['accounts_api_create_account'];
-  };
-  '/api/accounts/verify': {
-    /** Verify Account */
-    post: operations['accounts_api_verify_account'];
-  };
-  '/api/accounts/login': {
-    /** Login */
-    post: operations['accounts_api_login'];
   };
   '/api/accounts/me': {
     /** Get Me */
@@ -26,6 +30,41 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** TokenObtainPairOutputSchema */
+    TokenObtainPairOutputSchema: {
+      /** Email */
+      email: string;
+      /** Refresh */
+      refresh: string;
+      /** Access */
+      access: string;
+    };
+    /** TokenObtainPairInputSchema */
+    TokenObtainPairInputSchema: {
+      /** Password */
+      password: string;
+      /** Email */
+      email: string;
+    };
+    /** TokenRefreshOutputSchema */
+    TokenRefreshOutputSchema: {
+      /** Refresh */
+      refresh: string;
+      /** Access */
+      access?: string;
+    };
+    /** TokenRefreshInputSchema */
+    TokenRefreshInputSchema: {
+      /** Refresh */
+      refresh: string;
+    };
+    /** Schema */
+    Schema: Record<string, never>;
+    /** TokenVerifyInputSchema */
+    TokenVerifyInputSchema: {
+      /** Token */
+      token: string;
+    };
     /** Account */
     Account: {
       /** Email Address */
@@ -52,27 +91,6 @@ export interface components {
       email_address: string;
       /** Password */
       password: string;
-      /** Verification Url */
-      verification_url: string;
-    };
-    /** EmailVerification */
-    EmailVerification: {
-      /** Resend To Email */
-      resend_to_email: string;
-      /** Verification Code */
-      verification_code: string;
-    };
-    /** Token */
-    Token: {
-      /** Jwt */
-      jwt: string;
-    };
-    /** EmailPasswordLogin */
-    EmailPasswordLogin: {
-      /** Email Address */
-      email_address: string;
-      /** Password */
-      password: string;
     };
   };
   responses: never;
@@ -85,6 +103,54 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+  /** Obtain Token */
+  '3f863343_controller_obtain_token': {
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TokenObtainPairInputSchema'];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          'application/json': components['schemas']['TokenObtainPairOutputSchema'];
+        };
+      };
+    };
+  };
+  /** Refresh Token */
+  '8c53b0cc_controller_refresh_token': {
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TokenRefreshInputSchema'];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          'application/json': components['schemas']['TokenRefreshOutputSchema'];
+        };
+      };
+    };
+  };
+  /** Verify Token */
+  '293284fd_controller_verify_token': {
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TokenVerifyInputSchema'];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          'application/json': components['schemas']['Schema'];
+        };
+      };
+    };
+  };
   /** Create Account */
   accounts_api_create_account: {
     requestBody: {
@@ -97,50 +163,6 @@ export interface operations {
       201: {
         content: {
           'application/json': components['schemas']['Account'];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          'application/json': components['schemas']['InputError'];
-        };
-      };
-    };
-  };
-  /** Verify Account */
-  accounts_api_verify_account: {
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['EmailVerification'];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          'application/json': components['schemas']['Account'];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          'application/json': components['schemas']['InputError'];
-        };
-      };
-    };
-  };
-  /** Login */
-  accounts_api_login: {
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['EmailPasswordLogin'];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          'application/json': components['schemas']['Token'];
         };
       };
       /** @description Bad Request */
