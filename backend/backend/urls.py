@@ -19,10 +19,12 @@ from django.urls import path
 from ninja_extra import NinjaExtraAPI
 from ninja_jwt.controller import NinjaJWTDefaultController
 from accounts.api import router as accounts_router
+from manual.api import router as manual_router
 
 api = NinjaExtraAPI()
 api.register_controllers(NinjaJWTDefaultController)
 api.add_router('/accounts/', accounts_router)
+api.add_router('/manual/', manual_router)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
