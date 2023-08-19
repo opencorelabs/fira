@@ -11,7 +11,7 @@ export default withSessionRoute(async function (
     body: req.body,
   });
   console.log('response', response);
-  return res.status(405).send('Not Implemented');
+  return res.status(405).json({ message: 'Not Implemented' });
   // if (req.method !== 'POST') {
   //   return res.status(405).send('Method Not Allowed');
   // }

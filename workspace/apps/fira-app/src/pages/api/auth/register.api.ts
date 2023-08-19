@@ -1,12 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { client } from 'src/lib/api';
 import { withSessionRoute } from 'src/lib/session/session';
 
 export default withSessionRoute(async function (
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  return res.status(500).send('Not Implemented');
+  const response = await client.POST('/api/accounts/register', {
+    body: req.body,
+  });
+  return res.status(500).json({ message: 'Not Implemented' });
   // if (req.method !== 'POST') {
   //   return res.status(405).send('Method Not Allowed');
   // }
