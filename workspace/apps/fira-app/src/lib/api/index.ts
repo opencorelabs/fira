@@ -1,9 +1,7 @@
 import createClient from 'openapi-fetch';
 
-import { paths } from './schema';
+import type { paths } from './schema';
 
 export const client = createClient<paths>({
-  baseUrl: 'http://localhost:8080',
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:8080',
 });
-
-console.log('client', client);

@@ -107,17 +107,8 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
 }
 
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
-  context: GetServerSidePropsContext
+  _: GetServerSidePropsContext
 ) {
-  if (context.req.session?.user?.verified) {
-    return {
-      redirect: {
-        destination: PAGE_ROUTES.DASHBOARD,
-        permanent: false,
-      },
-    };
-  }
-
   return {
     props: {},
   };

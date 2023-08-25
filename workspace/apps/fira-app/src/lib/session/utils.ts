@@ -4,10 +4,9 @@ declare module 'iron-session' {
       id?: string;
       verified: boolean;
       token?: string;
+      refresh?: string;
       name?: string;
-      avatar?: string;
-      // TODO: remove this
-      // status?: V1AccountRegistrationStatus;
+      email?: string;
     };
   }
 }

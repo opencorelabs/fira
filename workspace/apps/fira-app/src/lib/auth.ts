@@ -16,8 +16,8 @@ export async function login(data: LoginRequest, options = {}) {
 }
 
 type RegisterRequest = {
-  email: string;
-  name: string;
+  email_address: string;
+  full_name: string;
   password: string;
 };
 
@@ -28,7 +28,6 @@ export async function signup(data: RegisterRequest, options = {}) {
     body: JSON.stringify(data),
     ...options,
   });
-  console.log('response', response);
   return response.json();
 }
 

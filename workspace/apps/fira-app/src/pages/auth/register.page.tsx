@@ -9,17 +9,15 @@ import {
 } from '@chakra-ui/react';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { PAGE_ROUTES } from 'src/config/routes';
 import { signup } from 'src/lib/auth';
 import { withSessionSsr } from 'src/lib/session/session';
 
 type FormValues = {
-  name: string;
-  email: string;
+  full_name: string;
+  email_address: string;
   password: string;
 };
 
@@ -27,26 +25,24 @@ export default function Register(
   _: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
   const [, setResponse] = useState<null | Record<string, unknown>>(null);
-  const router = useRouter();
+  // const router = useRouter();
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<FormValues>();
 
-  const onSubmit = useCallback(
-    async (values: FormValues) => {
-      try {
-        setResponse(null);
-        const response = await signup(values);
-        setResponse(response.data);
-        router.push(PAGE_ROUTES.VERIFY_EMAIL);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    [router]
-  );
+  const onSubmit = useCallback(async (values: FormValues) => {
+    try {
+      setResponse(null);
+      const response = await signup(values);
+      console.info('response', response);
+      // setResponse(response.data);
+      // router.push(PAGE_ROUTES.VERIFY_EMAIL);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   const onError = console.error;
 
@@ -55,24 +51,24 @@ export default function Register(
       <Heading color="gray.500">Register</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
-          <FormControl isInvalid={Boolean(errors.name)}>
+          <FormControl isInvalid={Boolean(errors.full_name)}>
             <Input
-              {...register('name', { required: 'Name is required' })}
+              {...register('full_name', { required: 'Full name is required' })}
               placeholder="Name"
               type="text"
               bg="gray.700"
             />
-            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.full_name?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={Boolean(errors.email)}>
+          <FormControl isInvalid={Boolean(errors.email_address)}>
             <Input
-              {...register('email', { required: 'Email is required' })}
+              {...register('email_address', { required: 'Email address is required' })}
               placeholder="Email"
               type="email"
               bg="gray.700"
               color="gray.100"
             />
-            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.email_address?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.password)}>
             <Input
@@ -118,16 +114,8 @@ export default function Register(
 }
 
 export const getServerSideProps = withSessionSsr(async function getServerSideProps(
-  context: GetServerSidePropsContext
+  _: GetServerSidePropsContext
 ) {
-  if (context.req.session?.user?.verified) {
-    return {
-      redirect: {
-        destination: PAGE_ROUTES.DASHBOARD,
-        permanent: false,
-      },
-    };
-  }
   return {
     props: {},
   };

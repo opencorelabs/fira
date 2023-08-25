@@ -6,15 +6,15 @@
 export interface paths {
   '/api/token/pair': {
     /** Obtain Token */
-    post: operations['3f863343_controller_obtain_token'];
+    post: operations['060ad8d4_controller_obtain_token'];
   };
   '/api/token/refresh': {
     /** Refresh Token */
-    post: operations['8c53b0cc_controller_refresh_token'];
+    post: operations['d52b6ce9_controller_refresh_token'];
   };
   '/api/token/verify': {
     /** Verify Token */
-    post: operations['293284fd_controller_verify_token'];
+    post: operations['3d4641bc_controller_verify_token'];
   };
   '/api/accounts/register': {
     /** Create Account */
@@ -104,7 +104,7 @@ export type external = Record<string, never>;
 
 export interface operations {
   /** Obtain Token */
-  '3f863343_controller_obtain_token': {
+  '060ad8d4_controller_obtain_token': {
     requestBody: {
       content: {
         'application/json': components['schemas']['TokenObtainPairInputSchema'];
@@ -120,7 +120,7 @@ export interface operations {
     };
   };
   /** Refresh Token */
-  '8c53b0cc_controller_refresh_token': {
+  d52b6ce9_controller_refresh_token: {
     requestBody: {
       content: {
         'application/json': components['schemas']['TokenRefreshInputSchema'];
@@ -136,7 +136,7 @@ export interface operations {
     };
   };
   /** Verify Token */
-  '293284fd_controller_verify_token': {
+  '3d4641bc_controller_verify_token': {
     requestBody: {
       content: {
         'application/json': components['schemas']['TokenVerifyInputSchema'];
