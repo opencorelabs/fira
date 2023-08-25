@@ -7,12 +7,13 @@ import {
   Input,
   VStack,
 } from '@chakra-ui/react';
-import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { signup } from 'src/lib/auth';
+import { withAuthSsr } from 'src/lib/session/authed';
 import { withSessionSsr } from 'src/lib/session/session';
 
 type FormValues = {
@@ -113,10 +114,10 @@ export default function Register(
   );
 }
 
-export const getServerSideProps = withSessionSsr(async function getServerSideProps(
-  _: GetServerSidePropsContext
-) {
-  return {
-    props: {},
-  };
-});
+export const getServerSideProps = withSessionSsr(
+  withAuthSsr(async function getServerSideProps() {
+    return {
+      props: {},
+    };
+  })
+);
