@@ -5,13 +5,16 @@ import {
   FormErrorMessage,
   Heading,
   Input,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { PAGE_ROUTES } from 'src/config/routes';
 import { signup } from 'src/lib/auth';
 import { withAuthSsr } from 'src/lib/session/authed';
 import { withSessionSsr } from 'src/lib/session/session';
@@ -22,28 +25,38 @@ type FormValues = {
   password: string;
 };
 
+type RegisterResponse = {
+  error?: string;
+  ok: boolean;
+  status: number;
+  url: null | string;
+};
+
 export default function Register(
   _: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-  const [, setResponse] = useState<null | Record<string, unknown>>(null);
-  // const router = useRouter();
+  const [response, setResponse] = useState<null | RegisterResponse>(null);
+  const router = useRouter();
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<FormValues>();
 
-  const onSubmit = useCallback(async (values: FormValues) => {
-    try {
-      setResponse(null);
-      const response = await signup(values);
-      console.info('response', response);
-      // setResponse(response.data);
-      // router.push(PAGE_ROUTES.VERIFY_EMAIL);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  const onSubmit = useCallback(
+    async (values: FormValues) => {
+      try {
+        setResponse(null);
+        const res = await signup(values);
+        setResponse(res.data);
+        // TODO [Jake]: Implement verification email flow
+        router.push((router.query?.callbackUrl as string) ?? PAGE_ROUTES.DASHBOARD);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [router]
+  );
 
   const onError = console.error;
 
@@ -101,13 +114,11 @@ export default function Register(
           >
             Have an account? Login
           </Button>
-          {/* 
-          // TODO: Implement error handling
-          {!!response?.errorMessage && (
+          {!!response?.error && (
             <Text color="red">
-              {response?.errorMessage} - Status {response?.status}
+              {response?.error} - Status {response?.status}
             </Text>
-          )} */}
+          )}
         </VStack>
       </Box>
     </VStack>
