@@ -37,7 +37,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>();
 
   const onSubmit = useCallback(
@@ -82,7 +82,13 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          <Button size="sm" w="full" type="submit" colorScheme="primary">
+          <Button
+            size="sm"
+            w="full"
+            type="submit"
+            colorScheme="primary"
+            isLoading={isSubmitting}
+          >
             Login
           </Button>
           <Button

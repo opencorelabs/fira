@@ -40,7 +40,7 @@ export default function Register(
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>();
 
   const onSubmit = useCallback(
@@ -100,7 +100,13 @@ export default function Register(
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          <Button size="sm" w="full" type="submit" colorScheme="primary">
+          <Button
+            colorScheme="primary"
+            isLoading={isSubmitting}
+            size="sm"
+            type="submit"
+            w="full"
+          >
             Sign up
           </Button>
           <Button
