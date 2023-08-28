@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 
 import { PAGE_ROUTES } from 'src/config/routes';
 import { login } from 'src/lib/auth';
+import { withAuthSsr } from 'src/lib/session/authed';
 import { withSessionSsr } from 'src/lib/session/session';
 
 type FormValues = {
@@ -36,7 +37,7 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>();
 
   const onSubmit = useCallback(
@@ -81,7 +82,13 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          <Button size="sm" w="full" type="submit" colorScheme="primary">
+          <Button
+            size="sm"
+            w="full"
+            type="submit"
+            colorScheme="primary"
+            isLoading={isSubmitting}
+          >
             Login
           </Button>
           <Button
@@ -106,19 +113,10 @@ export default function Login(_: InferGetServerSidePropsType<typeof getServerSid
   );
 }
 
-export const getServerSideProps = withSessionSsr(async function getServerSideProps(
-  context: GetServerSidePropsContext
-) {
-  if (context.req.session?.user?.verified) {
+export const getServerSideProps = withSessionSsr(
+  withAuthSsr(async function getServerSideProps() {
     return {
-      redirect: {
-        destination: PAGE_ROUTES.DASHBOARD,
-        permanent: false,
-      },
+      props: {},
     };
-  }
-
-  return {
-    props: {},
-  };
-});
+  })
+);

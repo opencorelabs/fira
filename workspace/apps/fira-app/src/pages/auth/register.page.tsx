@@ -5,9 +5,10 @@ import {
   FormErrorMessage,
   Heading,
   Input,
+  Text,
   VStack,
 } from '@chakra-ui/react';
-import type { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import type { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useState } from 'react';
@@ -15,32 +16,41 @@ import { useForm } from 'react-hook-form';
 
 import { PAGE_ROUTES } from 'src/config/routes';
 import { signup } from 'src/lib/auth';
+import { withAuthSsr } from 'src/lib/session/authed';
 import { withSessionSsr } from 'src/lib/session/session';
 
 type FormValues = {
-  name: string;
-  email: string;
+  full_name: string;
+  email_address: string;
   password: string;
+};
+
+type RegisterResponse = {
+  error?: string;
+  ok: boolean;
+  status: number;
+  url: null | string;
 };
 
 export default function Register(
   _: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-  const [, setResponse] = useState<null | Record<string, unknown>>(null);
+  const [response, setResponse] = useState<null | RegisterResponse>(null);
   const router = useRouter();
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>();
 
   const onSubmit = useCallback(
     async (values: FormValues) => {
       try {
         setResponse(null);
-        const response = await signup(values);
-        setResponse(response.data);
-        router.push(PAGE_ROUTES.VERIFY_EMAIL);
+        const res = await signup(values);
+        setResponse(res.data);
+        // TODO [Jake]: Implement verification email flow
+        router.push((router.query?.callbackUrl as string) ?? PAGE_ROUTES.DASHBOARD);
       } catch (error) {
         console.error(error);
       }
@@ -55,24 +65,24 @@ export default function Register(
       <Heading color="gray.500">Register</Heading>
       <Box w="24rem">
         <VStack as="form" onSubmit={handleSubmit(onSubmit, onError)}>
-          <FormControl isInvalid={Boolean(errors.name)}>
+          <FormControl isInvalid={Boolean(errors.full_name)}>
             <Input
-              {...register('name', { required: 'Name is required' })}
+              {...register('full_name', { required: 'Full name is required' })}
               placeholder="Name"
               type="text"
               bg="gray.700"
             />
-            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.full_name?.message}</FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={Boolean(errors.email)}>
+          <FormControl isInvalid={Boolean(errors.email_address)}>
             <Input
-              {...register('email', { required: 'Email is required' })}
+              {...register('email_address', { required: 'Email address is required' })}
               placeholder="Email"
               type="email"
               bg="gray.700"
               color="gray.100"
             />
-            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.email_address?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={Boolean(errors.password)}>
             <Input
@@ -90,7 +100,13 @@ export default function Register(
             />
             <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
           </FormControl>
-          <Button size="sm" w="full" type="submit" colorScheme="primary">
+          <Button
+            colorScheme="primary"
+            isLoading={isSubmitting}
+            size="sm"
+            type="submit"
+            w="full"
+          >
             Sign up
           </Button>
           <Button
@@ -104,31 +120,21 @@ export default function Register(
           >
             Have an account? Login
           </Button>
-          {/* 
-          // TODO: Implement error handling
-          {!!response?.errorMessage && (
+          {!!response?.error && (
             <Text color="red">
-              {response?.errorMessage} - Status {response?.status}
+              {response?.error} - Status {response?.status}
             </Text>
-          )} */}
+          )}
         </VStack>
       </Box>
     </VStack>
   );
 }
 
-export const getServerSideProps = withSessionSsr(async function getServerSideProps(
-  context: GetServerSidePropsContext
-) {
-  if (context.req.session?.user?.verified) {
+export const getServerSideProps = withSessionSsr(
+  withAuthSsr(async function getServerSideProps() {
     return {
-      redirect: {
-        destination: PAGE_ROUTES.DASHBOARD,
-        permanent: false,
-      },
+      props: {},
     };
-  }
-  return {
-    props: {},
-  };
-});
+  })
+);

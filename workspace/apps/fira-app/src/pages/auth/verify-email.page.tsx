@@ -2,6 +2,7 @@ import { Box, Button, Container, Flex, Heading, Text, useToast } from '@chakra-u
 import { GetServerSidePropsContext } from 'next';
 import { useCallback } from 'react';
 
+import { withAuthSsr } from 'src/lib/session/authed';
 import { withSessionSsr } from 'src/lib/session/session';
 
 export default function VerifyEmail() {
@@ -37,59 +38,49 @@ export default function VerifyEmail() {
   );
 }
 
-export const getServerSideProps = withSessionSsr(async function getServerSideProps(
-  _: GetServerSidePropsContext
-) {
-  // TODO: Implement verification
-  // try {
-  //   if (context.req.session?.user?.verified) {
-  //     return {
-  //       redirect: {
-  //         destination: PAGE_ROUTES.DASHBOARD,
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
+export const getServerSideProps = withSessionSsr(
+  withAuthSsr(async function getServerSideProps(_: GetServerSidePropsContext) {
+    // TODO: Implement verification
+    //   if (context.query?.verification_token) {
+    // // Send validation request to API and rediect to dashboard
+    // const response = await getApi().firaServiceVerifyAccount({
+    //   // @ts-expect-error type is required
+    //   type: 1,
+    //   namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
+    //   token: context.query.verification_token as string,
+    // });
+    // context.req.session.user = {
+    //   ...context.req.session.user,
+    //   verified: true,
+    //   token: response.data.jwt,
+    // };
+    // await context.req.session.save();
+    //     return {
+    //       redirect: {
+    //         destination: PAGE_ROUTES.DASHBOARD,
+    //         permanent: false,
+    //       },
+    //     };
+    //   }
+    // } catch (error) {
+    //   console.error('\n\nerror', error);
+    //   // TODO: Return error message to client
+    //   return {
+    //     props: {},
+    //   };
+    // }
 
-  //   if (context.query?.verification_token) {
-  // // Send validation request to API and rediect to dashboard
-  // const response = await getApi().firaServiceVerifyAccount({
-  //   // @ts-expect-error type is required
-  //   type: 1,
-  //   namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-  //   token: context.query.verification_token as string,
-  // });
-  // context.req.session.user = {
-  //   ...context.req.session.user,
-  //   verified: true,
-  //   token: response.data.jwt,
-  // };
-  // await context.req.session.save();
-  //     return {
-  //       redirect: {
-  //         destination: PAGE_ROUTES.DASHBOARD,
-  //         permanent: false,
-  //       },
-  //     };
-  //   }
-  // } catch (error) {
-  //   console.error('\n\nerror', error);
-  //   // TODO: Return error message to client
-  //   return {
-  //     props: {},
-  //   };
-  // }
+    // if (!context.req.session?.user) {
+    //   return {
+    //     redirect: {
+    //       destination: PAGE_ROUTES.LOGIN,
+    //       permanent: false,
+    //     },
+    //   };
+    // }
 
-  // if (!context.req.session?.user) {
-  //   return {
-  //     redirect: {
-  //       destination: PAGE_ROUTES.LOGIN,
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-
-  return {
-    props: {},
-  };
-});
+    return {
+      props: {},
+    };
+  })
+);

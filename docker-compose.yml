@@ -9,6 +9,8 @@ services:
       - "8080:8080"
     volumes:
       - .:/fira
+      # - node_modules:/workspace/node_modules
+      # - /workspace/apps/fira-app/node_modules
     environment:
       FIRA_MAILGUN_DOMAIN: ${FIRA_MAILGUN_DOMAIN}
       FIRA_MAILGUN_API_KEY: ${FIRA_MAILGUN_API_KEY}

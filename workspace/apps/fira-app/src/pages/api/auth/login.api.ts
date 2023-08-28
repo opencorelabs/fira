@@ -1,57 +1,47 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { client } from 'src/lib/api';
 import { withSessionRoute } from 'src/lib/session/session';
 
 export default withSessionRoute(async function (
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  return res.status(500).send('Not Implemented');
-  // if (req.method !== 'POST') {
-  //   return res.status(405).send('Method Not Allowed');
-  // }
+  if (req.method !== 'POST') {
+    return res.status(405).send('Method Not Allowed');
+  }
+  try {
+    const token = await client.POST('/api/token/pair', {
+      body: req.body,
+    });
 
-  // try {
-  // const data = req.body;
-  // const response = await getApi().firaServiceLoginAccount({
-  //   namespace: V1AccountNamespace.ACCOUNT_NAMESPACE_CONSUMER,
-  //   credential: {
-  //     credentialType: V1AccountCredentialType.ACCOUNT_CREDENTIAL_TYPE_EMAIL,
-  //     emailCredential: {
-  //       email: data?.email,
-  //       password: data?.password,
-  //       verify: true,
-  //     },
-  //   },
-  // });
-  // if (response.error) {
-  //   return res
-  //     .status(response.status)
-  //     .json({ error: response.error ?? response.statusText });
-  // }
-  // let me: HttpResponse<V1Account, RpcStatus> | null = null;
-  // if (
-  //   response.data.status === V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK
-  // ) {
-  //   me = await getApi().firaServiceGetAccount({
-  //     headers: {
-  //       authorization: `Bearer ${response.data.jwt}`,
-  //     },
-  //   });
-  // }
-  // req.session.user = {
-  //   token: response.data.jwt,
-  //   verified:
-  //     response.data.status ===
-  //     V1AccountRegistrationStatus.ACCOUNT_REGISTRATION_STATUS_OK,
-  //   status: response.data.status,
-  //   ...(me ? { id: me.data.id } : {}),
-  //   ...(me ? { name: me.data.name } : {}),
-  //   ...(me ? { avatarUrl: me.data.avatarUrl } : {}),
-  // };
-  // await req.session.save();
-  // res.status(response.status).json(response.data);
-  // } catch (error) {
-  //   res.status(500).json({ error: error.error?.message ?? 'something went wrong' });
-  // }
+    // TODO: add better error handling here
+    if (token.error) {
+      // @ts-expect-error type never bs
+      return res.status(401).json({ error: token.error.detail });
+    }
+
+    const me = await client.GET('/api/accounts/me', {
+      headers: {
+        authorization: `Bearer ${token.data.access}`,
+      },
+    });
+
+    // TODO: add better error handling here
+    if (!me.data) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    req.session.user = {
+      token: token.data?.access,
+      refresh: token.data?.refresh,
+      verified: me.data.verified,
+      name: me.data.full_name,
+      email: me.data.email_address,
+    };
+    await req.session.save();
+    res.status(token.response.status).json(token.data);
+  } catch (error) {
+    res.status(500).json({ error: error.error?.message ?? 'something went wrong' });
+  }
 });
