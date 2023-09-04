@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     'ninja_jwt',
     'backend',  # for the mgmt commands
     'accounts',
+    'manual',
+    'core'
 ]
 
 MIDDLEWARE = [
